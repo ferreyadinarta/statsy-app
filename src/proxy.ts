@@ -25,8 +25,24 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  // Refresh session — do not remove this
-  await supabase.auth.getUser()
+  // Refresh session — do not add logic before this
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { pathname } = request.nextUrl
+
+  // Not logged in + trying to access dashboard → send to login
+  if (!user && pathname.startsWith('/dashboard')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  // Logged in + visiting login or signup → send to dashboard
+  if (user && (pathname === '/login' || pathname === '/signup')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
 
   return supabaseResponse
 }
