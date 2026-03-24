@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
-import { useToast } from "../ui/toast";
+import { useToast } from "@/lib/use-toast";
 
 type Props = {
   onClose: () => void;
@@ -33,7 +33,7 @@ export default function CreatePageModal({ onClose }: Props) {
 
   const supabase = createClient();
   const router = useRouter();
-  const toast = useToast();
+  const { success, error: showError } = useToast(); 
 
   function handleNameChange(val: string) {
     setName(val);
@@ -75,7 +75,7 @@ export default function CreatePageModal({ onClose }: Props) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Not authenticated. Please log in again.");
+      showError("Not authenticated. Please log in again.");
       setLoading(false);
       return;
     }
@@ -93,15 +93,15 @@ export default function CreatePageModal({ onClose }: Props) {
           ...prev,
           slug: "This slug is already taken. Try another.",
         }));
-        toast.error("This slug is already taken.");
+        showError("This slug is already taken.");
       } else {
-        toast.error("Something went wrong. Please try again.");
+        showError("Something went wrong. Please try again.");
       }
       return;
     }
 
     // Success!
-    toast.success(`${name.trim()} created successfully!`);
+    success(`${name.trim()} created successfully!`);
     router.refresh();
 
     setTimeout(() => {

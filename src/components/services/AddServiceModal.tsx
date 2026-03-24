@@ -4,7 +4,7 @@ import { JSX, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
-import { useToast } from "../ui/toast";
+import { useToast } from "@/lib/use-toast";
 
 type Props = {
   pageId: string;
@@ -25,8 +25,7 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
 
   const supabase = createClient();
   const router = useRouter();
-  const toast = useToast();
-
+  const { success, error: showError } = useToast();
   function validate(): boolean {
     const errors: FieldErrors = {};
     if (!name.trim()) {
@@ -48,7 +47,7 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Not authenticated. Please log in again.");
+      showError("Not authenticated. Please log in again.");
       setLoading(false);
       return;
     }
@@ -61,16 +60,16 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
     });
 
     if (error) {
-      setLoading(false); 
-      toast.error("Failed");
+      setLoading(false);
+      showError("Failed to add service. Please try again.");
       return;
     }
 
     router.refresh();
 
     setTimeout(() => {
-      toast.success("Service Added Successfully!");
-      setLoading(false); 
+      success("Service Added Successfully!");
+      setLoading(false);
       onClose();
     }, 500);
   }

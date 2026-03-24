@@ -4,7 +4,7 @@ import { JSX, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
-import { useToast } from "../ui/toast";
+import { useToast } from "@/lib/use-toast";
 
 type Service = {
   id: string;
@@ -31,7 +31,7 @@ export default function EditServiceModal({ service, onClose }: Props) {
 
   const supabase = createClient();
   const router = useRouter();
-  const toast = useToast();
+  const { success, error: showError } = useToast(); 
 
   function validate(): boolean {
     const errors: FieldErrors = {};
@@ -60,14 +60,14 @@ export default function EditServiceModal({ service, onClose }: Props) {
 
     if (error) {
       setLoading(false);
-      toast.error("Failed");
+      showError("Failed To Edit Service. Please try again.");
       return;
     }
 
     router.refresh();
 
     setTimeout(() => {
-      toast.success("Service Edited Successfully!");
+      success("Service Edited Successfully!");
       setLoading(false);
       onClose();
     }, 500);
