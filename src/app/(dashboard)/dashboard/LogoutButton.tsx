@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 export default function LogoutButton() {
   const supabase = createClient();
@@ -15,13 +15,23 @@ export default function LogoutButton() {
   }
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
+    <button
       onClick={handleLogout}
-      className="border-[#1a1714] text-[#1a1714] hover:bg-[#1a1714] hover:text-[#f5f2eb] cursor-pointer text-xs font-semibold uppercase tracking-wider"
+      className="flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-xs font-medium transition-colors duration-150 cursor-pointer"
+      style={{ color: "#8a8070", border: "1.5px solid transparent" }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.color = "#1a1714";
+        e.currentTarget.style.borderColor = "#e4dfd4";
+        e.currentTarget.style.background = "white";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.color = "#8a8070";
+        e.currentTarget.style.borderColor = "transparent";
+        e.currentTarget.style.background = "transparent";
+      }}
     >
+      <LogOut size={13} />
       Log out
-    </Button>
+    </button>
   );
 }
