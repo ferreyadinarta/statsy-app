@@ -1,16 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import LogoutButton from "./LogoutButton";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import DashboardClient from "./DashboardClient";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -20,95 +12,140 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
+  const { data: pages } = await supabase
+    .from("status_pages")
+    .select("*")
+    .order("created_at", { ascending: false });
+
   return (
     <div className="min-h-screen bg-[#f5f2eb]">
       {/* Nav */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-5 border-b border-[#1a1714] bg-[rgba(245,242,235,0.92)] backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#e8500a] animate-pulse" />
-          <span className="font-black text-xl tracking-[-0.04em] text-[#1a1714]">
+      <header
+        className="sticky top-0 z-50 flex items-center justify-between px-8 py-4"
+        style={{
+          borderBottom: "1.5px solid #1a1714",
+          background: "rgba(245,242,235,0.95)",
+          backdropFilter: "blur(10px)",
+        }}
+      >
+        {/* Left — logo */}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 no-underline"
+        >
+          <span
+            className="w-[9px] h-[9px] rounded-full bg-[#e8500a] flex-shrink-0"
+            style={{ animation: "blink 2.4s ease-in-out infinite" }}
+          />
+          <span
+            style={{
+              fontFamily: "var(--font-head)",
+              fontWeight: 900,
+              fontSize: "1.2rem",
+              letterSpacing: "-0.04em",
+              color: "#1a1714",
+            }}
+          >
             Statsy
           </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-[#8a8070] hidden sm:block">
-            {user.email}
-          </span>
+        </Link>
+
+        {/* Right — user info + logout */}
+        <div
+          className="flex items-center gap-1"
+          style={{ borderLeft: "1px solid #e4dfd4", paddingLeft: "20px" }}
+        >
+          <div className="flex items-center gap-3 mr-3">
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+              style={{ background: "#1a1714", color: "#f5f2eb" }}
+            >
+              {user.email?.[0].toUpperCase()}
+            </div>
+            <span
+              className="text-sm hidden sm:block"
+              style={{ color: "#3d3830" }}
+            >
+              {user.email}
+            </span>
+          </div>
           <LogoutButton />
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-8 py-14">
-        {/* Page heading */}
-        <div className="mb-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#e8500a] mb-2">
+        {/* Heading */}
+        <div
+          className="mb-10 pb-10"
+          style={{ borderBottom: "1.5px solid #e4dfd4" }}
+        >
+          <p
+            className="text-xs font-semibold uppercase tracking-[0.12em] mb-2"
+            style={{ color: "#e8500a" }}
+          >
             Dashboard
           </p>
-          <h1 className="font-serif text-4xl font-bold tracking-tight text-[#1a1714] mb-2">
+          <h1
+            style={{
+              fontFamily: "var(--font-head)",
+              fontWeight: 900,
+              fontSize: "2.2rem",
+              letterSpacing: "-0.04em",
+              color: "#1a1714",
+            }}
+          >
             Your status pages
           </h1>
-          <p className="text-[#8a8070] text-sm">
+          <p className="mt-2 text-sm" style={{ color: "#8a8070" }}>
             Manage your pages, services, and incidents from here.
           </p>
         </div>
 
-        <Separator className="mb-10 bg-[#e4dfd4]" />
-
-        {/* Empty state */}
-        <Card className="border-dashed border-[#c4bfb4] bg-white">
-          <CardContent className="flex flex-col items-center text-center py-20">
-            <div className="w-12 h-12 rounded-lg bg-[rgba(232,80,10,0.08)] border border-[rgba(232,80,10,0.15)] flex items-center justify-center text-2xl mb-6">
-              📡
-            </div>
-            <CardTitle className="font-serif text-xl tracking-tight text-[#1a1714] mb-2">
-              No status pages yet
-            </CardTitle>
-            <CardDescription className="max-w-xs mb-8 leading-relaxed">
-              Create your first status page and start keeping your users
-              informed when things go wrong.
-            </CardDescription>
-            <Button
-              disabled
-              className="bg-[#1a1714] text-[#f5f2eb] opacity-40 cursor-not-allowed"
-            >
-              + Create status page
-            </Button>
-            <p className="text-xs text-[#8a8070] mt-3">
-              Coming in the next step
-            </p>
-          </CardContent>
-        </Card>
+        <DashboardClient pages={pages ?? []} />
 
         {/* Plan bar */}
-        <Card className="mt-6 border-[#e4dfd4] bg-[#ede9e0]">
-          <CardContent className="flex items-center justify-between py-4 flex-wrap gap-4">
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#8a8070]">
-                Plan
-              </span>
-              <Badge
-                variant="outline"
-                className="border-[#1a1714] text-[#1a1714] font-bold uppercase text-xs"
-              >
-                Free
-              </Badge>
-            </div>
-            <div className="flex items-center gap-4 text-xs text-[#8a8070]">
-              <span>1 page</span>
-              <Separator orientation="vertical" className="h-3 bg-[#c4bfb4]" />
-              <span>3 services per page</span>
-              <Separator orientation="vertical" className="h-3 bg-[#c4bfb4]" />
-              <span>50 subscribers</span>
-            </div>
-            <Button
-              variant="link"
-              className="text-xs font-semibold text-[#e8500a] p-0 h-auto"
+        <div
+          className="mt-8 flex items-center justify-between px-6 py-4 rounded-[4px] flex-wrap gap-4"
+          style={{ background: "#ede9e0", border: "1.5px solid #e4dfd4" }}
+        >
+          <div className="flex items-center gap-3">
+            <span
+              className="text-xs font-semibold uppercase tracking-wider"
+              style={{ color: "#8a8070" }}
             >
-              Upgrade to Pro →
-            </Button>
-          </CardContent>
-        </Card>
+              Plan
+            </span>
+            <span
+              className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
+              style={{
+                background: "white",
+                border: "1.5px solid #1a1714",
+                color: "#1a1714",
+              }}
+            >
+              Free
+            </span>
+          </div>
+          <div
+            className="flex items-center gap-3 text-xs"
+            style={{ color: "#8a8070" }}
+          >
+            <span>1 page</span>
+            <span style={{ color: "#c4bfb4" }}>|</span>
+            <span>3 services per page</span>
+            <span style={{ color: "#c4bfb4" }}>|</span>
+            <span>50 subscribers</span>
+          </div>
+          <button
+            className="text-xs font-semibold hover:underline underline-offset-2"
+            style={{ color: "#e8500a" }}
+          >
+            Upgrade to Pro &rarr;
+          </button>
+        </div>
       </main>
+
+      <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
     </div>
   );
 }
