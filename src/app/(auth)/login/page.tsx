@@ -4,30 +4,53 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+
+type FieldErrors = {
+  email?: string;
+  password?: string;
+};
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
   const router = useRouter();
 
+  function validate(): boolean {
+    const errors: FieldErrors = {};
+    if (!email.trim()) {
+      errors.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = "Enter a valid email address.";
+    }
+    if (!password) {
+      errors.password = "Password is required.";
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
+    setAuthError(null);
+    if (!validate()) return;
 
+    setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-
     setLoading(false);
 
     if (error) {
-      setError("Invalid email or password.");
+      setAuthError("Invalid email or password.");
       return;
     }
 
@@ -36,67 +59,238 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f5f2eb] px-6">
-      <div className="bg-white border border-[#1a1714] rounded p-12 w-full max-w-md">
-        <div className="font-black text-lg tracking-tight text-[#e8500a] mb-8">
-          ● Statsy
+    <div className="h-screen flex flex-col items-center justify-center bg-[#f5f2eb] px-6">
+      <Link
+        href="/"
+        className="flex flex-col items-center gap-2 mb-10 no-underline"
+      >
+        <div className="flex items-center justify-center gap-2">
+          <span
+            className="w-3 h-3 rounded-full bg-[#e8500a] flex-shrink-0"
+            style={{ animation: "blink 2.4s ease-in-out infinite" }}
+          />
+          <span
+            style={{
+              fontFamily: "var(--font-head)",
+              fontWeight: 900,
+              fontSize: "1.7rem",
+              letterSpacing: "-0.04em",
+              color: "#1a1714",
+            }}
+          >
+            Statsy
+          </span>
         </div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-[#1a1714] mb-2">
-          Welcome back
-        </h1>
-        <p className="text-[#8a8070] text-sm mb-8">
-          Log in to your Statsy account.
-        </p>
+        <span
+          className="text-xs font-medium tracking-[0.06em] uppercase text-center"
+          style={{ color: "#8a8070" }}
+        >
+          Status pages for everyone
+        </span>
+      </Link>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[#3d3830]">
+      <div
+        className="w-full max-w-md bg-white rounded-[4px]"
+        style={{
+          border: "1.5px solid #1a1714",
+          boxShadow: "6px 6px 0 #1a1714",
+        }}
+      >
+        <div
+          className="px-8 pt-8 pb-6"
+          style={{ borderBottom: "1.5px solid #e4dfd4" }}
+        >
+          <h1
+            style={{
+              fontFamily: "var(--font-head)",
+              fontWeight: 900,
+              fontSize: "1.9rem",
+              letterSpacing: "-0.04em",
+              lineHeight: 1.1,
+            }}
+          >
+            Welcome back
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: "#8a8070" }}>
+            Log in to your Statsy account.
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleLogin}
+          noValidate
+          className="px-8 py-6 flex flex-col gap-5"
+        >
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs font-semibold uppercase tracking-[0.08em]"
+              style={{ color: "#3d3830" }}
+            >
               Email
             </label>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setFieldErrors((prev) => ({ ...prev, email: undefined }));
+              }}
               placeholder="you@yoursite.com"
-              required
-              className="border border-[#e4dfd4] rounded px-3.5 py-3 text-sm text-[#1a1714] outline-none focus:border-[#1a1714] transition-colors"
+              className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4]"
+              style={{
+                border: `1.5px solid ${fieldErrors.email ? "#e8500a" : "#e4dfd4"}`,
+                color: "#1a1714",
+                fontFamily: "var(--font-body)",
+              }}
+              onFocus={(e) => {
+                if (!fieldErrors.email) e.target.style.borderColor = "#1a1714";
+              }}
+              onBlur={(e) => {
+                if (!fieldErrors.email) e.target.style.borderColor = "#e4dfd4";
+              }}
             />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[#3d3830]">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Your password"
-              required
-              className="border border-[#e4dfd4] rounded px-3.5 py-3 text-sm text-[#1a1714] outline-none focus:border-[#1a1714] transition-colors"
-            />
+            {fieldErrors.email && (
+              <p className="text-xs" style={{ color: "#e8500a" }}>
+                {fieldErrors.email}
+              </p>
+            )}
           </div>
 
-          {error && <p className="text-[#e8500a] text-sm">{error}</p>}
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs font-semibold uppercase tracking-[0.08em]"
+              style={{ color: "#3d3830" }}
+            >
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                }}
+                placeholder="Your password"
+                className="w-full rounded-[4px] px-4 py-3 pr-11 text-sm outline-none bg-white placeholder:text-[#c4bfb4]"
+                style={{
+                  border: `1.5px solid ${fieldErrors.password ? "#e8500a" : "#e4dfd4"}`,
+                  color: "#1a1714",
+                  fontFamily: "var(--font-body)",
+                }}
+                onFocus={(e) => {
+                  if (!fieldErrors.password)
+                    e.target.style.borderColor = "#1a1714";
+                }}
+                onBlur={(e) => {
+                  if (!fieldErrors.password)
+                    e.target.style.borderColor = "#e4dfd4";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                style={{ color: "#c4bfb4" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#c4bfb4")}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            {fieldErrors.password && (
+              <p className="text-xs" style={{ color: "#e8500a" }}>
+                {fieldErrors.password}
+              </p>
+            )}
+          </div>
+
+          {/* <label className="flex items-center gap-3 cursor-pointer select-none">
+            <div
+              className="relative w-4 h-4 rounded-[2px] flex items-center justify-center flex-shrink-0 transition-colors"
+              style={{
+                border: "1.5px solid " + (rememberMe ? "#1a1714" : "#c4bfb4"),
+                background: rememberMe ? "#1a1714" : "white",
+              }}
+              onClick={() => setRememberMe(!rememberMe)}
+            >
+              {rememberMe && (
+                <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                  <path
+                    d="M1 3.5L3.5 6L8 1"
+                    stroke="#f5f2eb"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </div>
+            <span
+              className="text-sm"
+              style={{ color: "#3d3830" }}
+              onClick={() => setRememberMe(!rememberMe)}
+            >
+              Remember me
+            </span>
+          </label> */}
+
+          {authError && (
+            <p
+              className="text-sm px-4 py-2.5 rounded-[4px]"
+              style={{
+                color: "#e8500a",
+                background: "rgba(232,80,10,0.06)",
+                border: "1.5px solid rgba(232,80,10,0.2)",
+              }}
+            >
+              {authError}
+            </p>
+          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 bg-[#1a1714] text-[#f5f2eb] rounded py-3 text-sm font-medium cursor-pointer hover:bg-[#e8500a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-1 rounded-[4px] py-3 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            style={{
+              background: "#1a1714",
+              color: "#f5f2eb",
+              border: "1.5px solid #1a1714",
+              fontFamily: "var(--font-body)",
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.background = "#e8500a";
+                e.currentTarget.style.borderColor = "#e8500a";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#1a1714";
+              e.currentTarget.style.borderColor = "#1a1714";
+            }}
           >
             {loading ? "Logging in…" : "Log in →"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-[#8a8070]">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/signup"
-            className="text-[#1a1714] font-semibold hover:text-[#e8500a] transition-colors"
-          >
-            Sign up free
-          </Link>
-        </p>
+        <div
+          className="px-8 py-5 text-center"
+          style={{ borderTop: "1.5px solid #e4dfd4" }}
+        >
+          <p className="text-sm" style={{ color: "#8a8070" }}>
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/signup"
+              className="font-semibold"
+              style={{ color: "#1a1714" }}
+            >
+              Sign up free
+            </Link>
+          </p>
+        </div>
       </div>
+
+      <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
     </div>
   );
 }
