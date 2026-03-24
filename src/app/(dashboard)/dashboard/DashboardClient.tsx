@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ExternalLink, Plus, FileText } from "lucide-react";
-import CreatePageModal from "./CreatePageModal";
+import CreatePageModal from "../../../components/dashboard/CreatePageModal";
 
 const FREE_PAGE_LIMIT = 1;
 
