@@ -187,7 +187,7 @@ export default function StatusPageClient({ page, services }: Props) {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setEditingService(service)}
-                      className="p-2 rounded-[4px] transition-colors"
+                      className="p-2 rounded-[4px] transition-colors cursor-pointer"
                       style={{ color: "#8a8070" }}
                       onMouseEnter={(e) =>
                         (e.currentTarget.style.color = "#1a1714")
@@ -201,7 +201,7 @@ export default function StatusPageClient({ page, services }: Props) {
                     </button>
                     <button
                       onClick={() => setDeletingService(service)}
-                      className="p-2 rounded-[4px] transition-colors"
+                      className="p-2 rounded-[4px] transition-colors cursor-pointer"
                       style={{ color: "#8a8070" }}
                       onMouseEnter={(e) =>
                         (e.currentTarget.style.color = "#d32f2f")
@@ -234,7 +234,7 @@ export default function StatusPageClient({ page, services }: Props) {
           <span>
             You've reached the Free plan limit of {FREE_SERVICE_LIMIT} services.{" "}
             <button
-              className="font-semibold underline underline-offset-2"
+              className="font-semibold underline underline-offset-2 cursor-pointer"
               style={{ color: "#e8500a" }}
             >
               Upgrade to Pro

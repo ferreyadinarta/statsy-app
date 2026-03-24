@@ -212,7 +212,7 @@ export default function DashboardClient({ pages }: Props) {
             <p className="text-xs mt-1" style={{ color: "#8a8070" }}>
               You've reached the Free plan limit.{" "}
               <button
-                className="font-semibold hover:underline underline-offset-2"
+                className="font-semibold hover:underline underline-offset-2 cursor-pointer"
                 style={{ color: "#e8500a" }}
               >
                 Upgrade to Pro

@@ -281,7 +281,7 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors cursor-pointer"
                 style={{ color: "#c4bfb4" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c4bfb4")}
@@ -333,7 +333,7 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors cursor-pointer"
                 style={{ color: "#c4bfb4" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c4bfb4")}

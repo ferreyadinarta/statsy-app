@@ -137,7 +137,7 @@ export default async function DashboardPage() {
             <span>50 subscribers</span>
           </div>
           <button
-            className="text-xs font-semibold hover:underline underline-offset-2"
+            className="text-xs font-semibold hover:underline underline-offset-2 cursor-pointer"
             style={{ color: "#e8500a" }}
           >
             Upgrade to Pro &rarr;

@@ -140,7 +140,7 @@ export default function CreatePageModal({ onClose }: Props) {
           <button
             onClick={onClose}
             disabled={loading}
-            className="transition-colors rounded-[4px] p-1 disabled:opacity-50"
+            className="transition-colors rounded-[4px] p-1 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             style={{ color: "#8a8070" }}
             onMouseEnter={(e) =>
               !loading && (e.currentTarget.style.color = "#1a1714")
