@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ToastContainer } from "@/components/ui/toast"; // Add this import
 
 export const metadata: Metadata = {
   title: "Statsy — Status Pages for Everyone",
@@ -29,7 +30,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <ToastContainer /> {/* Add this line */}
+      </body>
     </html>
   );
 }
