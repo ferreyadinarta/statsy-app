@@ -36,6 +36,28 @@ export default async function StatusPageManagePage({ params }: PageProps) {
     .eq("status_page_id", page.id)
     .order("created_at", { ascending: true });
 
+  // Get all incidents for this page (last 7 days for free plan)
+  const daysToShow = 7; // TODO: Change to 90 for Pro plan
+  const dateThreshold = new Date();
+  dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
+
+  const { data: incidents } = await supabase
+    .from("incidents")
+    .select(
+      `
+    *,
+    incident_updates (
+      id,
+      message,
+      status,
+      created_at
+    )
+  `,
+    )
+    .eq("status_page_id", page.id)
+    .gte("created_at", dateThreshold.toISOString())
+    .order("created_at", { ascending: false });
+
   return (
     <div className="min-h-screen bg-[#f5f2eb]">
       {/* Nav */}
@@ -92,43 +114,50 @@ export default async function StatusPageManagePage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 py-14">
+      <main className="max-w-5xl mx-auto px-8 pt-6 pb-14">
         {/* Back link + Heading */}
-        <div
-          className="mb-10 pb-10"
-          style={{ borderBottom: "1.5px solid #e4dfd4" }}
-        >
+        <div className="mb-8">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-xs font-medium mb-4 no-underline transition-all bg-white border-[1.5px] border-[#e4dfd4] hover:border-[#1a1714] hover:text-[#1a1714]"
-            style={{ color: "#3d3830" }}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-xs font-medium no-underline transition-colors mb-6 bg-white border-[1.5px] border-[#e4dfd4] text-[#3d3830] hover:border-[#1a1714] hover:text-[#1a1714]"
           >
             <ChevronLeft size={14} />
             Back to dashboard
           </Link>
-          <p
-            className="text-xs font-semibold uppercase tracking-[0.12em] mb-2"
-            style={{ color: "#e8500a" }}
-          >
-            Status Page
-          </p>
-          <h1
-            style={{
-              fontFamily: "var(--font-head)",
-              fontWeight: 900,
-              fontSize: "2.2rem",
-              letterSpacing: "-0.04em",
-              color: "#1a1714",
-            }}
-          >
-            {page.name}
-          </h1>
-          <p className="mt-2 text-sm" style={{ color: "#8a8070" }}>
-            Manage services and their status for this page.
-          </p>
-        </div>
 
-        <StatusPageClient page={page} services={services ?? []} />
+          <div
+            className="mb-8 pb-8"
+            style={{ borderBottom: "1.5px solid #1a1714" }}
+          >
+            <p
+              className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3"
+              style={{ color: "#e8500a" }}
+            >
+              Status Page
+            </p>
+            <h1
+              className="mb-3"
+              style={{
+                fontFamily: "var(--font-head)",
+                fontWeight: 900,
+                fontSize: "2.8rem",
+                letterSpacing: "-0.04em",
+                lineHeight: "1",
+                color: "#1a1714",
+              }}
+            >
+              {page.name}
+            </h1>
+            <p className="text-base font-medium" style={{ color: "#3d3830" }}>
+              Manage services, post incidents, and keep your users informed.
+            </p>
+          </div>
+        </div>
+        <StatusPageClient
+          page={page}
+          services={services ?? []}
+          incidents={incidents ?? []}
+        />{" "}
       </main>
 
       <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
