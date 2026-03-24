@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import LogoutButton from "./LogoutButton";
+import LogoutButton from "../../../components/dashboard/LogoutButton";
 import DashboardClient from "./DashboardClient";
 
 export default async function DashboardPage() {
