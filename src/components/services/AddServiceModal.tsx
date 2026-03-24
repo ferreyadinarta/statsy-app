@@ -4,6 +4,7 @@ import { JSX, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { useToast } from "../ui/toast";
 
 type Props = {
   pageId: string;
@@ -20,11 +21,11 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
   const [name, setName] = useState("");
   const [status, setStatus] = useState<ServiceStatus>("operational");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
   const router = useRouter();
+  const toast = useToast();
 
   function validate(): boolean {
     const errors: FieldErrors = {};
@@ -39,7 +40,6 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setAuthError(null);
     if (!validate()) return;
 
     setLoading(true);
@@ -48,7 +48,7 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      setAuthError("Not authenticated.");
+      toast.error("Not authenticated. Please log in again.");
       setLoading(false);
       return;
     }
@@ -63,10 +63,11 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
     setLoading(false);
 
     if (error) {
-      setAuthError("Something went wrong. Please try again.");
+      toast.error("Failed to add service. Please try again.");
       return;
     }
 
+    toast.success("Service added successfully!");
     router.refresh();
     onClose();
   }
@@ -228,20 +229,6 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
               ))}
             </div>
           </div>
-
-          {/* Error message */}
-          {authError && (
-            <div
-              className="px-4 py-3 rounded-[4px] text-sm"
-              style={{
-                background: "#fdeae8",
-                border: "1px solid #d32f2f",
-                color: "#d32f2f",
-              }}
-            >
-              {authError}
-            </div>
-          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">

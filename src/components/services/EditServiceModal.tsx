@@ -4,6 +4,7 @@ import { JSX, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { useToast } from "../ui/toast";
 
 type Service = {
   id: string;
@@ -26,11 +27,11 @@ export default function EditServiceModal({ service, onClose }: Props) {
   const [name, setName] = useState(service.name);
   const [status, setStatus] = useState<ServiceStatus>(service.status);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
   const router = useRouter();
+  const toast = useToast();
 
   function validate(): boolean {
     const errors: FieldErrors = {};
@@ -45,7 +46,6 @@ export default function EditServiceModal({ service, onClose }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setAuthError(null);
     if (!validate()) return;
 
     setLoading(true);
@@ -61,10 +61,11 @@ export default function EditServiceModal({ service, onClose }: Props) {
     setLoading(false);
 
     if (error) {
-      setAuthError("Something went wrong. Please try again.");
+      toast.error("Failed to update service. Please try again.");
       return;
     }
 
+    toast.success("Service updated successfully!");
     router.refresh();
     onClose();
   }
@@ -195,7 +196,9 @@ export default function EditServiceModal({ service, onClose }: Props) {
                     name="status"
                     value={option.value}
                     checked={status === option.value}
-                    onChange={(e) => setStatus(e.target.value as ServiceStatus)}
+                    onChange={(e) =>
+                      setStatus(e.target.value as ServiceStatus)
+                    }
                     className="sr-only"
                   />
                   <div
@@ -226,20 +229,6 @@ export default function EditServiceModal({ service, onClose }: Props) {
               ))}
             </div>
           </div>
-
-          {/* Error message */}
-          {authError && (
-            <div
-              className="px-4 py-3 rounded-[4px] text-sm"
-              style={{
-                background: "#fdeae8",
-                border: "1px solid #d32f2f",
-                color: "#d32f2f",
-              }}
-            >
-              {authError}
-            </div>
-          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, AlertTriangle } from "lucide-react";
+import { useToast } from "../ui/toast";
 
 type Service = {
   id: string;
@@ -17,13 +18,12 @@ type Props = {
 
 export default function DeleteServiceConfirm({ service, onClose }: Props) {
   const [loading, setLoading] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
 
   const supabase = createClient();
   const router = useRouter();
+  const toast = useToast();
 
   async function handleDelete() {
-    setAuthError(null);
     setLoading(true);
 
     const { error } = await supabase
@@ -34,10 +34,11 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
     setLoading(false);
 
     if (error) {
-      setAuthError("Something went wrong. Please try again.");
+      toast.error("Failed to delete service. Please try again.");
       return;
     }
 
+    toast.success("Service deleted successfully!");
     router.refresh();
     onClose();
   }
@@ -112,20 +113,6 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
               </p>
             </div>
           </div>
-
-          {/* Error message */}
-          {authError && (
-            <div
-              className="px-4 py-3 rounded-[4px] text-sm"
-              style={{
-                background: "#fdeae8",
-                border: "1px solid #d32f2f",
-                color: "#d32f2f",
-              }}
-            >
-              {authError}
-            </div>
-          )}
 
           {/* Actions */}
           <div className="flex gap-3">

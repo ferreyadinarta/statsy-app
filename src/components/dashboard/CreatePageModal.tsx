@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import { useToast } from "../ui/toast";
 
 type Props = {
   onClose: () => void;
@@ -28,11 +29,11 @@ export default function CreatePageModal({ onClose }: Props) {
   const [slug, setSlug] = useState("");
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
   const router = useRouter();
+  const toast = useToast();
 
   function handleNameChange(val: string) {
     setName(val);
@@ -66,7 +67,6 @@ export default function CreatePageModal({ onClose }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setAuthError(null);
     if (!validate()) return;
 
     setLoading(true);
@@ -75,7 +75,7 @@ export default function CreatePageModal({ onClose }: Props) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      setAuthError("Not authenticated.");
+      toast.error("Not authenticated. Please log in again.");
       setLoading(false);
       return;
     }
@@ -86,22 +86,28 @@ export default function CreatePageModal({ onClose }: Props) {
       user_id: user.id,
     });
 
-    setLoading(false);
-
     if (error) {
+      setLoading(false);
       if (error.code === "23505") {
         setFieldErrors((prev) => ({
           ...prev,
           slug: "This slug is already taken. Try another.",
         }));
+        toast.error("This slug is already taken.");
       } else {
-        setAuthError("Something went wrong. Please try again.");
+        toast.error("Something went wrong. Please try again.");
       }
       return;
     }
 
+    // Success!
+    toast.success(`${name.trim()} created successfully!`);
     router.refresh();
-    onClose();
+
+    setTimeout(() => {
+      setLoading(false);
+      onClose();
+    }, 500);
   }
 
   return (
@@ -133,10 +139,15 @@ export default function CreatePageModal({ onClose }: Props) {
           </h2>
           <button
             onClick={onClose}
-            className="transition-colors rounded-[4px] p-1"
+            disabled={loading}
+            className="transition-colors rounded-[4px] p-1 disabled:opacity-50"
             style={{ color: "#8a8070" }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8070")}
+            onMouseEnter={(e) =>
+              !loading && (e.currentTarget.style.color = "#1a1714")
+            }
+            onMouseLeave={(e) =>
+              !loading && (e.currentTarget.style.color = "#8a8070")
+            }
           >
             <X size={18} />
           </button>
@@ -161,27 +172,18 @@ export default function CreatePageModal({ onClose }: Props) {
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
               placeholder="e.g. Acme Status"
-              className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4]"
+              disabled={loading}
+              className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4] disabled:opacity-50"
               style={{
                 border: `1.5px solid ${fieldErrors.name ? "#e8500a" : "#e4dfd4"}`,
                 color: "#1a1714",
-                fontFamily: "var(--font-body)",
-              }}
-              onFocus={(e) => {
-                if (!fieldErrors.name) e.target.style.borderColor = "#1a1714";
-              }}
-              onBlur={(e) => {
-                if (!fieldErrors.name) e.target.style.borderColor = "#e4dfd4";
               }}
             />
-            {/* Fixed height container so layout doesn't jump */}
-            <div className="min-h-[16px]">
-              {fieldErrors.name && (
-                <p className="text-xs" style={{ color: "#e8500a" }}>
-                  {fieldErrors.name}
-                </p>
-              )}
-            </div>
+            {fieldErrors.name && (
+              <p className="text-xs" style={{ color: "#e8500a" }}>
+                {fieldErrors.name}
+              </p>
+            )}
           </div>
 
           {/* Slug */}
@@ -190,22 +192,18 @@ export default function CreatePageModal({ onClose }: Props) {
               className="text-xs font-semibold uppercase tracking-[0.08em]"
               style={{ color: "#3d3830" }}
             >
-              Slug
+              URL slug
             </label>
             <div
-              className="flex items-center rounded-[4px] overflow-hidden"
+              className="flex items-center gap-2 rounded-[4px] px-4 py-3"
               style={{
                 border: `1.5px solid ${fieldErrors.slug ? "#e8500a" : "#e4dfd4"}`,
+                background: "white",
               }}
             >
               <span
-                className="px-3 py-3 text-sm flex-shrink-0"
-                style={{
-                  background: "#f5f2eb",
-                  color: "#8a8070",
-                  borderRight: "1.5px solid #e4dfd4",
-                  fontFamily: "var(--font-body)",
-                }}
+                className="text-sm whitespace-nowrap"
+                style={{ color: "#8a8070" }}
               >
                 statsy.page/
               </span>
@@ -214,42 +212,33 @@ export default function CreatePageModal({ onClose }: Props) {
                 value={slug}
                 onChange={(e) => handleSlugChange(e.target.value)}
                 placeholder="your-slug"
-                className="flex-1 px-3 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4]"
-                style={{ color: "#1a1714", fontFamily: "var(--font-body)" }}
+                disabled={loading}
+                className="flex-1 text-sm outline-none bg-transparent placeholder:text-[#c4bfb4] disabled:opacity-50"
+                style={{ color: "#1a1714" }}
               />
             </div>
-            {/* #7 — always render hint, swap text color on error, no layout jump */}
-            <div className="min-h-[16px]">
+            {fieldErrors.slug && (
+              <p className="text-xs" style={{ color: "#e8500a" }}>
+                {fieldErrors.slug}
+              </p>
+            )}
+            {!fieldErrors.slug && (
               <p
                 className="text-xs"
-                style={{ color: fieldErrors.slug ? "#e8500a" : "#8a8070" }}
+                style={{ color: slug ? "#1a7a4a" : "#8a8070" }}
               >
-                {fieldErrors.slug
-                  ? fieldErrors.slug
-                  : "Lowercase letters, numbers, and hyphens only."}
+                Lowercase letters, numbers, and hyphens only.
               </p>
-            </div>
+            )}
           </div>
-
-          {authError && (
-            <p
-              className="text-sm px-4 py-2.5 rounded-[4px]"
-              style={{
-                color: "#e8500a",
-                background: "rgba(232,80,10,0.06)",
-                border: "1.5px solid rgba(232,80,10,0.2)",
-              }}
-            >
-              {authError}
-            </p>
-          )}
 
           {/* Actions */}
           <div className="flex gap-3 mt-1">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-[4px] py-3 text-sm font-medium transition-colors duration-150 cursor-pointer"
+              disabled={loading}
+              className="flex-1 rounded-[4px] py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 border: "1.5px solid #e4dfd4",
                 color: "#3d3830",
@@ -257,10 +246,10 @@ export default function CreatePageModal({ onClose }: Props) {
                 fontFamily: "var(--font-body)",
               }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.borderColor = "#1a1714")
+                !loading && (e.currentTarget.style.borderColor = "#1a1714")
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.borderColor = "#e4dfd4")
+                !loading && (e.currentTarget.style.borderColor = "#e4dfd4")
               }
             >
               Cancel
@@ -270,9 +259,9 @@ export default function CreatePageModal({ onClose }: Props) {
               disabled={loading}
               className="flex-1 rounded-[4px] py-3 text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               style={{
-                background: "#1a1714",
+                background: loading ? "#8a8070" : "#1a1714",
                 color: "#f5f2eb",
-                border: "1.5px solid #1a1714",
+                border: `1.5px solid ${loading ? "#8a8070" : "#1a1714"}`,
                 fontFamily: "var(--font-body)",
               }}
               onMouseEnter={(e) => {
@@ -282,11 +271,13 @@ export default function CreatePageModal({ onClose }: Props) {
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#1a1714";
-                e.currentTarget.style.borderColor = "#1a1714";
+                if (!loading) {
+                  e.currentTarget.style.background = "#1a1714";
+                  e.currentTarget.style.borderColor = "#1a1714";
+                }
               }}
             >
-              {loading ? "Creating…" : "Create page"}
+              {loading ? "Creating..." : "Create page"}
             </button>
           </div>
         </form>
