@@ -58,16 +58,19 @@ export default function EditServiceModal({ service, onClose }: Props) {
       })
       .eq("id", service.id);
 
-    setLoading(false);
-
     if (error) {
-      toast.error("Failed to update service. Please try again.");
+      setLoading(false);
+      toast.error("Failed");
       return;
     }
 
-    toast.success("Service updated successfully!");
     router.refresh();
-    onClose();
+
+    setTimeout(() => {
+      toast.success("Service Edited Successfully!");
+      setLoading(false);
+      onClose();
+    }, 500);
   }
 
   const statusOptions: {
@@ -127,7 +130,7 @@ export default function EditServiceModal({ service, onClose }: Props) {
           </h2>
           <button
             onClick={onClose}
-            className="transition-colors rounded-[4px] p-1"
+            className="transition-colors rounded-[4px] p-1 cursor-pointer"
             style={{ color: "#8a8070" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
             onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8070")}
@@ -196,9 +199,7 @@ export default function EditServiceModal({ service, onClose }: Props) {
                     name="status"
                     value={option.value}
                     checked={status === option.value}
-                    onChange={(e) =>
-                      setStatus(e.target.value as ServiceStatus)
-                    }
+                    onChange={(e) => setStatus(e.target.value as ServiceStatus)}
                     className="sr-only"
                   />
                   <div

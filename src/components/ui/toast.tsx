@@ -72,7 +72,7 @@ export function ToastContainer() {
           </span>
           <button
             onClick={() => removeToast(toast.id)}
-            className="transition-colors rounded-[4px] p-1"
+            className="transition-colors rounded-[4px] p-1 cursor-pointer"
             style={{ color: "#8a8070" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
             onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8070")}
