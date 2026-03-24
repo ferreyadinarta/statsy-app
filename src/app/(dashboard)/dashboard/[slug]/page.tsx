@@ -100,14 +100,8 @@ export default async function StatusPageManagePage({ params }: PageProps) {
         >
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-xs font-medium mb-4 no-underline transition-colors"
-            style={{ color: "#8a8070" }}
-            onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) =>
-              (e.currentTarget.style.color = "#1a1714")
-            }
-            onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) =>
-              (e.currentTarget.style.color = "#8a8070")
-            }
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-xs font-medium mb-4 no-underline transition-all bg-white border-[1.5px] border-[#e4dfd4] hover:border-[#1a1714] hover:text-[#1a1714]"
+            style={{ color: "#3d3830" }}
           >
             <ChevronLeft size={14} />
             Back to dashboard

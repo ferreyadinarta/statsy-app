@@ -10,8 +10,8 @@ import {
   Trash2,
 } from "lucide-react";
 import DeleteServiceConfirm from "@/components/services/DeleteServiceConfirm";
-import AddServiceModal from "@/components/services/addServiceModal";
-import EditServiceModal from "@/components/services/editServiceModal";
+import AddServiceModal from "@/components/services/AddServiceModal";
+import EditServiceModal from "@/components/services/EditServiceModal";
 
 const FREE_SERVICE_LIMIT = 3;
 
@@ -80,8 +80,11 @@ export default function StatusPageClient({ page, services }: Props) {
   return (
     <>
       {/* Services section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-5">
+      <div
+        className="mb-8 bg-white rounded-[4px] px-6 py-6"
+        style={{ border: "1.5px solid #e4dfd4" }}
+      >
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h2
               className="text-xs uppercase tracking-wider font-semibold"
@@ -123,18 +126,15 @@ export default function StatusPageClient({ page, services }: Props) {
         </div>
 
         {services.length === 0 ? (
-          <div
-            className="rounded-[4px] flex flex-col items-center text-center py-16"
-            style={{ border: "1.5px dashed #c4bfb4", background: "white" }}
-          >
+          <div className="flex flex-col items-center text-center py-16">
             <div
-              className="w-12 h-12 rounded-[4px] flex items-center justify-center mb-4"
+              className="w-16 h-16 rounded-[4px] flex items-center justify-center mb-5"
               style={{
                 background: "rgba(232,80,10,0.08)",
                 border: "1px solid rgba(232,80,10,0.15)",
               }}
             >
-              <CheckCircle size={20} style={{ color: "#e8500a" }} />
+              <CheckCircle size={28} style={{ color: "#e8500a" }} />
             </div>
             <h3
               style={{
@@ -158,8 +158,11 @@ export default function StatusPageClient({ page, services }: Props) {
               return (
                 <div
                   key={service.id}
-                  className="flex items-center justify-between px-6 py-4 rounded-[4px] bg-white"
-                  style={{ border: "1.5px solid #e4dfd4" }}
+                  className="flex items-center justify-between px-5 py-4 rounded-[4px]"
+                  style={{
+                    border: "1.5px solid #e4dfd4",
+                    background: "#f5f2eb",
+                  }}
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <span
@@ -216,31 +219,30 @@ export default function StatusPageClient({ page, services }: Props) {
             })}
           </div>
         )}
-
-        {atLimit && (
-          <div
-            className="mt-4 flex items-center gap-3 px-4 py-3 rounded-[4px] text-xs"
-            style={{
-              background: "rgba(232,80,10,0.08)",
-              border: "1px solid rgba(232,80,10,0.15)",
-              color: "#3d3830",
-            }}
-          >
-            <AlertCircle size={16} style={{ color: "#e8500a" }} />
-            <span>
-              You've reached the Free plan limit of {FREE_SERVICE_LIMIT}{" "}
-              services.{" "}
-              <button
-                className="font-semibold underline underline-offset-2"
-                style={{ color: "#e8500a" }}
-              >
-                Upgrade to Pro
-              </button>{" "}
-              for up to 10 services per page.
-            </span>
-          </div>
-        )}
       </div>
+
+      {atLimit && (
+        <div
+          className="flex items-center gap-3 px-4 py-3 rounded-[4px] text-xs"
+          style={{
+            background: "rgba(232,80,10,0.08)",
+            border: "1px solid rgba(232,80,10,0.15)",
+            color: "#3d3830",
+          }}
+        >
+          <AlertCircle size={16} style={{ color: "#e8500a" }} />
+          <span>
+            You've reached the Free plan limit of {FREE_SERVICE_LIMIT} services.{" "}
+            <button
+              className="font-semibold underline underline-offset-2"
+              style={{ color: "#e8500a" }}
+            >
+              Upgrade to Pro
+            </button>{" "}
+            for up to 10 services per page.
+          </span>
+        </div>
+      )}
 
       {/* Modals */}
       {showAddModal && (
