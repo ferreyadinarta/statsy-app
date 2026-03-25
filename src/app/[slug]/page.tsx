@@ -40,27 +40,50 @@ export default async function PublicStatusPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-[#f5f2eb]">
-      <main className="max-w-5xl mx-auto px-8 pt-16 pb-20">
+      {/* Header with branding */}
+      <header
+        className="sticky top-0 z-50 flex items-center justify-between px-8 py-4"
+        style={{
+          background: "rgba(245,242,235,0.95)",
+          backdropFilter: "blur(10px)",
+          borderBottom: "1.5px solid #e4dfd4",
+        }}
+      >
+        {/* Empty left side for balance */}
+        <div />
+
+        {/* Statsy branding */}
+        <a
+          href="https://statsy.page"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 no-underline transition-colors group"
+        >
+          <span className="text-xs font-medium text-[#8a8070] group-hover:text-[#1a1714]">
+            Powered by
+          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-[7px] h-[7px] rounded-full bg-[#e8500a] flex-shrink-0" />
+            <span
+              className="text-xs font-bold text-[#1a1714]"
+              style={{
+                fontFamily: "var(--font-head)",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Statsy
+            </span>
+          </div>
+        </a>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-8 pt-12 pb-20">
         <PublicStatusPageClient
           page={page}
           services={services ?? []}
           incidents={incidents ?? []}
         />
       </main>
-
-      {/* Footer with Statsy branding */}
-      <footer className="border-t-[1.5px] border-[#e4dfd4] py-8 mt-20">
-        <div className="max-w-5xl mx-auto px-8 text-center">
-          <a
-            href="https://statsy.page"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium no-underline transition-colors text-[#8a8070] hover:text-[#1a1714]"
-          >
-            Powered by Statsy
-          </a>
-        </div>
-      </footer>
     </div>
   );
 }
