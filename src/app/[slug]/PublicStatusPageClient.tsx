@@ -2,6 +2,7 @@
 
 import { CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import IncidentCard from "@/components/incidents/IncidentCard";
+import SubscribeForm from "@/components/public/SubscibeForm";
 
 type IncidentUpdate = {
   id: string;
@@ -273,6 +274,7 @@ export default function PublicStatusPageClient({
               />
             ))}
           </div>
+          <SubscribeForm statusPageId={page.id} />
         </section>
       )}
     </>

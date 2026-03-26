@@ -10,6 +10,8 @@ type Props = {
   incidentId: string;
   currentStatus: "investigating" | "identified" | "monitoring" | "resolved";
   onClose: () => void;
+  incidentTitle: string;
+  statusPageId: string;
 };
 
 type IncidentStatus =
@@ -26,6 +28,8 @@ export default function PostUpdateModal({
   incidentId,
   currentStatus,
   onClose,
+  incidentTitle,
+  statusPageId,
 }: Props) {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<IncidentStatus>(currentStatus);
@@ -89,6 +93,17 @@ export default function PostUpdateModal({
         console.error("Error updating incident status:", statusError);
       }
     }
+
+    fetch("/api/notify-subscribers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status_page_id: statusPageId,
+        incidentTitle: incidentTitle, // pass this as a prop to the modal
+        incidentStatus: status,
+        incidentMessage: message,
+      }),
+    }).catch((err) => console.error("Notification failed:", err));
 
     router.refresh();
 

@@ -72,6 +72,17 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
       return;
     }
 
+    fetch("/api/notify-subscribers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status_page_id: pageId,
+        incidentTitle: title,
+        incidentStatus: status,
+        incidentMessage: description,
+      }),
+    }).catch((err) => console.error("Notification failed:", err));
+
     router.refresh();
 
     setTimeout(() => {

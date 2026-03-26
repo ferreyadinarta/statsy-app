@@ -16,6 +16,7 @@ type Incident = {
   description: string | null;
   status: "investigating" | "identified" | "monitoring" | "resolved";
   created_at: string;
+  status_page_id: string;
   incident_updates: IncidentUpdate[];
 };
 
@@ -283,7 +284,9 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
         <PostUpdateModal
           incidentId={incident.id}
           currentStatus={incident.status}
+          statusPageId={incident.status_page_id}
           onClose={() => setShowUpdateModal(false)}
+          incidentTitle={incident.title}
         />
       )}
     </>
