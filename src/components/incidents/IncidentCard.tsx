@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Trash2 } from "lucide-react";
 import PostUpdateModal from "./PostUpdateModal";
+import DeleteIncidentConfirm from "./DeleteIncidentsConfirm";
 
 type IncidentUpdate = {
   id: string;
@@ -36,16 +38,8 @@ const statusColors = {
     border: "#fb8c00",
     text: "#fb8c00",
   },
-  monitoring: {
-    bg: "#e8f5ee",
-    border: "#1a7a4a",
-    text: "#1a7a4a",
-  },
-  resolved: {
-    bg: "#e8f5ee",
-    border: "#1a7a4a",
-    text: "#1a7a4a",
-  },
+  monitoring: { bg: "#e8f5ee", border: "#1a7a4a", text: "#1a7a4a" },
+  resolved: { bg: "#e8f5ee", border: "#1a7a4a", text: "#1a7a4a" },
 };
 
 const statusLabels = {
@@ -77,10 +71,10 @@ function formatDate(dateString: string): string {
 
 export default function IncidentCard({ incident, isOwner = false }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const colors = statusColors[incident.status];
 
-  // Sort updates by newest first
   const sortedUpdates = [...incident.incident_updates].sort(
     (a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
@@ -109,10 +103,7 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
               <div className="flex items-center gap-3 mb-2">
                 <span
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wider"
-                  style={{
-                    background: colors.border,
-                    color: "white",
-                  }}
+                  style={{ background: colors.border, color: "white" }}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   {statusLabels[incident.status]}
@@ -136,26 +127,52 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
                 {incident.title}
               </h3>
             </div>
-            {isOwner && incident.status !== "resolved" && (
-              <button
-                onClick={() => setShowUpdateModal(true)}
-                className="flex-shrink-0 px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                style={{
-                  background: "#1a1714",
-                  border: "1.5px solid #1a1714",
-                  color: "#f5f2eb",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#e8500a";
-                  e.currentTarget.style.borderColor = "#e8500a";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "#1a1714";
-                  e.currentTarget.style.borderColor = "#1a1714";
-                }}
-              >
-                Update
-              </button>
+
+            {/* Owner actions */}
+            {isOwner && (
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {incident.status !== "resolved" && (
+                  <button
+                    onClick={() => setShowUpdateModal(true)}
+                    className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    style={{
+                      background: "#1a1714",
+                      border: "1.5px solid #1a1714",
+                      color: "#f5f2eb",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#e8500a";
+                      e.currentTarget.style.borderColor = "#e8500a";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#1a1714";
+                      e.currentTarget.style.borderColor = "#1a1714";
+                    }}
+                  >
+                    Update
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="p-2 rounded-[4px] transition-colors cursor-pointer"
+                  style={{
+                    background: "white",
+                    border: "1.5px solid #e4dfd4",
+                    color: "#8a8070",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "#d32f2f";
+                    e.currentTarget.style.color = "#d32f2f";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "#e4dfd4";
+                    e.currentTarget.style.color = "#8a8070";
+                  }}
+                  title="Delete incident"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -187,17 +204,13 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
               </h4>
               <span
                 className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                style={{
-                  background: "#e4dfd4",
-                  color: "#3d3830",
-                }}
+                style={{ background: "#e4dfd4", color: "#3d3830" }}
               >
                 {sortedUpdates.length}
               </span>
             </div>
 
             <div className="relative">
-              {/* Vertical timeline line */}
               <div
                 className="absolute left-[11px] top-3 bottom-3"
                 style={{
@@ -214,13 +227,9 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
 
                   return (
                     <div key={update.id} className="relative pl-12">
-                      {/* Timeline marker */}
                       <div
                         className="absolute left-0 top-1 flex items-center justify-center"
-                        style={{
-                          width: "26px",
-                          height: "26px",
-                        }}
+                        style={{ width: "26px", height: "26px" }}
                       >
                         <div
                           className="w-6 h-6 rounded-full flex items-center justify-center"
@@ -279,7 +288,6 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
         )}
       </div>
 
-      {/* Update Modal */}
       {showUpdateModal && (
         <PostUpdateModal
           incidentId={incident.id}
@@ -287,6 +295,14 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
           statusPageId={incident.status_page_id}
           onClose={() => setShowUpdateModal(false)}
           incidentTitle={incident.title}
+        />
+      )}
+
+      {showDeleteConfirm && (
+        <DeleteIncidentConfirm
+          incidentId={incident.id}
+          incidentTitle={incident.title}
+          onClose={() => setShowDeleteConfirm(false)}
         />
       )}
     </>
