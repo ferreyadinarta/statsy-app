@@ -109,7 +109,7 @@ function buildEmailHtml(p: BuildEmailHtmlParams): string {
               </div>
 
               <!-- Title -->
-              <h1 style="margin:0 0 8px;font-size:1.3rem;color:#1a1714;line-height:1.3;font-weight:800;letter-spacing:-0.02em;">
+              <h1 style="margin:0 0 0px;font-size:1.3rem;color:#1a1714;line-height:1.3;font-weight:800;letter-spacing:-0.02em;">
                 ${p.incidentTitle}
               </h1>
 
