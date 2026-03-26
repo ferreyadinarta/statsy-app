@@ -60,17 +60,21 @@ interface BuildEmailHtmlParams {
   unsubscribeUrl: string;
 }
 
-function statusLabel(status: string): string {
-  const labels: Record<string, string> = {
-    investigating: "🔴 Investigating",
-    identified: "🟠 Identified",
-    monitoring: "🟡 Monitoring",
-    resolved: "🟢 Resolved",
-  };
-  return labels[status] ?? status;
-}
-
 function buildEmailHtml(p: BuildEmailHtmlParams): string {
+  const statusColors: Record<
+    string,
+    { bg: string; color: string; border: string }
+  > = {
+    investigating: { bg: "#fff3e0", color: "#e65100", border: "#fb8c00" },
+    identified: { bg: "#fff3e0", color: "#e65100", border: "#fb8c00" },
+    monitoring: { bg: "#e8f5ee", color: "#1a7a4a", border: "#1a7a4a" },
+    resolved: { bg: "#e8f5ee", color: "#1a7a4a", border: "#1a7a4a" },
+  };
+
+  const sc = statusColors[p.incidentStatus] ?? statusColors.investigating;
+  const statusText =
+    p.incidentStatus.charAt(0).toUpperCase() + p.incidentStatus.slice(1);
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -86,28 +90,38 @@ function buildEmailHtml(p: BuildEmailHtmlParams): string {
 
           <!-- Header -->
           <tr>
-            <td style="background:#1a1714;padding:20px 32px;">
-              <a href="${p.pageUrl}" style="color:#f5f2eb;font-size:0.85rem;text-decoration:none;font-weight:600;">
-                ${p.pageName} Status
+            <td style="background:#1a1714;padding:18px 32px;">
+              <a href="${p.pageUrl}" style="color:#f5f2eb;font-size:0.9rem;text-decoration:none;font-weight:700;letter-spacing:-0.02em;">
+                ${p.pageName}
               </a>
-            </td>
+              <span style="color:#c4bfb4;font-size:0.8rem;margin-left:8px;">Status Update</span>            </td>
           </tr>
 
           <!-- Body -->
           <tr>
-            <td style="padding:32px;">
-              <p style="margin:0 0 6px;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:#8a8070;">
-                ${statusLabel(p.incidentStatus)}
-              </p>
-              <h1 style="margin:0 0 20px;font-size:1.25rem;color:#1a1714;line-height:1.3;">
+            <td style="padding:28px 32px 24px;">
+
+              <!-- Status badge -->
+              <div style="margin-bottom:14px;">
+                <span style="display:inline-block;padding:4px 12px;border-radius:4px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;background:${sc.bg};color:${sc.color};border:1.5px solid ${sc.border};">
+                  ${statusText}
+                </span>
+              </div>
+
+              <!-- Title -->
+              <h1 style="margin:0 0 8px;font-size:1.3rem;color:#1a1714;line-height:1.3;font-weight:800;letter-spacing:-0.02em;">
                 ${p.incidentTitle}
               </h1>
+
+              <!-- Message -->
               <p style="margin:0 0 28px;font-size:0.9rem;color:#3d3530;line-height:1.7;white-space:pre-line;">
                 ${p.incidentMessage}
               </p>
+
+              <!-- CTA -->
               <a href="${p.pageUrl}"
-                style="display:inline-block;background:#1a1714;color:#f5f2eb;padding:10px 20px;
-                border-radius:4px;font-size:0.85rem;text-decoration:none;font-weight:500;">
+                style="display:inline-block;width:auto;background:#1a1714;color:#f5f2eb;padding:11px 22px;
+                border-radius:4px;font-size:0.85rem;text-decoration:none;font-weight:600;letter-spacing:-0.01em;">
                 View Status Page →
               </a>
             </td>
@@ -115,12 +129,18 @@ function buildEmailHtml(p: BuildEmailHtmlParams): string {
 
           <!-- Footer -->
           <tr>
-            <td style="border-top:1px solid #e8e2d9;padding:16px 32px;">
-              <p style="margin:0;font-size:0.75rem;color:#8a8070;">
+            <td style="border-top:1px solid #e8e2d9;padding:14px 32px;">
+              <p style="margin:0;font-size:0.75rem;color:#8a8070;line-height:1.6;">
                 You're receiving this because you subscribed to updates from
-                <a href="${p.pageUrl}" style="color:#e8500a;text-decoration:none;">${p.pageName}</a>.
+                <a href="${p.pageUrl}" style="color:#e8500a;text-decoration:none;font-weight:600;">${p.pageName}</a>.
                 &nbsp;·&nbsp;
                 <a href="${p.unsubscribeUrl}" style="color:#8a8070;text-decoration:underline;">Unsubscribe</a>
+              </p>
+              <!-- Statsy branding — TODO (Chat 08): hide for Pro plan users -->
+              <p style="margin:8px 0 0;font-size:0.72rem;color:#c4bfb4;">
+                Powered by
+                <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a>
+                — status pages for everyone
               </p>
             </td>
           </tr>

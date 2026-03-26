@@ -19,7 +19,6 @@ export default async function StatusPageManagePage({ params }: PageProps) {
 
   if (!user) redirect("/login");
 
-  // Get the status page
   const { data: page, error: pageError } = await supabase
     .from("status_pages")
     .select("*")
@@ -29,38 +28,31 @@ export default async function StatusPageManagePage({ params }: PageProps) {
 
   if (pageError || !page) notFound();
 
-  // Get all services for this page
   const { data: services } = await supabase
     .from("services")
     .select("*")
     .eq("status_page_id", page.id)
     .order("created_at", { ascending: true });
 
-  // Get all incidents for this page (last 7 days for free plan)
-  const daysToShow = 7; // TODO: Change to 90 for Pro plan
+  const daysToShow = 7;
   const dateThreshold = new Date();
   dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
 
   const { data: incidents } = await supabase
     .from("incidents")
-    .select(
-      `
-    *,
-    incident_updates (
-      id,
-      message,
-      status,
-      created_at
-    )
-  `,
-    )
+    .select(`*, incident_updates(id, message, status, created_at)`)
     .eq("status_page_id", page.id)
     .gte("created_at", dateThreshold.toISOString())
     .order("created_at", { ascending: false });
 
+  // Fetch subscriber count
+  const { count: subscriberCount } = await supabase
+    .from("subscribers")
+    .select("*", { count: "exact", head: true })
+    .eq("status_page_id", page.id);
+
   return (
     <div className="min-h-screen bg-[#f5f2eb]">
-      {/* Nav */}
       <header
         className="sticky top-0 z-50 flex items-center justify-between px-8 py-4"
         style={{
@@ -69,7 +61,6 @@ export default async function StatusPageManagePage({ params }: PageProps) {
           backdropFilter: "blur(10px)",
         }}
       >
-        {/* Left — logo */}
         <Link
           href="/dashboard"
           className="flex items-center gap-2 no-underline"
@@ -91,7 +82,6 @@ export default async function StatusPageManagePage({ params }: PageProps) {
           </span>
         </Link>
 
-        {/* Right — user info + logout */}
         <div
           className="flex items-center gap-1"
           style={{ borderLeft: "1px solid #e4dfd4", paddingLeft: "20px" }}
@@ -115,7 +105,6 @@ export default async function StatusPageManagePage({ params }: PageProps) {
       </header>
 
       <main className="max-w-5xl mx-auto px-8 pt-6 pb-14">
-        {/* Back link + Heading */}
         <div className="mb-8">
           <Link
             href="/dashboard"
@@ -153,11 +142,13 @@ export default async function StatusPageManagePage({ params }: PageProps) {
             </p>
           </div>
         </div>
+
         <StatusPageClient
           page={page}
           services={services ?? []}
           incidents={incidents ?? []}
-        />{" "}
+          subscriberCount={subscriberCount ?? 0}
+        />
       </main>
 
       <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { X, AlertCircle } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
 
 type Props = {
@@ -21,16 +21,73 @@ type FieldErrors = {
   title?: string;
 };
 
+const statusOptions: {
+  value: IncidentStatus;
+  label: string;
+  color: string;
+  bg: string;
+  border: string;
+}[] = [
+  {
+    value: "investigating",
+    label: "Investigating",
+    color: "#e8500a",
+    bg: "rgba(232,80,10,0.08)",
+    border: "#e8500a",
+  },
+  {
+    value: "identified",
+    label: "Identified",
+    color: "#fb8c00",
+    bg: "rgba(251,140,0,0.08)",
+    border: "#fb8c00",
+  },
+  {
+    value: "monitoring",
+    label: "Monitoring",
+    color: "#1a7a4a",
+    bg: "#e8f5ee",
+    border: "#1a7a4a",
+  },
+  {
+    value: "resolved",
+    label: "Resolved",
+    color: "#1a7a4a",
+    bg: "#e8f5ee",
+    border: "#1a7a4a",
+  },
+];
+
 export default function CreateIncidentModal({ pageId, onClose }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<IncidentStatus>("investigating");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
+
+  const selectedOption = statusOptions.find((o) => o.value === status)!;
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpen]);
 
   function validate(): boolean {
     const errors: FieldErrors = {};
@@ -91,17 +148,6 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
       onClose();
     }, 500);
   }
-
-  const statusOptions: {
-    value: IncidentStatus;
-    label: string;
-    color: string;
-  }[] = [
-    { value: "investigating", label: "Investigating", color: "#ff9800" },
-    { value: "identified", label: "Identified", color: "#fb8c00" },
-    { value: "monitoring", label: "Monitoring", color: "#66bb6a" },
-    { value: "resolved", label: "Resolved", color: "#1a7a4a" },
-  ];
 
   return (
     <div
@@ -202,7 +248,7 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
             />
           </div>
 
-          {/* Status */}
+          {/* Status — custom dropdown */}
           <div className="flex flex-col gap-2">
             <label
               className="text-xs font-semibold uppercase tracking-[0.08em]"
@@ -210,21 +256,99 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
             >
               Initial status
             </label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as IncidentStatus)}
-              className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white cursor-pointer"
-              style={{
-                border: "1.5px solid #e4dfd4",
-                color: "#1a1714",
-              }}
-            >
-              {statusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative" ref={dropdownRef}>
+              {/* Trigger */}
+              <button
+                type="button"
+                onClick={() => setDropdownOpen((prev) => !prev)}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-[4px] cursor-pointer transition-colors"
+                style={{
+                  border: `1.5px solid ${dropdownOpen ? "#1a1714" : "#e4dfd4"}`,
+                  background: "white",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.borderColor = "#1a1714")
+                }
+                onMouseLeave={(e) => {
+                  if (!dropdownOpen)
+                    e.currentTarget.style.borderColor = "#e4dfd4";
+                }}
+              >
+                <span
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-xs font-bold uppercase tracking-wide"
+                  style={{
+                    background: selectedOption.bg,
+                    color: selectedOption.color,
+                    border: `1.5px solid ${selectedOption.border}`,
+                  }}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: selectedOption.color }}
+                  />
+                  {selectedOption.label}
+                </span>
+                <ChevronDown
+                  size={16}
+                  style={{
+                    color: "#8a8070",
+                    transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 150ms",
+                  }}
+                />
+              </button>
+
+              {/* Dropdown options */}
+              {dropdownOpen && (
+                <div
+                  className="absolute top-full left-0 right-0 mt-1 rounded-[4px] overflow-hidden z-10"
+                  style={{
+                    border: "1.5px solid #1a1714",
+                    background: "white",
+                    boxShadow: "3px 3px 0 #1a1714",
+                  }}
+                >
+                  {statusOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => {
+                        setStatus(option.value);
+                        setDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-4 py-3 text-left cursor-pointer transition-colors"
+                      style={{
+                        background:
+                          status === option.value ? "#f5f2eb" : "white",
+                        borderBottom: "1px solid #e4dfd4",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.background = "#f5f2eb")
+                      }
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background =
+                          status === option.value ? "#f5f2eb" : "white";
+                      }}
+                    >
+                      <span
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-xs font-bold uppercase tracking-wide"
+                        style={{
+                          background: option.bg,
+                          color: option.color,
+                          border: `1.5px solid ${option.border}`,
+                        }}
+                      >
+                        <span
+                          className="w-1.5 h-1.5 rounded-full"
+                          style={{ background: option.color }}
+                        />
+                        {option.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Actions */}

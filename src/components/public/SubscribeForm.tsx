@@ -43,10 +43,7 @@ export default function SubscribeForm({ statusPageId }: SubscribeFormProps) {
           text: data.error ?? "Something went wrong.",
         });
       } else {
-        setMessage({
-          type: "success",
-          text: "You're subscribed! We'll notify you of any incidents.",
-        });
+        setMessage({ type: "success", text: "Subscribed!" });
         setEmail("");
       }
     } catch {
@@ -61,45 +58,35 @@ export default function SubscribeForm({ statusPageId }: SubscribeFormProps) {
 
   return (
     <div
+      className="flex items-center justify-between gap-4 px-6 py-3 rounded-[4px] mt-2"
       style={{
-        borderTop: "1.5px solid #1a1714",
-        marginTop: "40px",
-        paddingTop: "32px",
+        background: "#faf9f6",
+        border: "1.5px solid #e4dfd4",
+        borderTop: "none",
+        borderRadius: "0 0 4px 4px",
+        marginTop: "-2px", // pulls flush against last service row
       }}
     >
-      <h2
-        style={{
-          fontFamily: "var(--font-head, sans-serif)",
-          fontSize: "1rem",
-          fontWeight: 700,
-          margin: "0 0 4px",
-          color: "#1a1714",
-        }}
-      >
-        Get incident notifications
-      </h2>
-      <p style={{ fontSize: "0.85rem", color: "#8a8070", margin: "0 0 16px" }}>
-        Subscribe to receive email updates when incidents are posted or
-        resolved.
-      </p>
-
-      {message?.type === "success" ? (
+      {/* Left — label */}
+      <div className="flex items-center gap-2 flex-shrink-0">
         <div
-          style={{
-            background: "#f0faf5",
-            border: "1.5px solid #1a7a4a",
-            borderRadius: "4px",
-            padding: "12px 16px",
-            fontSize: "0.85rem",
-            color: "#1a7a4a",
-          }}
-        >
-          ✓ {message.text}
-        </div>
+          className="w-2 h-2 rounded-full flex-shrink-0"
+          style={{ background: "#e8500a" }}
+        />
+        <span className="text-sm font-semibold" style={{ color: "#1a1714" }}>
+          Get notified of incidents
+        </span>
+      </div>
+
+      {/* Right — form or success */}
+      {message?.type === "success" ? (
+        <span className="text-sm font-medium" style={{ color: "#1a7a4a" }}>
+          ✓ You're subscribed
+        </span>
       ) : (
         <form
           onSubmit={handleSubmit}
-          style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
+          className="flex items-center gap-2 flex-1 justify-end"
         >
           <input
             type="email"
@@ -108,13 +95,12 @@ export default function SubscribeForm({ statusPageId }: SubscribeFormProps) {
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
             style={{
-              flex: "1",
-              minWidth: "200px",
-              padding: "8px 12px",
-              border: "1.5px solid #1a1714",
+              width: "220px",
+              padding: "7px 12px",
+              border: `1.5px solid ${message?.type === "error" ? "#d32f2f" : "#e4dfd4"}`,
               borderRadius: "4px",
-              fontSize: "0.875rem",
-              background: "white",
+              fontSize: "0.8rem",
+              background: "#faf9f6",
               color: "#1a1714",
               outline: "none",
               fontFamily: "inherit",
@@ -124,27 +110,40 @@ export default function SubscribeForm({ statusPageId }: SubscribeFormProps) {
             type="submit"
             disabled={loading}
             style={{
-              padding: "8px 18px",
+              padding: "7px 14px",
               background: loading ? "#8a8070" : "#1a1714",
               color: "#f5f2eb",
               border: "1.5px solid #1a1714",
               borderRadius: "4px",
-              fontSize: "0.875rem",
-              fontWeight: 500,
+              fontSize: "0.8rem",
+              fontWeight: 600,
               cursor: loading ? "not-allowed" : "pointer",
               fontFamily: "inherit",
               whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.background = "#e8500a";
+                e.currentTarget.style.borderColor = "#e8500a";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.currentTarget.style.background = "#1a1714";
+                e.currentTarget.style.borderColor = "#1a1714";
+              }
             }}
           >
-            {loading ? "Subscribing…" : "Notify me"}
+            {loading ? "..." : "Notify me"}
           </button>
         </form>
       )}
 
       {message?.type === "error" && (
-        <p style={{ margin: "8px 0 0", fontSize: "0.8rem", color: "#d32f2f" }}>
+        <span className="text-xs flex-shrink-0" style={{ color: "#d32f2f" }}>
           {message.text}
-        </p>
+        </span>
       )}
     </div>
   );

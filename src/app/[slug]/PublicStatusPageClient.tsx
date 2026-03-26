@@ -1,8 +1,6 @@
 "use client";
 
-import { CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import IncidentCard from "@/components/incidents/IncidentCard";
-import SubscribeForm from "@/components/public/SubscibeForm";
 
 type IncidentUpdate = {
   id: string;
@@ -16,6 +14,7 @@ type Incident = {
   title: string;
   description: string | null;
   status: "investigating" | "identified" | "monitoring" | "resolved";
+  status_page_id: string;
   created_at: string;
   incident_updates: IncidentUpdate[];
 };
@@ -44,15 +43,10 @@ export default function PublicStatusPageClient({
   services,
   incidents,
 }: Props) {
-  // Calculate overall status based on services
   function getOverallStatus() {
     if (services.length === 0) return "operational";
-
-    const hasOutage = services.some((s) => s.status === "outage");
-    const hasDegraded = services.some((s) => s.status === "degraded");
-
-    if (hasOutage) return "outage";
-    if (hasDegraded) return "degraded";
+    if (services.some((s) => s.status === "outage")) return "outage";
+    if (services.some((s) => s.status === "degraded")) return "degraded";
     return "operational";
   }
 
@@ -81,6 +75,13 @@ export default function PublicStatusPageClient({
           text: "#d32f2f",
           label: "Service outage",
         };
+      default:
+        return {
+          bg: "#e8f5ee",
+          border: "#1a7a4a",
+          text: "#1a7a4a",
+          label: "All systems operational",
+        };
     }
   }
 
@@ -99,30 +100,18 @@ export default function PublicStatusPageClient({
     }
   }
 
-  function getServiceStatusIcon(status: Service["status"]) {
-    switch (status) {
-      case "operational":
-        return (
-          <div
-            className="w-2 h-2 rounded-full"
-            style={{ background: "#1a7a4a" }}
-          />
-        );
-      case "degraded":
-        return (
-          <div
-            className="w-2 h-2 rounded-full"
-            style={{ background: "#e8500a" }}
-          />
-        );
-      case "outage":
-        return (
-          <div
-            className="w-2 h-2 rounded-full"
-            style={{ background: "#d32f2f" }}
-          />
-        );
-    }
+  function getServiceStatusDot(status: Service["status"]) {
+    const colorMap = {
+      operational: "#1a7a4a",
+      degraded: "#e8500a",
+      outage: "#d32f2f",
+    };
+    return (
+      <div
+        className="w-2 h-2 rounded-full flex-shrink-0"
+        style={{ background: colorMap[status] }}
+      />
+    );
   }
 
   function getServiceStatusLabel(status: Service["status"]) {
@@ -136,16 +125,41 @@ export default function PublicStatusPageClient({
     }
   }
 
+  function getLastUpdated() {
+    const allDates = [
+      ...services.map((s) => new Date(s.created_at)),
+      ...incidents.map((i) => new Date(i.created_at)),
+      ...incidents.flatMap((i) =>
+        i.incident_updates.map((u) => new Date(u.created_at)),
+      ),
+    ];
+    if (allDates.length === 0) return null;
+    const latest = new Date(Math.max(...allDates.map((d) => d.getTime())));
+    const diffMs = Date.now() - latest.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60)
+      return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
+    if (diffHours < 24)
+      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
+  }
+
   const statusConfig = getOverallStatusConfig();
+  const lastUpdated = getLastUpdated();
+  const activeIncidents = incidents.filter((i) => i.status !== "resolved");
+  const pastIncidents = incidents.filter((i) => i.status === "resolved");
 
   return (
     <>
-      {/* Header with page name and overall status badge */}
+      {/* Header */}
       <div className="mb-10">
         <div className="flex items-start justify-between mb-8">
           <div>
             <h1
-              className="mb-3"
+              className="mb-2"
               style={{
                 fontFamily: "var(--font-head)",
                 fontWeight: 900,
@@ -157,20 +171,25 @@ export default function PublicStatusPageClient({
             >
               {page.name}
             </h1>
-            <p className="text-base font-medium" style={{ color: "#8a8070" }}>
+            <p className="text-sm font-medium" style={{ color: "#8a8070" }}>
               Current system status and incident updates
+              {lastUpdated && (
+                <span style={{ color: "#8a8070" }}>
+                  {" "}
+                  · Last updated {lastUpdated}
+                </span>
+              )}
             </p>
           </div>
 
-          {/* Overall status badge */}
           <div
-            className="flex items-center gap-2.5 px-5 py-3 rounded-full"
+            className="flex items-center gap-2.5 px-5 py-3 rounded-full flex-shrink-0"
             style={{
               background: statusConfig.bg,
               border: `1.5px solid ${statusConfig.border}`,
             }}
           >
-            {getServiceStatusIcon(overallStatus)}
+            {getServiceStatusDot(overallStatus as Service["status"])}
             <span
               className="text-sm font-bold"
               style={{ color: statusConfig.text }}
@@ -180,17 +199,13 @@ export default function PublicStatusPageClient({
           </div>
         </div>
 
-        {/* Divider */}
         <div
           className="w-full"
-          style={{
-            height: "1.5px",
-            background: "#1a1714",
-          }}
+          style={{ height: "1.5px", background: "#1a1714" }}
         />
       </div>
 
-      {/* Services Section */}
+      {/* ── SERVICES ── */}
       <section className="mb-10">
         {services.length === 0 ? (
           <div
@@ -208,7 +223,7 @@ export default function PublicStatusPageClient({
               return (
                 <div
                   key={service.id}
-                  className="group flex items-center justify-between px-6 py-5 rounded-[4px] transition-all cursor-default"
+                  className="flex items-center justify-between px-6 py-5 rounded-[4px] transition-all cursor-default"
                   style={{
                     border: "1.5px solid #e4dfd4",
                     background: "white",
@@ -236,7 +251,7 @@ export default function PublicStatusPageClient({
                     {service.name}
                   </span>
                   <div className="flex items-center gap-2.5">
-                    {getServiceStatusIcon(service.status)}
+                    {getServiceStatusDot(service.status)}
                     <span
                       className="text-base font-bold"
                       style={{ color: colors.text }}
@@ -251,9 +266,9 @@ export default function PublicStatusPageClient({
         )}
       </section>
 
-      {/* Incidents Section - SECOND (historical context) */}
-      {incidents.length > 0 && (
-        <section>
+      {/* ── ACTIVE INCIDENTS ── */}
+      {activeIncidents.length > 0 && (
+        <section className="mt-10 mb-10">
           <h2
             className="text-xl font-black mb-6"
             style={{
@@ -262,11 +277,10 @@ export default function PublicStatusPageClient({
               letterSpacing: "-0.03em",
             }}
           >
-            Recent Incidents
+            Active Incidents
           </h2>
-
           <div className="flex flex-col gap-6">
-            {incidents.map((incident) => (
+            {activeIncidents.map((incident) => (
               <IncidentCard
                 key={incident.id}
                 incident={incident}
@@ -274,9 +288,46 @@ export default function PublicStatusPageClient({
               />
             ))}
           </div>
-          <SubscribeForm statusPageId={page.id} />
         </section>
       )}
+
+      {/* ── PAST INCIDENTS ── */}
+      <section className="mt-10">
+        <h2
+          className="text-xl font-black mb-6"
+          style={{
+            fontFamily: "var(--font-head)",
+            color: "#1a1714",
+            letterSpacing: "-0.03em",
+          }}
+        >
+          Past Incidents
+        </h2>
+        {pastIncidents.length === 0 ? (
+          <div
+            className="flex items-center gap-3 px-6 py-5 rounded-[4px]"
+            style={{ border: "1.5px solid #e4dfd4", background: "white" }}
+          >
+            <div
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ background: "#1a7a4a" }}
+            />
+            <p className="text-sm font-medium" style={{ color: "#3d3830" }}>
+              No incidents in the past 7 days
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {pastIncidents.map((incident) => (
+              <IncidentCard
+                key={incident.id}
+                incident={incident}
+                isOwner={false}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </>
   );
 }

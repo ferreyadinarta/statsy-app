@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import PublicStatusPageClient from "./PublicStatusPageClient";
+import SubscribeButton from "@/components/public/SubscribeButton";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -10,7 +11,6 @@ export default async function PublicStatusPage({ params }: PageProps) {
   const { slug } = await params;
   const supabase = await createClient();
 
-  // Get the status page (no auth required - public)
   const { data: page, error: pageError } = await supabase
     .from("status_pages")
     .select("*")
@@ -19,14 +19,12 @@ export default async function PublicStatusPage({ params }: PageProps) {
 
   if (pageError || !page) notFound();
 
-  // Get all services for this page
   const { data: services } = await supabase
     .from("services")
     .select("*")
     .eq("status_page_id", page.id)
     .order("created_at", { ascending: true });
 
-  // Get incidents from the last 7 days (Free plan limit)
   const daysToShow = 7;
   const dateThreshold = new Date();
   dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
@@ -40,7 +38,6 @@ export default async function PublicStatusPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-[#f5f2eb]">
-      {/* Header with branding */}
       <header
         className="sticky top-0 z-50 flex items-center justify-between px-8 py-4"
         style={{
@@ -49,10 +46,10 @@ export default async function PublicStatusPage({ params }: PageProps) {
           borderBottom: "1.5px solid #e4dfd4",
         }}
       >
-        {/* Empty left side for balance */}
-        <div />
+        {/* Left — subscribe button */}
+        <SubscribeButton statusPageId={page.id} />
 
-        {/* Statsy branding */}
+        {/* Right — Statsy branding */}
         <a
           href="https://statsy.page"
           target="_blank"
