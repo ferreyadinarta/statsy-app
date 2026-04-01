@@ -227,10 +227,8 @@ export default function BillingClient({
             <div className="flex justify-end">
               <button
                 onClick={() => setShowCancelConfirm(true)}
-                className="text-xs font-medium transition-colors cursor-pointer"
+                className="text-xs font-medium transition-colors cursor-pointer text-[#8a8070] hover:text-[#d32f2f]"
                 style={{ color: "#8a8070" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#d32f2f")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8070")}
               >
                 Cancel subscription
               </button>
@@ -412,16 +410,6 @@ export default function BillingClient({
                 color: "white",
                 border: "1.5px solid #e8500a",
                 boxShadow: "3px 3px 0 #1a1714",
-              }}
-              onMouseEnter={(e) => {
-                if (paddleReady) {
-                  e.currentTarget.style.transform = "translate(-1px, -1px)";
-                  e.currentTarget.style.boxShadow = "4px 4px 0 #1a1714";
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translate(0, 0)";
-                e.currentTarget.style.boxShadow = "3px 3px 0 #1a1714";
               }}
             >
               <Zap size={15} strokeWidth={2.5} />
