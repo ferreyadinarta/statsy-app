@@ -1,54 +1,20 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect, notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
-import StatusPageClient from "./StatusPageClient";
+import BillingClient from "./BillingClient";
+import { getUserPlanFull } from "@/lib/plan";
 
-type PageProps = {
-  params: Promise<{ slug: string }>;
-};
-
-export default async function StatusPageManagePage({ params }: PageProps) {
-  const { slug } = await params;
+export default async function BillingPage() {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
-  const { data: page, error: pageError } = await supabase
-    .from("status_pages")
-    .select("*")
-    .eq("slug", slug)
-    .eq("user_id", user.id)
-    .single();
-
-  if (pageError || !page) notFound();
-
-  const { data: services } = await supabase
-    .from("services")
-    .select("*")
-    .eq("status_page_id", page.id)
-    .order("created_at", { ascending: true });
-
-  const daysToShow = 7;
-  const dateThreshold = new Date();
-  dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
-
-  const { data: incidents } = await supabase
-    .from("incidents")
-    .select(`*, incident_updates(id, message, status, created_at)`)
-    .eq("status_page_id", page.id)
-    .gte("created_at", dateThreshold.toISOString())
-    .order("created_at", { ascending: false });
-
-  const { count: subscriberCount } = await supabase
-    .from("subscribers")
-    .select("*", { count: "exact", head: true })
-    .eq("status_page_id", page.id);
+  const subscription = await getUserPlanFull(user.id);
 
   return (
     <div className="min-h-screen bg-[#f5f2eb]">
@@ -60,7 +26,10 @@ export default async function StatusPageManagePage({ params }: PageProps) {
           backdropFilter: "blur(10px)",
         }}
       >
-        <Link href="/dashboard" className="flex items-center gap-2 no-underline">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 no-underline"
+        >
           <span
             className="w-[9px] h-[9px] rounded-full bg-[#e8500a] flex-shrink-0"
             style={{ animation: "blink 2.4s ease-in-out infinite" }}
@@ -89,7 +58,10 @@ export default async function StatusPageManagePage({ params }: PageProps) {
             >
               {user.email?.[0].toUpperCase()}
             </div>
-            <span className="text-sm hidden sm:block" style={{ color: "#3d3830" }}>
+            <span
+              className="text-sm hidden sm:block"
+              style={{ color: "#3d3830" }}
+            >
               {user.email}
             </span>
           </div>
@@ -97,10 +69,13 @@ export default async function StatusPageManagePage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 pt-8 pb-14">
-        <div className="mb-6 pb-6" style={{ borderBottom: "1.5px solid #e4dfd4" }}>
-          {/* Breadcrumb eyebrow */}
-          <div className="flex items-center gap-2 mb-4">
+      <main className="max-w-5xl mx-auto px-8 pt-8 pb-20">
+        <div
+          className="mb-6 pb-6"
+          style={{ borderBottom: "1.5px solid #e4dfd4" }}
+        >
+          {/* Eyebrow row — back link + label on same line */}
+          <div className="flex items-center gap-2 mb-2">
             <Link
               href="/dashboard"
               className="inline-flex items-center gap-1 no-underline text-[#8a8070] hover:text-[#e8500a] transition-colors"
@@ -115,7 +90,7 @@ export default async function StatusPageManagePage({ params }: PageProps) {
               className="text-xs font-semibold uppercase tracking-[0.12em]"
               style={{ color: "#e8500a" }}
             >
-              Status Page
+              Account
             </span>
           </div>
 
@@ -125,22 +100,20 @@ export default async function StatusPageManagePage({ params }: PageProps) {
               fontWeight: 900,
               fontSize: "2.2rem",
               letterSpacing: "-0.04em",
-              lineHeight: "1",
               color: "#1a1714",
             }}
           >
-            {page.name}
+            Billing
           </h1>
-          <p className="text-sm mt-1" style={{ color: "#8a8070" }}>
-            Manage services, post incidents, and keep your users informed.
+          <p className="mt-1 text-sm" style={{ color: "#8a8070" }}>
+            Manage your plan and subscription.
           </p>
         </div>
 
-        <StatusPageClient
-          page={page}
-          services={services ?? []}
-          incidents={incidents ?? []}
-          subscriberCount={subscriberCount ?? 0}
+        <BillingClient
+          userId={user.id}
+          userEmail={user.email ?? ""}
+          subscription={subscription}
         />
       </main>
 

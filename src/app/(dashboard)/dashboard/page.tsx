@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "../../../components/dashboard/LogoutButton";
 import DashboardClient from "./DashboardClient";
+import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -11,6 +12,9 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
+
+  const plan = await getUserPlan(user.id);
+  const limits = PLAN_LIMITS[plan];
 
   const { data: pages } = await supabase
     .from("status_pages")
@@ -118,30 +122,44 @@ export default async function DashboardPage() {
             <span
               className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
               style={{
-                background: "white",
-                border: "1.5px solid #1a1714",
-                color: "#1a1714",
+                background: plan === "pro" ? "#e8f5ee" : "white",
+                border: `1.5px solid ${plan === "pro" ? "#1a7a4a" : "#1a1714"}`,
+                color: plan === "pro" ? "#1a7a4a" : "#1a1714",
               }}
             >
-              Free
+              {plan === "pro" ? "Pro" : "Free"}
             </span>
           </div>
           <div
             className="flex items-center gap-3 text-xs"
             style={{ color: "#8a8070" }}
           >
-            <span>1 page</span>
+            <span>
+              {limits.pages} {limits.pages === 1 ? "page" : "pages"}
+            </span>
             <span style={{ color: "#c4bfb4" }}>|</span>
-            <span>3 services per page</span>
+            <span>{limits.services} services per page</span>
             <span style={{ color: "#c4bfb4" }}>|</span>
-            <span>50 subscribers</span>
+            <span>{limits.subscribers} subscribers</span>
           </div>
-          <button
-            className="text-xs font-semibold hover:underline underline-offset-2 cursor-pointer"
-            style={{ color: "#e8500a" }}
-          >
-            Upgrade to Pro &rarr;
-          </button>
+          {plan === "free" && (
+            <Link
+              href="/billing"
+              className="text-xs font-semibold hover:underline underline-offset-2"
+              style={{ color: "#e8500a" }}
+            >
+              Upgrade to Pro &rarr;
+            </Link>
+          )}
+          {plan === "pro" && (
+            <Link
+              href="/billing"
+              className="text-xs font-semibold hover:underline underline-offset-2"
+              style={{ color: "#8a8070" }}
+            >
+              Manage billing &rarr;
+            </Link>
+          )}
         </div>
       </main>
 

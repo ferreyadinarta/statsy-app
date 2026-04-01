@@ -1,12 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-
-const FREE_PLAN_LIMIT = 30;
+import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
 
 export async function POST(req: NextRequest) {
   const { email, status_page_id } = await req.json();
 
-  // Validation
   if (!email || !status_page_id) {
     return NextResponse.json(
       { error: "Missing required fields." },
@@ -24,7 +22,6 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createClient();
 
-  // Confirm the status page actually exists (and is public)
   const { data: page, error: pageError } = await supabase
     .from("status_pages")
     .select("id, user_id")
@@ -38,28 +35,28 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // TODO (Chat 08): fetch page owner's plan and use their limit
-  // For now, everyone is on Free plan = 30 subscribers
+  // Respect the page owner's plan limit
+  const plan = await getUserPlan(page.user_id);
+  const limit = PLAN_LIMITS[plan].subscribers;
+
   const { count } = await supabase
     .from("subscribers")
     .select("*", { count: "exact", head: true })
     .eq("status_page_id", status_page_id);
 
-  if ((count ?? 0) >= FREE_PLAN_LIMIT) {
+  if ((count ?? 0) >= limit) {
     return NextResponse.json(
       { error: "This page has reached its subscriber limit." },
       { status: 403 },
     );
   }
 
-  // Insert — on conflict (duplicate email)
   const { error: insertError } = await supabase
     .from("subscribers")
     .insert({ email, status_page_id });
 
   if (insertError) {
     if (insertError.code === "23505") {
-      // Unique violation — already subscribed
       return NextResponse.json(
         { error: "This email is already subscribed." },
         { status: 409 },

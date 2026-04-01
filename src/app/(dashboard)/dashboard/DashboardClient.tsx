@@ -211,12 +211,13 @@ export default function DashboardClient({ pages }: Props) {
           {atLimit && (
             <p className="text-xs mt-1" style={{ color: "#8a8070" }}>
               You've reached the Free plan limit.{" "}
-              <button
-                className="font-semibold hover:underline underline-offset-2 cursor-pointer"
+              <Link
+                href="/billing"
+                className="font-semibold hover:underline underline-offset-2"
                 style={{ color: "#e8500a" }}
               >
                 Upgrade to Pro
-              </button>{" "}
+              </Link>{" "}
               to create more pages.
             </p>
           )}
