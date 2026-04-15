@@ -29,7 +29,7 @@ export async function POST() {
   }
 
   const paddleEnv =
-    process.env.PADDLE_ENVIRONMENT === "production"
+    process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === "production"
       ? "api.paddle.com"
       : "sandbox-api.paddle.com";
 
