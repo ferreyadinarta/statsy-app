@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// Service role client — bypasses RLS for webhook writes
 function getServiceClient() {
     return createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,7 +8,6 @@ function getServiceClient() {
     );
 }
 
-// Verify Paddle webhook signature
 async function verifyPaddleSignature(
     rawBody: string,
     signatureHeader: string | null,
@@ -51,6 +49,8 @@ export async function POST(req: NextRequest) {
     );
     if (!isValid) {
         console.error("Invalid Paddle webhook signature");
+        console.error("Header:", signatureHeader);
+        console.error("Secret length:", secret?.length);
         return NextResponse.json(
             { error: "Invalid signature" },
             { status: 401 },
@@ -69,7 +69,6 @@ export async function POST(req: NextRequest) {
 
     const supabase = getServiceClient();
 
-    // Extract common fields
     const paddleSubId = data?.id as string;
     const customerId = data?.customer_id as string;
     const userId = (data?.custom_data as Record<string, string>)?.user_id;
@@ -78,7 +77,6 @@ export async function POST(req: NextRequest) {
         (data?.current_billing_period as Record<string, string>)?.ends_at ??
         null;
 
-    // Map Paddle status to our status
     function mapStatus(s: string): string {
         if (s === "active") return "active";
         if (s === "trialing") return "trialing";
@@ -89,7 +87,6 @@ export async function POST(req: NextRequest) {
     }
 
     if (!userId) {
-        // Can't link to a user — log and return 200 so Paddle doesn't retry
         console.warn("Paddle webhook: no user_id in custom_data", eventType);
         return NextResponse.json({ received: true });
     }
