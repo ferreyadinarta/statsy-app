@@ -96,18 +96,19 @@ export async function POST(req: NextRequest) {
         eventType === "subscription.updated"
     ) {
         const mappedStatus = mapStatus(statusRaw);
-        const plan =
-            mappedStatus === "cancelled" || mappedStatus === "paused"
-                ? "free"
-                : "pro";
+        const scheduledChange = data?.scheduled_change as Record<
+            string,
+            unknown
+        > | null;
+        const isCancelScheduled = scheduledChange?.action === "cancel";
 
         const { error } = await supabase.from("subscriptions").upsert(
             {
                 user_id: userId,
                 paddle_subscription_id: paddleSubId,
                 paddle_customer_id: customerId,
-                plan,
-                status: mappedStatus,
+                plan: "pro",
+                status: isCancelScheduled ? "cancelled" : mappedStatus,
                 current_period_end: currentPeriodEnd,
             },
             { onConflict: "user_id" },

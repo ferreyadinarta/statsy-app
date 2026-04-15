@@ -136,7 +136,9 @@ export default function BillingClient({
                 "Subscription cancelled. You'll stay on Pro until the end of your billing period.",
             );
             setShowCancelConfirm(false);
-            router.refresh();
+            setTimeout(() => {
+                router.refresh();
+            }, 3000);
         } catch {
             showError("Something went wrong. Please try again.");
         } finally {
@@ -553,9 +555,9 @@ function CancelModal({
                     className="text-sm mb-6 leading-relaxed"
                     style={{ color: "#3d3830" }}
                 >
-                    You&apos;ll stay on Pro until the end of your billing period.
-                    After that, you&apos;ll be moved to the Free plan and some
-                    features will be restricted.
+                    You&apos;ll stay on Pro until the end of your billing
+                    period. After that, you&apos;ll be moved to the Free plan
+                    and some features will be restricted.
                 </p>
                 <div className="flex gap-3">
                     <button
