@@ -21,6 +21,42 @@ export default async function DashboardPage() {
     .select("*")
     .order("created_at", { ascending: false });
 
+  // Compute overall status per page based on services + open incidents
+  const pageIds = (pages ?? []).map((p) => p.id);
+  const [{ data: services }, { data: openIncidents }] = await Promise.all([
+    supabase
+      .from("services")
+      .select("status_page_id, status")
+      .in("status_page_id", pageIds.length ? pageIds : [""]),
+    supabase
+      .from("incidents")
+      .select("status_page_id, status")
+      .in("status_page_id", pageIds.length ? pageIds : [""])
+      .neq("status", "resolved"),
+  ]);
+
+  type PageStatus = "operational" | "degraded" | "outage";
+  const pageStatusMap: Record<string, PageStatus> = {};
+  for (const id of pageIds) {
+    const svcStatuses = (services ?? [])
+      .filter((s) => s.status_page_id === id)
+      .map((s) => s.status);
+    const hasOpenIncident = (openIncidents ?? []).some(
+      (i) => i.status_page_id === id
+    );
+    if (svcStatuses.includes("outage")) pageStatusMap[id] = "outage";
+    else if (svcStatuses.includes("degraded") || hasOpenIncident)
+      pageStatusMap[id] = "degraded";
+    else pageStatusMap[id] = "operational";
+  }
+
+  const pagesWithStatus = (pages ?? []).map((p) => ({
+    ...p,
+    overallStatus: pageStatusMap[p.id] ?? "operational",
+  }));
+
+  const atLimit = pagesWithStatus.length >= limits.pages;
+
   return (
     <div className="min-h-screen bg-[#f5f2eb]">
       {/* Nav */}
@@ -77,10 +113,10 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 py-14">
+      <main className="max-w-5xl mx-auto px-8 py-10">
         {/* Heading */}
         <div
-          className="mb-10 pb-10"
+          className="mb-7 pb-7"
           style={{ borderBottom: "1.5px solid #e4dfd4" }}
         >
           <p
@@ -105,11 +141,11 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <DashboardClient pages={pages ?? []} />
+        <DashboardClient pages={pagesWithStatus} plan={plan} />
 
-        {/* Plan bar */}
-        <div
-          className="mt-8 flex items-center justify-between px-6 py-4 rounded-[4px] flex-wrap gap-4"
+        {/* Plan bar — hidden when upgrade callout is already shown */}
+        {!(atLimit && plan === "free") && <div
+          className="mt-6 flex items-center justify-between px-6 py-4 rounded-[4px] flex-wrap gap-4"
           style={{ background: "#ede9e0", border: "1.5px solid #e4dfd4" }}
         >
           <div className="flex items-center gap-3">
@@ -137,12 +173,12 @@ export default async function DashboardPage() {
             <span>
               {limits.pages} {limits.pages === 1 ? "page" : "pages"}
             </span>
-            <span style={{ color: "#c4bfb4" }}>|</span>
+            <span style={{ color: "#c4bfb4" }}>·</span>
             <span>{limits.services} services per page</span>
-            <span style={{ color: "#c4bfb4" }}>|</span>
+            <span style={{ color: "#c4bfb4" }}>·</span>
             <span>{limits.subscribers} subscribers</span>
           </div>
-          {plan === "free" && (
+          {plan === "free" && !atLimit && (
             <Link
               href="/billing"
               className="text-xs font-semibold hover:underline underline-offset-2"
@@ -160,7 +196,7 @@ export default async function DashboardPage() {
               Manage billing &rarr;
             </Link>
           )}
-        </div>
+        </div>}
       </main>
 
       <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>

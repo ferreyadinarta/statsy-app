@@ -1,25 +1,37 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, Plus, FileText } from "lucide-react";
+import { ExternalLink, Plus, FileText, Lock } from "lucide-react";
 import CreatePageModal from "../../../components/dashboard/CreatePageModal";
 
 const FREE_PAGE_LIMIT = 1;
+
+type PageStatus = "operational" | "degraded" | "outage";
 
 type StatusPage = {
   id: string;
   name: string;
   slug: string;
   created_at: string;
+  overallStatus: PageStatus;
 };
 
 type Props = {
   pages: StatusPage[];
+  plan: string;
 };
 
-export default function DashboardClient({ pages }: Props) {
+const STATUS_CONFIG: Record<PageStatus, { label: string; color: string; bg: string; border: string }> = {
+  operational: { label: "Operational", color: "#16a34a", bg: "rgba(22,163,74,0.08)", border: "rgba(22,163,74,0.2)" },
+  degraded:    { label: "Degraded",    color: "#d97706", bg: "rgba(217,119,6,0.08)",  border: "rgba(217,119,6,0.2)"  },
+  outage:      { label: "Outage",      color: "#dc2626", bg: "rgba(220,38,38,0.08)",  border: "rgba(220,38,38,0.2)"  },
+};
+
+export default function DashboardClient({ pages, plan }: Props) {
   const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
   const atLimit = pages.length >= FREE_PAGE_LIMIT;
 
   return (
@@ -80,17 +92,17 @@ export default function DashboardClient({ pages }: Props) {
       ) : (
         <div className="flex flex-col gap-3">
           {/* Header row */}
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between mb-1 px-1">
             <p
               className="text-xs uppercase tracking-wider font-semibold"
               style={{ color: "#8a8070" }}
             >
-              {pages.length} / {FREE_PAGE_LIMIT} page used
+              {pages.length} / {FREE_PAGE_LIMIT} {pages.length === 1 ? "page" : "pages"} used
             </p>
             <button
               onClick={() => !atLimit && setShowModal(true)}
               disabled={atLimit}
-              className="flex items-center gap-2 rounded-[4px] px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 cursor-pointer disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-[4px] px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 cursor-pointer disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8500a]"
               style={{
                 background: atLimit ? "#e4dfd4" : "#1a1714",
                 color: atLimit ? "#8a8070" : "#f5f2eb",
@@ -110,7 +122,7 @@ export default function DashboardClient({ pages }: Props) {
               }}
               title={atLimit ? "Upgrade to Pro to create more pages" : ""}
             >
-              <Plus size={13} />
+              {atLimit ? <Lock size={11} /> : <Plus size={13} />}
               New page
             </button>
           </div>
@@ -119,64 +131,86 @@ export default function DashboardClient({ pages }: Props) {
           {pages.map((page) => (
             <div
               key={page.id}
-              className="flex items-center justify-between px-6 py-5 rounded-[4px] bg-white"
+              onClick={() => router.push(`/dashboard/${page.slug}`)}
+              className="flex items-center justify-between px-6 py-5 rounded-[4px] cursor-pointer"
               style={{
+                background: "white",
                 border: "1.5px solid #e4dfd4",
-                transition: "border-color 0.15s",
+                transition: "border-color 0.15s, background 0.15s",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.borderColor = "#1a1714")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.borderColor = "#e4dfd4")
-              }
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#1a1714";
+                e.currentTarget.style.background = "#faf9f5";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#e4dfd4";
+                e.currentTarget.style.background = "white";
+              }}
             >
               <div className="flex items-center gap-4">
+                {/* Monogram icon */}
                 <div
-                  className="w-9 h-9 rounded-[4px] flex items-center justify-center flex-shrink-0"
+                  className="w-9 h-9 rounded-[4px] flex items-center justify-center flex-shrink-0 text-sm font-bold"
                   style={{
-                    background: "#f5f2eb",
-                    border: "1.5px solid #e4dfd4",
+                    background: "#1a1714",
+                    color: "#f5f2eb",
+                    fontFamily: "var(--font-head)",
+                    letterSpacing: "-0.02em",
                   }}
                 >
-                  <FileText size={15} style={{ color: "#8a8070" }} />
+                  {page.name[0].toUpperCase()}
                 </div>
                 <div>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-head)",
-                      fontWeight: 800,
-                      fontSize: "1rem",
-                      letterSpacing: "-0.02em",
-                      color: "#1a1714",
-                    }}
-                  >
-                    {page.name}
-                  </p>
+                  {(() => {
+                    const s = STATUS_CONFIG[page.overallStatus];
+                    return (
+                      <div className="flex items-center gap-2.5">
+                        <p
+                          style={{
+                            fontFamily: "var(--font-head)",
+                            fontWeight: 800,
+                            fontSize: "1rem",
+                            letterSpacing: "-0.02em",
+                            color: "#1a1714",
+                          }}
+                        >
+                          {page.name}
+                        </p>
+                        <span
+                          className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px]"
+                          style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: s.color }} />
+                          {s.label}
+                        </span>
+                      </div>
+                    );
+                  })()}
                   <p className="text-xs mt-0.5" style={{ color: "#8a8070" }}>
                     statsy.page/{page.slug}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <a
                   href={`/${page.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs font-medium transition-colors duration-150 px-3 py-2 rounded-[4px]"
+                  className="flex items-center gap-1.5 text-xs font-medium transition-colors duration-150 px-3 py-2 rounded-[4px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8500a]"
                   style={{
                     color: "#8a8070",
-                    border: "1.5px solid transparent",
+                    border: "1.5px solid #e4dfd4",
+                    background: "transparent",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = "#1a1714";
-                    e.currentTarget.style.borderColor = "#e4dfd4";
+                    e.currentTarget.style.borderColor = "#1a1714";
                     e.currentTarget.style.background = "#f5f2eb";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = "#8a8070";
-                    e.currentTarget.style.borderColor = "transparent";
+                    e.currentTarget.style.borderColor = "#e4dfd4";
                     e.currentTarget.style.background = "transparent";
                   }}
                   onClick={(e) => e.stopPropagation()}
@@ -186,7 +220,7 @@ export default function DashboardClient({ pages }: Props) {
                 </a>
                 <Link
                   href={`/dashboard/${page.slug}`}
-                  className="flex items-center gap-1.5 rounded-[4px] px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150"
+                  className="flex items-center gap-1.5 rounded-[4px] px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8500a]"
                   style={{
                     border: "1.5px solid #1a1714",
                     color: "#1a1714",
@@ -202,24 +236,45 @@ export default function DashboardClient({ pages }: Props) {
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
+
                   Manage
                 </Link>
               </div>
             </div>
           ))}
 
-          {atLimit && (
-            <p className="text-xs mt-1" style={{ color: "#8a8070" }}>
-              You've reached the Free plan limit.{" "}
+          {atLimit && plan === "free" && (
+            <div
+              className="flex items-center justify-between px-5 py-3.5 rounded-[4px] mt-1"
+              style={{
+                background: "rgba(232,80,10,0.05)",
+                border: "1.5px solid rgba(232,80,10,0.2)",
+              }}
+            >
+              <p className="text-xs" style={{ color: "#8a8070" }}>
+                <span style={{ color: "#1a1714", fontWeight: 600 }}>Free plan limit reached.</span>{" "}
+                Unlock unlimited pages, more services, and priority support.
+              </p>
               <Link
                 href="/billing"
-                className="font-semibold hover:underline underline-offset-2"
-                style={{ color: "#e8500a" }}
+                className="flex-shrink-0 ml-6 text-xs font-semibold rounded-[4px] px-3.5 py-2 transition-colors duration-150"
+                style={{
+                  background: "#e8500a",
+                  color: "white",
+                  border: "1.5px solid #e8500a",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "#c94008";
+                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "#c94008";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLAnchorElement).style.background = "#e8500a";
+                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "#e8500a";
+                }}
               >
-                Upgrade to Pro
-              </Link>{" "}
-              to create more pages.
-            </p>
+                Upgrade to Pro &rarr;
+              </Link>
+            </div>
           )}
         </div>
       )}
