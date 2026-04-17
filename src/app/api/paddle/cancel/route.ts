@@ -50,17 +50,27 @@ export async function POST() {
 
     if (!res.ok) {
         const err = await res.json();
-        console.error("Paddle cancel error:", JSON.stringify(err));
-        console.error(
-            "Paddle env:",
-            process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT,
-        );
-        console.error("API key length:", process.env.PADDLE_API_KEY?.length);
+        // Sub already has a scheduled cancel — treat as success and sync DB
+        if (
+            err?.error?.code === "subscription_locked_pending_changes"
+        ) {
+            await supabase
+                .from("subscriptions")
+                .update({ status: "cancelled" })
+                .eq("user_id", user.id);
+            return NextResponse.json({ success: true });
+        }
         return NextResponse.json(
             { error: "Failed to cancel with Paddle" },
             { status: 500 },
         );
     }
+
+    // Sync DB immediately — don't wait for webhook (unreliable in dev/staging)
+    await supabase
+        .from("subscriptions")
+        .update({ status: "cancelled" })
+        .eq("user_id", user.id);
 
     return NextResponse.json({ success: true });
 }
