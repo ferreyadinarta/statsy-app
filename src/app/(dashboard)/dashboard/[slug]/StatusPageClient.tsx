@@ -126,7 +126,7 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
     const jsSnippet = `<div id="statsy-badge-${slug}"></div>
 <script>
   (function() {
-    fetch("https://statsy.page/api/badge/${slug}")
+    fetch("https://${process.env.NEXT_PUBLIC_APP_URL}/api/badge/${slug}")
       .then(function(r) { return r.json(); })
       .then(function(d) {
         var colors = {
