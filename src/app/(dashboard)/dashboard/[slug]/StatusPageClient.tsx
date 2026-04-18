@@ -62,11 +62,53 @@ type Props = {
     plan: "free" | "pro";
 };
 
+// ── Syntax Highlighting ──────────────────────────────────────────────────────
+
+function HighlightedHtml({ code }: { code: string }) {
+    const TOKEN_RE = /(<\/?\w[\w:-]*\s*\/?>?|\/?>|[\w:-]+=|"[^"]*")/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    let key = 0;
+    while ((match = TOKEN_RE.exec(code)) !== null) {
+        if (match.index > lastIndex) parts.push(code.slice(lastIndex, match.index));
+        const t = match[0];
+        let color = "#9ca3af";
+        if (t.startsWith("<") || t === ">" || t === "/>") color = "#6ee7b7";
+        else if (t.endsWith("=")) color = "#93c5fd";
+        else if (t.startsWith('"')) color = "#fcd34d";
+        parts.push(<span key={key++} style={{ color }}>{t}</span>);
+        lastIndex = match.index + t.length;
+    }
+    if (lastIndex < code.length) parts.push(code.slice(lastIndex));
+    return <>{parts}</>;
+}
+
+function HighlightedJs({ code }: { code: string }) {
+    const TOKEN_RE = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:var|function|return|if|fetch|else|null|true|false)\b|\/\/.*)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    let key = 0;
+    while ((match = TOKEN_RE.exec(code)) !== null) {
+        if (match.index > lastIndex) parts.push(code.slice(lastIndex, match.index));
+        const t = match[0];
+        let color = "#9ca3af";
+        if (t.startsWith('"') || t.startsWith("'")) color = "#86efac";
+        else if (/^\/\//.test(t)) color = "#6b7280";
+        else color = "#c084fc";
+        parts.push(<span key={key++} style={{ color }}>{t}</span>);
+        lastIndex = match.index + t.length;
+    }
+    if (lastIndex < code.length) parts.push(code.slice(lastIndex));
+    return <>{parts}</>;
+}
+
 // ── Embed Badge Section ──────────────────────────────────────────────────────
 
 function EmbedBadgeSection({ slug }: { slug: string }) {
-    const [copiedIframe, setCopiedIframe] = useState(false);
-    const [copiedJs, setCopiedJs] = useState(false);
+    const [activeTab, setActiveTab] = useState<"iframe" | "js">("iframe");
+    const [copied, setCopied] = useState(false);
 
     const badgeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/badge/${slug}`;
     const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${slug}`;
@@ -105,25 +147,37 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
   })();
 </script>`;
 
-    function copyToClipboard(text: string, which: "iframe" | "js") {
-        navigator.clipboard.writeText(text).then(() => {
-            if (which === "iframe") {
-                setCopiedIframe(true);
-                setTimeout(() => setCopiedIframe(false), 2000);
-            } else {
-                setCopiedJs(true);
-                setTimeout(() => setCopiedJs(false), 2000);
-            }
+    const activeSnippet = activeTab === "iframe" ? iframeSnippet : jsSnippet;
+
+    function copyToClipboard() {
+        navigator.clipboard.writeText(activeSnippet).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
         });
     }
+
+    const tabs = [
+        {
+            id: "iframe" as const,
+            label: "iFrame",
+            tag: "Easiest",
+            description: "Drop-in, zero dependencies",
+        },
+        {
+            id: "js" as const,
+            label: "JS Snippet",
+            tag: "Flexible",
+            description: "Inline, fully styleable",
+        },
+    ];
 
     return (
         <section className="mb-10">
             {/* Header */}
-            <div className="flex items-end justify-between mb-6">
+            <div className="flex items-start justify-between mb-6">
                 <div>
                     <h2
-                        className="text-xl font-black mb-2"
+                        className="text-xl font-black mb-1.5"
                         style={{
                             fontFamily: "var(--font-head)",
                             color: "#1a1714",
@@ -132,146 +186,189 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                     >
                         Embed Badge
                     </h2>
-                    <p
-                        className="text-sm font-medium"
-                        style={{ color: "#8a8070" }}
-                    >
-                        Add a live status badge to your website or README.
+                    <p className="text-sm font-medium" style={{ color: "#8a8070" }}>
+                        Add a live status badge to your site or README.
                     </p>
                 </div>
-                <Code2 size={20} style={{ color: "#8a8070", flexShrink: 0 }} />
+                <Code2 size={18} style={{ color: "#c4bfb4", flexShrink: 0, marginTop: 4 }} />
             </div>
 
-            {/* Preview */}
+            {/* Live Preview */}
             <div
-                className="mb-4 px-6 py-5 rounded-[4px] flex items-center justify-between"
-                style={{ border: "1.5px solid #e4dfd4", background: "white" }}
-            >
-                <div className="flex flex-col gap-1">
-                    <span
-                        className="text-xs font-semibold uppercase tracking-[0.08em]"
-                        style={{ color: "#8a8070" }}
-                    >
-                        Live preview
-                    </span>
-                    <span className="text-xs" style={{ color: "#c4bfb4" }}>
-                        Updates every 60 seconds
-                    </span>
-                </div>
-                <iframe
-                    src={badgeUrl}
-                    width={280}
-                    height={36}
-                    frameBorder={0}
-                    scrolling="no"
-                    style={{ border: "none", overflow: "hidden" }}
-                    title={`${slug} status badge`}
-                />
-            </div>
-
-            {/* iframe snippet */}
-            <div
-                className="mb-3 rounded-[4px]"
-                style={{ border: "1.5px solid #e4dfd4", background: "white" }}
+                className="mb-3 rounded-[4px] overflow-hidden"
+                style={{ border: "1.5px solid #e4dfd4" }}
             >
                 <div
-                    className="flex items-center justify-between px-4 py-3"
-                    style={{ borderBottom: "1.5px solid #e4dfd4" }}
+                    className="px-4 py-2 flex items-center gap-2"
+                    style={{ borderBottom: "1.5px solid #e4dfd4", background: "#faf8f4" }}
                 >
                     <span
-                        className="text-xs font-bold uppercase tracking-[0.08em]"
+                        className="text-[10px] font-bold uppercase tracking-[0.1em]"
                         style={{ color: "#3d3830" }}
                     >
-                        iframe embed
+                        Live Preview
                     </span>
-                    <button
-                        onClick={() => copyToClipboard(iframeSnippet, "iframe")}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
-                        style={{
-                            background: copiedIframe ? "#e8f5ee" : "#f5f2eb",
-                            border: `1.5px solid ${copiedIframe ? "#1a7a4a" : "#e4dfd4"}`,
-                            color: copiedIframe ? "#1a7a4a" : "#3d3830",
-                        }}
+                    <span
+                        className="text-[10px] font-medium"
+                        style={{ color: "#8a8070" }}
                     >
-                        {copiedIframe ? (
-                            <>
-                                <Check size={12} strokeWidth={3} />
-                                Copied!
-                            </>
-                        ) : (
-                            <>
-                                <Copy size={12} strokeWidth={2.5} />
-                                Copy
-                            </>
-                        )}
-                    </button>
+                        · refreshes every 60s
+                    </span>
                 </div>
-                <pre
-                    className="px-4 py-4 text-xs overflow-x-auto"
+                <div
+                    className="flex items-center justify-center py-8"
                     style={{
-                        color: "#3d3830",
-                        fontFamily: "ui-monospace, 'Cascadia Code', monospace",
-                        lineHeight: 1.7,
-                        whiteSpace: "pre",
+                        background:
+                            "radial-gradient(circle, #e4dfd4 1px, transparent 1px)",
+                        backgroundSize: "18px 18px",
+                        backgroundColor: "#fdfcf9",
                     }}
                 >
-                    {iframeSnippet}
-                </pre>
+                    <iframe
+                        src={badgeUrl}
+                        width={280}
+                        height={36}
+                        frameBorder={0}
+                        scrolling="no"
+                        style={{ border: "none", overflow: "hidden", display: "block" }}
+                        title={`${slug} status badge`}
+                    />
+                </div>
             </div>
 
-            {/* JS snippet */}
+            {/* Embed Method Tabs + Code */}
             <div
-                className="rounded-[4px]"
+                className="rounded-[4px] overflow-hidden"
                 style={{ border: "1.5px solid #e4dfd4", background: "white" }}
             >
+                {/* Tab Bar */}
                 <div
-                    className="flex items-center justify-between px-4 py-3"
-                    style={{ borderBottom: "1.5px solid #e4dfd4" }}
+                    className="flex items-stretch"
+                    style={{ background: "#faf8f4", borderBottom: "1.5px solid #e4dfd4" }}
                 >
-                    <div className="flex flex-col gap-0.5">
+                    {tabs.map((tab) => {
+                        const active = activeTab === tab.id;
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => {
+                                    setActiveTab(tab.id);
+                                    setCopied(false);
+                                }}
+                                className="flex items-center gap-2.5 px-4 py-3 transition-all cursor-pointer text-left relative"
+                                style={{
+                                    background: "transparent",
+                                    borderRight: "1.5px solid #e4dfd4",
+                                    outline: "none",
+                                }}
+                            >
+                                {active && (
+                                    <span
+                                        style={{
+                                            position: "absolute",
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            height: 2,
+                                            background: "#1a7a4a",
+                                        }}
+                                    />
+                                )}
+                                <div className="flex flex-col gap-0.5">
+                                    <div className="flex items-center gap-2">
+                                        <span
+                                            className="text-xs font-bold"
+                                            style={{
+                                                color: active ? "#1a1714" : "#5a534c",
+                                                fontFamily: "ui-monospace, monospace",
+                                            }}
+                                        >
+                                            {tab.label}
+                                        </span>
+                                        <span
+                                            className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full"
+                                            style={{
+                                                background: active ? "#e8f5ee" : "#f0ece4",
+                                                color: active ? "#1a7a4a" : "#8a8070",
+                                            }}
+                                        >
+                                            {tab.tag}
+                                        </span>
+                                    </div>
+                                    <span
+                                        className="text-[10px]"
+                                        style={{ color: active ? "#6b6560" : "#8a8070" }}
+                                    >
+                                        {tab.description}
+                                    </span>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Code Block */}
+                <div style={{ background: "#16120e", position: "relative" }}>
+                    <div
+                        className="flex items-center justify-between px-4 pt-3 pb-2"
+                        style={{ borderBottom: "1px solid #2a2318" }}
+                    >
                         <span
-                            className="text-xs font-bold uppercase tracking-[0.08em]"
-                            style={{ color: "#3d3830" }}
+                            className="text-[10px] font-semibold uppercase tracking-widest"
+                            style={{ color: "#6b7280", fontFamily: "ui-monospace, monospace" }}
                         >
-                            JS snippet
+                            {activeTab === "iframe" ? "html" : "javascript"}
                         </span>
-                        <span className="text-xs" style={{ color: "#8a8070" }}>
-                            Renders inline — no iframe, fully styleable
-                        </span>
+                        <button
+                            onClick={copyToClipboard}
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] text-[10px] font-semibold uppercase tracking-wider transition-all cursor-pointer"
+                            style={{
+                                background: copied ? "#1a3d2b" : "#2a2318",
+                                color: copied ? "#6ee7b7" : "#9ca3af",
+                                border: `1px solid ${copied ? "#1a7a4a" : "#3f3732"}`,
+                            }}
+                        >
+                            {copied ? (
+                                <>
+                                    <Check size={10} strokeWidth={3} />
+                                    Copied
+                                </>
+                            ) : (
+                                <>
+                                    <Copy size={10} strokeWidth={2.5} />
+                                    Copy
+                                </>
+                            )}
+                        </button>
                     </div>
-                    <button
-                        onClick={() => copyToClipboard(jsSnippet, "js")}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
+                    <pre
+                        className="px-5 py-4 text-xs overflow-x-auto"
                         style={{
-                            background: copiedJs ? "#e8f5ee" : "#f5f2eb",
-                            border: `1.5px solid ${copiedJs ? "#1a7a4a" : "#e4dfd4"}`,
-                            color: copiedJs ? "#1a7a4a" : "#3d3830",
+                            color: "#9ca3af",
+                            fontFamily: "ui-monospace, 'Cascadia Code', 'JetBrains Mono', monospace",
+                            lineHeight: 1.8,
+                            whiteSpace: "pre",
+                            minHeight: 120,
+                            margin: 0,
                         }}
                     >
-                        {copiedJs ? (
-                            <>
-                                <Check size={12} strokeWidth={3} />
-                                Copied!
-                            </>
-                        ) : (
-                            <>
-                                <Copy size={12} strokeWidth={2.5} />
-                                Copy
-                            </>
-                        )}
-                    </button>
+                        {activeTab === "iframe"
+                            ? <HighlightedHtml code={activeSnippet} />
+                            : <HighlightedJs code={activeSnippet} />}
+                    </pre>
                 </div>
-                <pre
-                    className="px-4 py-4 text-xs overflow-x-auto"
-                    style={{
-                        color: "#3d3830",
-                        fontFamily: "ui-monospace, 'Cascadia Code', monospace",
-                        lineHeight: 1.7,
-                        whiteSpace: "pre",
-                    }}
+
+                {/* Hint Footer */}
+                <div
+                    className="px-4 py-2.5"
+                    style={{ borderTop: "1.5px solid #e4dfd4", background: "#faf8f4" }}
                 >
-                    {jsSnippet}
-                </pre>
+                    <span className="text-[10px]" style={{ color: "#8a8070" }}>
+                        {activeTab === "iframe"
+                            ? "Works in HTML, Notion, Webflow, etc."
+                            : "Paste before </body> — works on any website"}
+                    </span>
+                </div>
             </div>
         </section>
     );
