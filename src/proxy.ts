@@ -28,6 +28,7 @@ export async function proxy(request: NextRequest) {
     // ── Wildcard subdomain routing ─────────────────────────────────────────────
     if (host.endsWith(".statsy.page") && host !== "www.statsy.page") {
         const slug = host.replace(".statsy.page", "");
+        console.log("WILDCARD HIT - slug:", slug, "rewriting to:", `/${slug}`);
         const url = request.nextUrl.clone();
         url.pathname = `/${slug}${pathname === "/" ? "" : pathname}`;
         return NextResponse.rewrite(url);
