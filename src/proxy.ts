@@ -24,6 +24,14 @@ function isStatsyHost(host: string): boolean {
 export async function proxy(request: NextRequest) {
     const host = request.headers.get("host") ?? "";
     const { pathname } = request.nextUrl;
+    
+    // ── Wildcard subdomain routing ─────────────────────────────────────────────
+    if (host.endsWith(".statsy.page") && host !== "www.statsy.page") {
+        const slug = host.replace(".statsy.page", "");
+        const url = request.nextUrl.clone();
+        url.pathname = `/${slug}${pathname === "/" ? "" : pathname}`;
+        return NextResponse.rewrite(url);
+    }
 
     // ── Custom domain routing ──────────────────────────────────────────────────
     if (!isStatsyHost(host)) {
