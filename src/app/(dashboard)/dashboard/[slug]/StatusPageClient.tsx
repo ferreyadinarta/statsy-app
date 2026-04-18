@@ -15,6 +15,7 @@ import {
     Code2,
     Copy,
     Check,
+    Settings,
 } from "lucide-react";
 import DeleteServiceConfirm from "@/components/services/DeleteServiceConfirm";
 import AddServiceModal from "@/components/services/AddServiceModal";
@@ -71,13 +72,18 @@ function HighlightedHtml({ code }: { code: string }) {
     let match: RegExpExecArray | null;
     let key = 0;
     while ((match = TOKEN_RE.exec(code)) !== null) {
-        if (match.index > lastIndex) parts.push(code.slice(lastIndex, match.index));
+        if (match.index > lastIndex)
+            parts.push(code.slice(lastIndex, match.index));
         const t = match[0];
         let color = "#9ca3af";
         if (t.startsWith("<") || t === ">" || t === "/>") color = "#6ee7b7";
         else if (t.endsWith("=")) color = "#93c5fd";
         else if (t.startsWith('"')) color = "#fcd34d";
-        parts.push(<span key={key++} style={{ color }}>{t}</span>);
+        parts.push(
+            <span key={key++} style={{ color }}>
+                {t}
+            </span>,
+        );
         lastIndex = match.index + t.length;
     }
     if (lastIndex < code.length) parts.push(code.slice(lastIndex));
@@ -85,19 +91,25 @@ function HighlightedHtml({ code }: { code: string }) {
 }
 
 function HighlightedJs({ code }: { code: string }) {
-    const TOKEN_RE = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:var|function|return|if|fetch|else|null|true|false)\b|\/\/.*)/g;
+    const TOKEN_RE =
+        /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\b(?:var|function|return|if|fetch|else|null|true|false)\b|\/\/.*)/g;
     const parts: React.ReactNode[] = [];
     let lastIndex = 0;
     let match: RegExpExecArray | null;
     let key = 0;
     while ((match = TOKEN_RE.exec(code)) !== null) {
-        if (match.index > lastIndex) parts.push(code.slice(lastIndex, match.index));
+        if (match.index > lastIndex)
+            parts.push(code.slice(lastIndex, match.index));
         const t = match[0];
         let color = "#9ca3af";
         if (t.startsWith('"') || t.startsWith("'")) color = "#86efac";
         else if (/^\/\//.test(t)) color = "#6b7280";
         else color = "#c084fc";
-        parts.push(<span key={key++} style={{ color }}>{t}</span>);
+        parts.push(
+            <span key={key++} style={{ color }}>
+                {t}
+            </span>,
+        );
         lastIndex = match.index + t.length;
     }
     if (lastIndex < code.length) parts.push(code.slice(lastIndex));
@@ -186,11 +198,17 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                     >
                         Embed Badge
                     </h2>
-                    <p className="text-sm font-medium" style={{ color: "#8a8070" }}>
+                    <p
+                        className="text-sm font-medium"
+                        style={{ color: "#8a8070" }}
+                    >
                         Add a live status badge to your site or README.
                     </p>
                 </div>
-                <Code2 size={18} style={{ color: "#c4bfb4", flexShrink: 0, marginTop: 4 }} />
+                <Code2
+                    size={18}
+                    style={{ color: "#c4bfb4", flexShrink: 0, marginTop: 4 }}
+                />
             </div>
 
             {/* Live Preview */}
@@ -200,7 +218,10 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
             >
                 <div
                     className="px-4 py-2 flex items-center gap-2"
-                    style={{ borderBottom: "1.5px solid #e4dfd4", background: "#faf8f4" }}
+                    style={{
+                        borderBottom: "1.5px solid #e4dfd4",
+                        background: "#faf8f4",
+                    }}
                 >
                     <span
                         className="text-[10px] font-bold uppercase tracking-[0.1em]"
@@ -230,7 +251,11 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                         height={36}
                         frameBorder={0}
                         scrolling="no"
-                        style={{ border: "none", overflow: "hidden", display: "block" }}
+                        style={{
+                            border: "none",
+                            overflow: "hidden",
+                            display: "block",
+                        }}
                         title={`${slug} status badge`}
                     />
                 </div>
@@ -244,7 +269,10 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                 {/* Tab Bar */}
                 <div
                     className="flex items-stretch"
-                    style={{ background: "#faf8f4", borderBottom: "1.5px solid #e4dfd4" }}
+                    style={{
+                        background: "#faf8f4",
+                        borderBottom: "1.5px solid #e4dfd4",
+                    }}
                 >
                     {tabs.map((tab) => {
                         const active = activeTab === tab.id;
@@ -279,8 +307,11 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                                         <span
                                             className="text-xs font-bold"
                                             style={{
-                                                color: active ? "#1a1714" : "#5a534c",
-                                                fontFamily: "ui-monospace, monospace",
+                                                color: active
+                                                    ? "#1a1714"
+                                                    : "#5a534c",
+                                                fontFamily:
+                                                    "ui-monospace, monospace",
                                             }}
                                         >
                                             {tab.label}
@@ -288,8 +319,12 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                                         <span
                                             className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full"
                                             style={{
-                                                background: active ? "#e8f5ee" : "#f0ece4",
-                                                color: active ? "#1a7a4a" : "#8a8070",
+                                                background: active
+                                                    ? "#e8f5ee"
+                                                    : "#f0ece4",
+                                                color: active
+                                                    ? "#1a7a4a"
+                                                    : "#8a8070",
                                             }}
                                         >
                                             {tab.tag}
@@ -297,7 +332,11 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                                     </div>
                                     <span
                                         className="text-[10px]"
-                                        style={{ color: active ? "#6b6560" : "#8a8070" }}
+                                        style={{
+                                            color: active
+                                                ? "#6b6560"
+                                                : "#8a8070",
+                                        }}
                                     >
                                         {tab.description}
                                     </span>
@@ -315,7 +354,10 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                     >
                         <span
                             className="text-[10px] font-semibold uppercase tracking-widest"
-                            style={{ color: "#6b7280", fontFamily: "ui-monospace, monospace" }}
+                            style={{
+                                color: "#6b7280",
+                                fontFamily: "ui-monospace, monospace",
+                            }}
                         >
                             {activeTab === "iframe" ? "html" : "javascript"}
                         </span>
@@ -345,23 +387,29 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                         className="px-5 py-4 text-xs overflow-x-auto"
                         style={{
                             color: "#9ca3af",
-                            fontFamily: "ui-monospace, 'Cascadia Code', 'JetBrains Mono', monospace",
+                            fontFamily:
+                                "ui-monospace, 'Cascadia Code', 'JetBrains Mono', monospace",
                             lineHeight: 1.8,
                             whiteSpace: "pre",
                             minHeight: 120,
                             margin: 0,
                         }}
                     >
-                        {activeTab === "iframe"
-                            ? <HighlightedHtml code={activeSnippet} />
-                            : <HighlightedJs code={activeSnippet} />}
+                        {activeTab === "iframe" ? (
+                            <HighlightedHtml code={activeSnippet} />
+                        ) : (
+                            <HighlightedJs code={activeSnippet} />
+                        )}
                     </pre>
                 </div>
 
                 {/* Hint Footer */}
                 <div
                     className="px-4 py-2.5"
-                    style={{ borderTop: "1.5px solid #e4dfd4", background: "#faf8f4" }}
+                    style={{
+                        borderTop: "1.5px solid #e4dfd4",
+                        background: "#faf8f4",
+                    }}
                 >
                     <span className="text-[10px]" style={{ color: "#8a8070" }}>
                         {activeTab === "iframe"
@@ -480,6 +528,18 @@ export default function StatusPageClient({
                     <ExternalLink size={12} strokeWidth={2.5} />
                     View public page
                 </a>
+                <Link
+                    href={`/dashboard/${page.slug}/settings`}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] text-sm font-medium no-underline transition-colors"
+                    style={{
+                        border: "1.5px solid #e4dfd4",
+                        color: "#3d3830",
+                        background: "white",
+                    }}
+                >
+                    <Settings size={14} />
+                    Settings
+                </Link>
             </div>
 
             {/* ── SERVICES ── */}
