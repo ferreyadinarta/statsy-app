@@ -48,7 +48,7 @@ export default function SettingsClient({ page, plan }: Props) {
 
         if (!res.ok) {
             toast({
-                title: data.error ?? "Failed to save domain.",
+                description: data.error ?? "Failed to save domain.",
                 variant: "error",
             });
             setSaving(false);
@@ -57,7 +57,7 @@ export default function SettingsClient({ page, plan }: Props) {
 
         router.refresh();
         setTimeout(() => {
-            toast({ title: "Custom domain saved!" });
+            toast({ description: "Custom domain saved!" });
             setSaving(false);
         }, 500);
     }
@@ -75,7 +75,7 @@ export default function SettingsClient({ page, plan }: Props) {
 
         if (!res.ok) {
             toast({
-                title: data.error ?? "Failed to remove domain.",
+                description: data.error ?? "Failed to remove domain.",
                 variant: "error",
             });
             setRemoving(false);
@@ -85,7 +85,7 @@ export default function SettingsClient({ page, plan }: Props) {
         setDomain("");
         router.refresh();
         setTimeout(() => {
-            toast({ title: "Custom domain removed." });
+            toast({ description: "Custom domain removed." });
             setRemoving(false);
         }, 500);
     }

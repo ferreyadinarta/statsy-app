@@ -2,69 +2,69 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 function getServiceClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+    return createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
 }
 
 export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
+    _req: NextRequest,
+    { params }: { params: Promise<{ slug: string }> },
 ) {
-  const { slug } = await params;
-  const supabase = getServiceClient();
+    const { slug } = await params;
+    const supabase = getServiceClient();
 
-  const { data: page, error: pageError } = await supabase
-    .from("status_pages")
-    .select("id, name, slug")
-    .eq("slug", slug)
-    .single();
+    const { data: page, error: pageError } = await supabase
+        .from("status_pages")
+        .select("id, name, slug")
+        .eq("slug", slug)
+        .single();
 
-  if (pageError || !page) {
-    return new NextResponse("Not found", { status: 404 });
-  }
+    if (pageError || !page) {
+        return new NextResponse("Not found", { status: 404 });
+    }
 
-  const { data: services } = await supabase
-    .from("services")
-    .select("status")
-    .eq("status_page_id", page.id);
+    const { data: services } = await supabase
+        .from("services")
+        .select("status")
+        .eq("status_page_id", page.id);
 
-  let status: "operational" | "degraded" | "outage" = "operational";
-  if (services && services.some((s) => s.status === "outage")) {
-    status = "outage";
-  } else if (services && services.some((s) => s.status === "degraded")) {
-    status = "degraded";
-  }
+    let status: "operational" | "degraded" | "outage" = "operational";
+    if (services && services.some((s) => s.status === "outage")) {
+        status = "outage";
+    } else if (services && services.some((s) => s.status === "degraded")) {
+        status = "degraded";
+    }
 
-  const configs = {
-    operational: {
-      bg: "#e8f5ee",
-      border: "#1a7a4a",
-      dot: "#1a7a4a",
-      text: "#1a7a4a",
-      label: "All systems operational",
-    },
-    degraded: {
-      bg: "rgba(232,80,10,0.1)",
-      border: "#e8500a",
-      dot: "#e8500a",
-      text: "#e8500a",
-      label: "Degraded performance",
-    },
-    outage: {
-      bg: "#fdeae8",
-      border: "#d32f2f",
-      dot: "#d32f2f",
-      text: "#d32f2f",
-      label: "Service outage",
-    },
-  };
+    const configs = {
+        operational: {
+            bg: "#e8f5ee",
+            border: "#1a7a4a",
+            dot: "#1a7a4a",
+            text: "#1a7a4a",
+            label: "All systems operational",
+        },
+        degraded: {
+            bg: "rgba(232,80,10,0.1)",
+            border: "#e8500a",
+            dot: "#e8500a",
+            text: "#e8500a",
+            label: "Degraded performance",
+        },
+        outage: {
+            bg: "#fdeae8",
+            border: "#d32f2f",
+            dot: "#d32f2f",
+            text: "#d32f2f",
+            label: "Service outage",
+        },
+    };
 
-  const c = configs[status];
-  const pageUrl = `https://${slug}.statsy.page`;
+    const c = configs[status];
+    const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${slug}`;
 
-  const html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -129,12 +129,12 @@ export async function GET(
 </body>
 </html>`;
 
-  return new NextResponse(html, {
-    status: 200,
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      // Short cache — fresh enough for a status badge
-      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
-    },
-  });
+    return new NextResponse(html, {
+        status: 200,
+        headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            // Short cache — fresh enough for a status badge
+            "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+        },
+    });
 }

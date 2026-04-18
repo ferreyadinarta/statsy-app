@@ -224,13 +224,13 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                     }}
                 >
                     <span
-                        className="text-[10px] font-bold uppercase tracking-[0.1em]"
+                        className="text-xs font-bold uppercase tracking-[0.1em]"
                         style={{ color: "#3d3830" }}
                     >
                         Live Preview
                     </span>
                     <span
-                        className="text-[10px] font-medium"
+                        className="text-xs font-medium"
                         style={{ color: "#8a8070" }}
                     >
                         · refreshes every 60s
@@ -317,7 +317,7 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                                             {tab.label}
                                         </span>
                                         <span
-                                            className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full"
+                                            className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full"
                                             style={{
                                                 background: active
                                                     ? "#e8f5ee"
@@ -331,7 +331,7 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                                         </span>
                                     </div>
                                     <span
-                                        className="text-[10px]"
+                                        className="text-xs"
                                         style={{
                                             color: active
                                                 ? "#6b6560"
@@ -353,7 +353,7 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                         style={{ borderBottom: "1px solid #2a2318" }}
                     >
                         <span
-                            className="text-[10px] font-semibold uppercase tracking-widest"
+                            className="text-xs font-semibold uppercase tracking-widest"
                             style={{
                                 color: "#6b7280",
                                 fontFamily: "ui-monospace, monospace",
@@ -363,7 +363,7 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                         </span>
                         <button
                             onClick={copyToClipboard}
-                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] text-[10px] font-semibold uppercase tracking-wider transition-all cursor-pointer"
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
                             style={{
                                 background: copied ? "#1a3d2b" : "#2a2318",
                                 color: copied ? "#6ee7b7" : "#9ca3af",
@@ -411,7 +411,7 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                         background: "#faf8f4",
                     }}
                 >
-                    <span className="text-[10px]" style={{ color: "#8a8070" }}>
+                    <span className="text-xs" style={{ color: "#8a8070" }}>
                         {activeTab === "iframe"
                             ? "Works in HTML, Notion, Webflow, etc."
                             : "Paste before </body> — works on any website"}
@@ -510,7 +510,7 @@ export default function StatusPageClient({
                     href={`https://${page.slug}.statsy.page`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 rounded-[4px] px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all no-underline"
+                    className="flex items-center gap-1.5 rounded-[4px] px-3 py-2 text-sm font-semibold uppercase tracking-wider transition-all no-underline"
                     style={{
                         border: "1.5px solid #e4dfd4",
                         color: "#3d3830",

@@ -1,4 +1,3 @@
-// src/app/(dashboard)/dashboard/[slug]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";

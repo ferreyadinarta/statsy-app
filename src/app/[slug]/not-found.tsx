@@ -31,7 +31,7 @@ export default function NotFound() {
           Status page not found
         </h1>
         <p className="text-base mb-8" style={{ color: "#3d3830" }}>
-          This status page doesn't exist or has been removed.
+          This status page doesn&apos;t exist or has been removed.
         </p>
         <Link
           href="https://statsy.page"
