@@ -43,6 +43,52 @@ type Props = {
 
 const POLL_INTERVAL = 60_000;
 
+const INITIAL_SHOW = 3;
+
+function ActiveIncidentsSection({ incidents }: { incidents: Incident[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? incidents : incidents.slice(0, INITIAL_SHOW);
+  const hidden = incidents.length - INITIAL_SHOW;
+
+  return (
+    <section className="mt-10 mb-10">
+      <h2
+        className="text-xl font-black mb-6"
+        style={{
+          fontFamily: "var(--font-head)",
+          color: "#1a1714",
+          letterSpacing: "-0.03em",
+        }}
+      >
+        Active Incidents
+      </h2>
+      <div className="flex flex-col gap-6">
+        {visible.map((incident) => (
+          <IncidentCard key={incident.id} incident={incident} isOwner={false} />
+        ))}
+      </div>
+      {hidden > 0 && !expanded && (
+        <button
+          onClick={() => setExpanded(true)}
+          className="mt-4 text-sm font-semibold cursor-pointer"
+          style={{ color: "#7c6f5e" }}
+        >
+          + {hidden} more incident{hidden !== 1 ? "s" : ""} ▾
+        </button>
+      )}
+      {expanded && incidents.length > INITIAL_SHOW && (
+        <button
+          onClick={() => setExpanded(false)}
+          className="mt-4 text-sm font-semibold cursor-pointer"
+          style={{ color: "#7c6f5e" }}
+        >
+          Show less ▴
+        </button>
+      )}
+    </section>
+  );
+}
+
 export default function PublicStatusPageClient({
   page,
   services: initialServices,
@@ -419,27 +465,7 @@ export default function PublicStatusPageClient({
 
       {/* ── ACTIVE INCIDENTS ── */}
       {activeIncidents.length > 0 && (
-        <section className="mt-10 mb-10">
-          <h2
-            className="text-xl font-black mb-6"
-            style={{
-              fontFamily: "var(--font-head)",
-              color: "#1a1714",
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Active Incidents
-          </h2>
-          <div className="flex flex-col gap-6">
-            {activeIncidents.map((incident) => (
-              <IncidentCard
-                key={incident.id}
-                incident={incident}
-                isOwner={false}
-              />
-            ))}
-          </div>
-        </section>
+        <ActiveIncidentsSection incidents={activeIncidents} />
       )}
 
       {/* ── PAST INCIDENTS ── */}
