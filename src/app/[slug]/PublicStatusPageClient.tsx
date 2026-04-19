@@ -1,6 +1,7 @@
 "use client";
 
 import IncidentCard from "@/components/incidents/IncidentCard";
+import { useEffect, useState } from "react";
 
 type IncidentUpdate = {
   id: string;
@@ -40,13 +41,38 @@ type Props = {
   lastUpdated: string | null;
 };
 
+const POLL_INTERVAL = 60_000;
+
 export default function PublicStatusPageClient({
   page,
-  services,
-  incidents,
-  incidentDays,
-  lastUpdated,
+  services: initialServices,
+  incidents: initialIncidents,
+  incidentDays: initialIncidentDays,
+  lastUpdated: initialLastUpdated,
 }: Props) {
+  const [services, setServices] = useState<Service[]>(initialServices);
+  const [incidents, setIncidents] = useState<Incident[]>(initialIncidents);
+  const [incidentDays, setIncidentDays] = useState(initialIncidentDays);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(initialLastUpdated);
+
+  useEffect(() => {
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/public-status/${page.slug}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setServices(data.services);
+        setIncidents(data.incidents);
+        setIncidentDays(data.incidentDays);
+        setLastUpdated(data.lastUpdated);
+      } catch {
+        // silently ignore network errors
+      }
+    };
+
+    const id = setInterval(poll, POLL_INTERVAL);
+    return () => clearInterval(id);
+  }, [page.slug]);
   function getOverallStatus() {
     if (services.length === 0) return "operational";
     if (services.some((s) => s.status === "outage")) return "outage";
