@@ -78,11 +78,28 @@ export async function GET(
   const trimmedServices = (services ?? []).slice(0, PLAN_LIMITS[ownerPlan].services);
   const lastUpdated = computeLastUpdated(trimmedServices, incidents ?? []);
 
-  return NextResponse.json({
-    pagePaused,
-    services: trimmedServices,
-    incidents: incidents ?? [],
-    incidentDays: daysToShow,
-    lastUpdated,
+  return NextResponse.json(
+    {
+      pagePaused,
+      services: trimmedServices,
+      incidents: incidents ?? [],
+      incidentDays: daysToShow,
+      lastUpdated,
+    },
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
+      },
+    },
+  );
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+    },
   });
 }
