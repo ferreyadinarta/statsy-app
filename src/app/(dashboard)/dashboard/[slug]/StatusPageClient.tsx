@@ -1,7 +1,7 @@
 // src/app/(dashboard)/dashboard/[slug]/StatusPageClient.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
     Plus,
@@ -121,9 +121,16 @@ function HighlightedJs({ code }: { code: string }) {
 
 // ── Embed Badge Section ──────────────────────────────────────────────────────
 
-function EmbedBadgeSection({ slug }: { slug: string }) {
+function EmbedBadgeSection({ slug, services }: { slug: string; services: { id: string; status: string }[] }) {
     const [activeTab, setActiveTab] = useState<"iframe" | "js">("iframe");
     const [copied, setCopied] = useState(false);
+    const [badgeTick, setBadgeTick] = useState(0);
+    const servicesSig = services.map((s) => `${s.id}:${s.status}`).join(",");
+
+    useEffect(() => {
+        const id = setInterval(() => setBadgeTick((k) => k + 1), 60_000);
+        return () => clearInterval(id);
+    }, []);
 
     const badgeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/badge/${slug}`;
     const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${slug}`;
@@ -248,6 +255,7 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                     }}
                 >
                     <iframe
+                        key={`${servicesSig}-${badgeTick}`}
                         src={badgeUrl}
                         width={320}
                         height={36}
@@ -968,7 +976,7 @@ export default function StatusPageClient({
 
             {/* ── EMBED BADGE (Pro only) ── */}
             {plan === "pro" ? (
-                <EmbedBadgeSection slug={page.slug} />
+                <EmbedBadgeSection slug={page.slug} services={services} />
             ) : (
                 <section className="mb-10">
                     <div
