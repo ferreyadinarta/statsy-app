@@ -149,6 +149,7 @@ function LoginForm() {
                 setEmail(e.target.value);
                 setFieldErrors((prev) => ({ ...prev, email: undefined }));
               }}
+              autoFocus
               placeholder="you@yoursite.com"
               className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4]"
               style={{
@@ -171,12 +172,23 @@ function LoginForm() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label
-              className="text-xs font-semibold uppercase tracking-[0.08em]"
-              style={{ color: "#3d3830" }}
-            >
-              Password
-            </label>
+            <div className="flex items-center justify-between">
+              <label
+                className="text-xs font-semibold uppercase tracking-[0.08em]"
+                style={{ color: "#3d3830" }}
+              >
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-xs font-medium"
+                style={{ color: "#8a8070" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8070")}
+              >
+                Forgot password?
+              </Link>
+            </div>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
