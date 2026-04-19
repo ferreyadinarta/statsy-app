@@ -2,15 +2,56 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import PublicStatusPageClient from "./PublicStatusPageClient";
 import SubscribeButton from "@/components/public/SubscribeButton";
+import type { Metadata } from "next";
 
 type PageProps = {
     params: Promise<{ slug: string }>;
 };
 
+export async function generateMetadata({
+    params,
+}: PageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const supabase = await createClient();
+
+    const { data: page } = await supabase
+        .from("status_pages")
+        .select("name")
+        .eq("slug", slug)
+        .single();
+
+    if (!page) {
+        return { title: "Status Page | Statsy" };
+    }
+
+    const title = `${page.name} Status`;
+    const description = `Live status and incident updates for ${page.name}. Check if all systems are operational.`;
+    const url = `https://${slug}.statsy.page`;
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url,
+            siteName: "Statsy",
+            type: "website",
+        },
+        twitter: {
+            card: "summary",
+            title,
+            description,
+        },
+        alternates: {
+            canonical: url,
+        },
+    };
+}
+
 export default async function PublicStatusPage({ params }: PageProps) {
     const { slug } = await params;
     const supabase = await createClient();
-    console.log("PUBLIC PAGE SLUG:", slug);
 
     const { data: page, error: pageError } = await supabase
         .from("status_pages")
