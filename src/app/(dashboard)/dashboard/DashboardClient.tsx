@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, Plus, FileText, Lock } from "lucide-react";
+import { ExternalLink, Plus, FileText, Lock, Trash2 } from "lucide-react";
 import CreatePageModal from "../../../components/dashboard/CreatePageModal";
+import DeletePageModal from "../../../components/dashboard/DeletePageModal";
+import { useToast } from "@/lib/use-toast";
 
 const FREE_PAGE_LIMIT = 1;
 
@@ -49,8 +51,26 @@ const STATUS_CONFIG: Record<
 
 export default function DashboardClient({ pages, plan }: Props) {
     const [showModal, setShowModal] = useState(false);
+    const [deletingPage, setDeletingPage] = useState<StatusPage | null>(null);
     const router = useRouter();
+    const { error: showError, success } = useToast();
     const atLimit = pages.length >= FREE_PAGE_LIMIT;
+
+    async function handleDeletePage() {
+        if (!deletingPage) return;
+        const res = await fetch(`/api/status-page/${deletingPage.id}`, {
+            method: "DELETE",
+        });
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            showError(body.error ?? "Failed to delete page.");
+            setDeletingPage(null);
+            return;
+        }
+        setDeletingPage(null);
+        router.refresh();
+        setTimeout(() => success("Status page deleted."), 500);
+    }
 
     return (
         <>
@@ -241,6 +261,31 @@ export default function DashboardClient({ pages, plan }: Props) {
                             </div>
 
                             <div className="flex items-center gap-2">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeletingPage(page);
+                                    }}
+                                    className="flex items-center justify-center w-8 h-8 rounded-[4px] transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d32f2f]"
+                                    style={{
+                                        color: "#8a8070",
+                                        border: "1.5px solid #e4dfd4",
+                                        background: "transparent",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.color = "#d32f2f";
+                                        e.currentTarget.style.borderColor = "#d32f2f";
+                                        e.currentTarget.style.background = "#fdeae8";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.color = "#8a8070";
+                                        e.currentTarget.style.borderColor = "#e4dfd4";
+                                        e.currentTarget.style.background = "transparent";
+                                    }}
+                                    title="Delete page"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
                                 <Link
                                     href={`https://${page.slug}.statsy.page`}
                                     target="_blank"
@@ -350,6 +395,14 @@ export default function DashboardClient({ pages, plan }: Props) {
 
             {showModal && (
                 <CreatePageModal onClose={() => setShowModal(false)} />
+            )}
+
+            {deletingPage && (
+                <DeletePageModal
+                    page={deletingPage}
+                    onClose={() => setDeletingPage(null)}
+                    onConfirm={handleDeletePage}
+                />
             )}
         </>
     );
