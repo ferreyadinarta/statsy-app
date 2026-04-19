@@ -7,7 +7,7 @@ import { ExternalLink, Plus, FileText, Lock, Trash2 } from "lucide-react";
 import CreatePageModal from "../../../components/dashboard/CreatePageModal";
 import DeletePageModal from "../../../components/dashboard/DeletePageModal";
 import { useToast } from "@/lib/use-toast";
-
+import type { GraceInfo } from "@/lib/plan";
 
 type PageStatus = "operational" | "degraded" | "outage";
 
@@ -22,6 +22,8 @@ type StatusPage = {
 type Props = {
     pages: StatusPage[];
     plan: string;
+    overLimitPageIds: Set<string>;
+    graceInfo: GraceInfo;
 };
 
 const STATUS_CONFIG: Record<
@@ -48,7 +50,7 @@ const STATUS_CONFIG: Record<
     },
 };
 
-export default function DashboardClient({ pages, plan }: Props) {
+export default function DashboardClient({ pages, plan, overLimitPageIds, graceInfo }: Props) {
     const [showModal, setShowModal] = useState(false);
     const [deletingPage, setDeletingPage] = useState<StatusPage | null>(null);
     const router = useRouter();
@@ -73,6 +75,44 @@ export default function DashboardClient({ pages, plan }: Props) {
 
     return (
         <>
+            {graceInfo.inGrace && (
+                <div
+                    className="flex items-start justify-between gap-4 px-5 py-4 rounded-[4px] mb-5"
+                    style={{
+                        background: "rgba(232,80,10,0.06)",
+                        border: "1.5px solid rgba(232,80,10,0.35)",
+                    }}
+                >
+                    <div className="flex flex-col gap-1">
+                        <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
+                            ⚠ Payment failed — {graceInfo.daysLeft} day{graceInfo.daysLeft === 1 ? "" : "s"} left in your grace period
+                        </p>
+                        <p className="text-xs" style={{ color: "#8a8070" }}>
+                            Your Pro features are still active. If payment isn&apos;t resolved by{" "}
+                            <span style={{ color: "#1a1714", fontWeight: 600 }}>
+                                {graceInfo.endsAt?.toLocaleDateString("en-US", { month: "long", day: "numeric" })}
+                            </span>
+                            , pages and services over the free plan limit will be paused automatically.
+                        </p>
+                    </div>
+                    <Link
+                        href="/billing"
+                        className="flex-shrink-0 text-xs font-semibold rounded-[4px] px-3.5 py-2 transition-colors duration-150"
+                        style={{ background: "#e8500a", color: "white", border: "1.5px solid #e8500a" }}
+                        onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.background = "#c94008";
+                            (e.currentTarget as HTMLAnchorElement).style.borderColor = "#c94008";
+                        }}
+                        onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLAnchorElement).style.background = "#e8500a";
+                            (e.currentTarget as HTMLAnchorElement).style.borderColor = "#e8500a";
+                        }}
+                    >
+                        Update payment &rarr;
+                    </Link>
+                </div>
+            )}
+
             {pages.length === 0 ? (
                 <div
                     className="rounded-[4px] flex flex-col items-center text-center py-20"
@@ -177,26 +217,33 @@ export default function DashboardClient({ pages, plan }: Props) {
                     </div>
 
                     {/* Page cards */}
-                    {pages.map((page) => (
+                    {pages.map((page) => {
+                        const paused = overLimitPageIds.has(page.id);
+                        return (
                         <div
                             key={page.id}
                             onClick={() =>
-                                router.push(`/dashboard/${page.slug}`)
+                                !paused && router.push(`/dashboard/${page.slug}`)
                             }
-                            className="flex items-center justify-between px-6 py-5 rounded-[4px] cursor-pointer"
+                            className="flex items-center justify-between px-6 py-5 rounded-[4px]"
                             style={{
-                                background: "white",
-                                border: "1.5px solid #e4dfd4",
-                                transition:
-                                    "border-color 0.15s, background 0.15s",
+                                background: paused ? "#faf9f5" : "white",
+                                border: `1.5px solid ${paused ? "#e4dfd4" : "#e4dfd4"}`,
+                                transition: "border-color 0.15s, background 0.15s",
+                                cursor: paused ? "default" : "pointer",
+                                opacity: paused ? 0.6 : 1,
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = "#1a1714";
-                                e.currentTarget.style.background = "#faf9f5";
+                                if (!paused) {
+                                    e.currentTarget.style.borderColor = "#1a1714";
+                                    e.currentTarget.style.background = "#faf9f5";
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = "#e4dfd4";
-                                e.currentTarget.style.background = "white";
+                                if (!paused) {
+                                    e.currentTarget.style.borderColor = "#e4dfd4";
+                                    e.currentTarget.style.background = "white";
+                                }
                             }}
                         >
                             <div className="flex items-center gap-4">
@@ -231,6 +278,18 @@ export default function DashboardClient({ pages, plan }: Props) {
                                                 >
                                                     {page.name}
                                                 </p>
+                                                {paused ? (
+                                                    <span
+                                                        className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px]"
+                                                        style={{
+                                                            background: "rgba(211,47,47,0.08)",
+                                                            color: "#d32f2f",
+                                                            border: "1px solid rgba(211,47,47,0.3)",
+                                                        }}
+                                                    >
+                                                        Paused
+                                                    </span>
+                                                ) : (
                                                 <span
                                                     className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px]"
                                                     style={{
@@ -247,6 +306,7 @@ export default function DashboardClient({ pages, plan }: Props) {
                                                     />
                                                     {s.label}
                                                 </span>
+                                                )}
                                             </div>
                                         );
                                     })()}
@@ -315,32 +375,72 @@ export default function DashboardClient({ pages, plan }: Props) {
                                     Public page
                                 </Link>
                                 <Link
-                                    href={`/dashboard/${page.slug}`}
+                                    href={paused ? "#" : `/dashboard/${page.slug}`}
+                                    onClick={(e) => { if (paused) e.preventDefault(); e.stopPropagation(); }}
                                     className="flex items-center gap-1.5 rounded-[4px] px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8500a]"
                                     style={{
-                                        border: "1.5px solid #1a1714",
-                                        color: "#1a1714",
+                                        border: `1.5px solid ${paused ? "#e4dfd4" : "#1a1714"}`,
+                                        color: paused ? "#8a8070" : "#1a1714",
                                         background: "white",
+                                        cursor: paused ? "not-allowed" : undefined,
                                     }}
                                     onMouseEnter={(e) => {
+                                        if (paused) return;
                                         e.currentTarget.style.background =
                                             "#1a1714";
                                         e.currentTarget.style.color = "#f5f2eb";
                                     }}
                                     onMouseLeave={(e) => {
+                                        if (paused) return;
                                         e.currentTarget.style.background =
                                             "white";
                                         e.currentTarget.style.color = "#1a1714";
                                     }}
-                                    onClick={(e) => e.stopPropagation()}
                                 >
                                     Manage
                                 </Link>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
 
-                    {atLimit && plan === "free" && (
+                    {plan === "free" && pages.length > 1 && (
+                        <div
+                            className="flex items-center justify-between px-5 py-3.5 rounded-[4px] mt-1"
+                            style={{
+                                background: "rgba(211,47,47,0.05)",
+                                border: "1.5px solid rgba(211,47,47,0.25)",
+                            }}
+                        >
+                            <p className="text-xs" style={{ color: "#8a8070" }}>
+                                <span style={{ color: "#d32f2f", fontWeight: 600 }}>
+                                    You&apos;re over your plan limit.
+                                </span>{" "}
+                                You have {pages.length} pages but the free plan allows 1. Your existing pages still work — delete down to 1 or upgrade to keep them all.
+                            </p>
+                            <Link
+                                href="/billing"
+                                className="flex-shrink-0 ml-6 text-xs font-semibold rounded-[4px] px-3.5 py-2 transition-colors duration-150"
+                                style={{
+                                    background: "#e8500a",
+                                    color: "white",
+                                    border: "1.5px solid #e8500a",
+                                }}
+                                onMouseEnter={(e) => {
+                                    (e.currentTarget as HTMLAnchorElement).style.background = "#c94008";
+                                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "#c94008";
+                                }}
+                                onMouseLeave={(e) => {
+                                    (e.currentTarget as HTMLAnchorElement).style.background = "#e8500a";
+                                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "#e8500a";
+                                }}
+                            >
+                                Upgrade to Pro &rarr;
+                            </Link>
+                        </div>
+                    )}
+
+                    {atLimit && plan === "free" && pages.length <= 1 && (
                         <div
                             className="flex items-center justify-between px-5 py-3.5 rounded-[4px] mt-1"
                             style={{

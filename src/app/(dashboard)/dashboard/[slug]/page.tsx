@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import StatusPageClient from "./StatusPageClient";
-import { getUserPlan } from "@/lib/plan";
+import { getUserPlan, getGraceInfo } from "@/lib/plan";
 
 type PageProps = {
     params: Promise<{ slug: string }>;
@@ -29,7 +29,10 @@ export default async function StatusPageManagePage({ params }: PageProps) {
 
     if (pageError || !page) notFound();
 
-    const plan = await getUserPlan(user.id);
+    const [plan, graceInfo] = await Promise.all([
+        getUserPlan(user.id),
+        getGraceInfo(user.id),
+    ]);
 
     const daysToShow = plan === "pro" ? 90 : 7;
     const dateThreshold = new Date();
@@ -164,6 +167,8 @@ export default async function StatusPageManagePage({ params }: PageProps) {
                     incidents={incidents ?? []}
                     subscriberCount={subscriberCount ?? 0}
                     plan={plan}
+                    overLimitServiceIds={new Set((services ?? []).slice(plan === "pro" ? 10 : 3).map((s) => s.id))}
+                    graceInfo={graceInfo}
                 />
             </main>
 

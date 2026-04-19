@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "../../../components/dashboard/LogoutButton";
 import DashboardClient from "./DashboardClient";
-import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
+import { getUserPlan, PLAN_LIMITS, getGraceInfo } from "@/lib/plan";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -13,13 +13,16 @@ export default async function DashboardPage() {
 
     if (!user) redirect("/login");
 
-    const plan = await getUserPlan(user.id);
+    const [plan, graceInfo] = await Promise.all([
+        getUserPlan(user.id),
+        getGraceInfo(user.id),
+    ]);
     const limits = PLAN_LIMITS[plan];
 
     const { data: pages } = await supabase
         .from("status_pages")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
     // Compute overall status per page based on services + open incidents
     const pageIds = (pages ?? []).map((p) => p.id);
@@ -56,6 +59,9 @@ export default async function DashboardPage() {
     }));
 
     const atLimit = pagesWithStatus.length >= limits.pages;
+    const overLimitPageIds = new Set(
+        pagesWithStatus.slice(limits.pages).map((p) => p.id),
+    );
 
     return (
         <div className="min-h-screen bg-[#f5f2eb]">
@@ -148,7 +154,7 @@ export default async function DashboardPage() {
                     </p>
                 </div>
 
-                <DashboardClient pages={pagesWithStatus} plan={plan} />
+                <DashboardClient pages={pagesWithStatus} plan={plan} overLimitPageIds={overLimitPageIds} graceInfo={graceInfo} />
 
                 {/* Plan bar — hidden when upgrade callout is already shown */}
                 {!(atLimit && plan === "free") && (

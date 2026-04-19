@@ -68,7 +68,20 @@ export default async function PublicStatusPage({ params }: PageProps) {
         .eq("status_page_id", page.id)
         .order("created_at", { ascending: true });
 
-    const ownerPlan = await getUserPlan(page.user_id);
+    const [ownerPlan, { data: ownerPages }] = await Promise.all([
+        getUserPlan(page.user_id),
+        createClient().then((sb) =>
+            sb.from("status_pages")
+                .select("id")
+                .eq("user_id", page.user_id)
+                .order("created_at", { ascending: true })
+        ),
+    ]);
+
+    const pageLimit = PLAN_LIMITS[ownerPlan].pages;
+    const allowedPageIds = (ownerPages ?? []).slice(0, pageLimit).map((p) => p.id);
+    const pagePaused = !allowedPageIds.includes(page.id);
+
     const daysToShow = PLAN_LIMITS[ownerPlan].historyDays;
     const dateThreshold = new Date();
     dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
@@ -119,11 +132,31 @@ export default async function PublicStatusPage({ params }: PageProps) {
             </header>
 
             <main className="max-w-5xl mx-auto px-8 pt-12 pb-20">
-                <PublicStatusPageClient
-                    page={page}
-                    services={services ?? []}
-                    incidents={incidents ?? []}
-                />
+                {pagePaused ? (
+                    <div className="flex flex-col items-center justify-center py-24 text-center">
+                        <div
+                            className="w-12 h-12 rounded-full flex items-center justify-center mb-5"
+                            style={{ background: "rgba(211,47,47,0.08)", border: "1.5px solid rgba(211,47,47,0.2)" }}
+                        >
+                            <span style={{ color: "#d32f2f", fontSize: "1.4rem" }}>⏸</span>
+                        </div>
+                        <h2
+                            className="text-2xl font-black mb-2"
+                            style={{ fontFamily: "var(--font-head)", letterSpacing: "-0.03em", color: "#1a1714" }}
+                        >
+                            Page paused
+                        </h2>
+                        <p className="text-sm max-w-sm" style={{ color: "#8a8070" }}>
+                            This status page is currently inactive. The owner&apos;s plan limit has been reached.
+                        </p>
+                    </div>
+                ) : (
+                    <PublicStatusPageClient
+                        page={page}
+                        services={(services ?? []).slice(0, PLAN_LIMITS[ownerPlan].services)}
+                        incidents={incidents ?? []}
+                    />
+                )}
             </main>
         </div>
     );
