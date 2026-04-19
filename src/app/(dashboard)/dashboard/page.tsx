@@ -210,8 +210,7 @@ export default async function DashboardPage() {
                         {plan === "pro" && (
                             <Link
                                 href="/billing"
-                                className="text-xs font-semibold hover:underline underline-offset-2"
-                                style={{ color: "#8a8070" }}
+                                className="text-xs font-semibold text-[#8a8070] hover:text-[#e8500a] hover:underline underline-offset-2"
                             >
                                 Manage billing &rarr;
                             </Link>

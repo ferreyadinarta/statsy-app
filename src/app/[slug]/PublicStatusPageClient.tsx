@@ -187,7 +187,21 @@ export default function PublicStatusPageClient({
     return { bars, uptimePct };
   }
 
+  function computeStreak() {
+    if (incidents.length === 0) return incidentDays;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastIncident = new Date(
+      Math.max(...incidents.map((i) => new Date(i.created_at).getTime())),
+    );
+    lastIncident.setHours(0, 0, 0, 0);
+    return Math.floor(
+      (today.getTime() - lastIncident.getTime()) / 86400000,
+    );
+  }
+
   const { bars: uptimeBars, uptimePct } = computeUptimeBars();
+  const streak = computeStreak();
   const statusConfig = getOverallStatusConfig();
   const activeIncidents = incidents.filter((i) => i.status !== "resolved");
   const pastIncidents = incidents.filter((i) => i.status === "resolved");
@@ -315,6 +329,14 @@ export default function PublicStatusPageClient({
               style={{ color: "#8a8070" }}
             >
               {incidentDays}-day uptime — {uptimePct}%
+            </span>
+            <span
+              className="text-sm font-semibold"
+              style={{ color: "#1a7a4a" }}
+            >
+              {streak === 0
+                ? "Incident today"
+                : `${streak} day${streak === 1 ? "" : "s"} without incident`}
             </span>
           </div>
           <div className="flex gap-[3px]">

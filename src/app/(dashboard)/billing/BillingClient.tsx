@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle, AlertCircle, Zap, ArrowRight } from "lucide-react";
+import { CheckCircle, AlertCircle, Zap, ArrowRight, Clock, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/use-toast";
 import { PLAN_LIMITS } from "@/lib/plan-shared";
@@ -49,15 +49,23 @@ export default function BillingClient({
     userEmail,
     subscription,
 }: Props) {
+    const isCancelledButActive =
+        subscription?.status === "cancelled" &&
+        subscription?.current_period_end != null &&
+        new Date() < new Date(subscription.current_period_end);
+
     const plan =
-        subscription?.status === "active" || subscription?.status === "trialing"
-            ? (subscription.plan ?? "free")
+        subscription?.status === "active" ||
+        subscription?.status === "trialing" ||
+        isCancelledButActive
+            ? (subscription!.plan ?? "free")
             : "free";
     const isPro = plan === "pro";
     const isCancelling = subscription?.status === "cancelled";
 
     const [paddleReady, setPaddleReady] = useState(false);
     const [cancelling, setCancelling] = useState(false);
+    const [reactivating, setReactivating] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const { success, error: showError } = useToast();
     const router = useRouter();
@@ -124,6 +132,24 @@ export default function BillingClient({
         });
     }
 
+    async function handleReactivate() {
+        setReactivating(true);
+        try {
+            const res = await fetch("/api/paddle/reactivate", { method: "POST" });
+            const data = await res.json();
+            if (!res.ok) {
+                showError(data.error ?? "Failed to reactivate. Please try again.");
+                return;
+            }
+            success("Subscription reactivated! You're back on Pro.");
+            router.refresh();
+        } catch {
+            showError("Something went wrong. Please try again.");
+        } finally {
+            setReactivating(false);
+        }
+    }
+
     async function handleCancel() {
         setCancelling(true);
         try {
@@ -137,9 +163,7 @@ export default function BillingClient({
                 "Subscription cancelled. You'll stay on Pro until the end of your billing period.",
             );
             setShowCancelConfirm(false);
-            setTimeout(() => {
-                router.refresh();
-            }, 3000);
+            router.refresh();
         } catch {
             showError("Something went wrong. Please try again.");
         } finally {
@@ -158,16 +182,16 @@ export default function BillingClient({
 
     // ── PRO VIEW ──────────────────────────────────────────────────────────────
     if (isPro) {
+        const cardBorder = isCancelling ? "1.5px solid #e8500a" : "1.5px solid #1a7a4a";
+
         return (
             <>
                 <div
                     className="rounded-[4px] p-8"
-                    style={{
-                        background: "white",
-                        border: "1.5px solid #1a7a4a",
-                    }}
+                    style={{ background: "white", border: cardBorder }}
                 >
-                    <div className="flex items-start justify-between mb-8">
+                    {/* Header row */}
+                    <div className="flex items-start justify-between mb-5">
                         <div>
                             <p
                                 className="text-xs font-bold uppercase tracking-wider mb-2"
@@ -201,43 +225,28 @@ export default function BillingClient({
                                 )}
                                 {isCancelling && (
                                     <span
-                                        className="text-xs font-bold px-2.5 py-1 rounded-[2px]"
+                                        className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-[2px]"
                                         style={{
                                             background: "rgba(232,80,10,0.08)",
                                             color: "#e8500a",
                                             border: "1.5px solid #e8500a",
                                         }}
                                     >
+                                        <Clock size={11} strokeWidth={2.5} />
                                         Cancels{" "}
-                                        {formatDate(
-                                            subscription?.current_period_end ??
-                                                null,
-                                        )}
+                                        {formatDate(subscription?.current_period_end ?? null)}
                                     </span>
                                 )}
                             </div>
-                            {!isCancelling &&
-                                subscription?.current_period_end && (
-                                    <p
-                                        className="text-sm"
-                                        style={{ color: "#8a8070" }}
-                                    >
-                                        Renews{" "}
-                                        {formatDate(
-                                            subscription.current_period_end,
-                                        )}
-                                    </p>
-                                )}
+                            {!isCancelling && subscription?.current_period_end && (
+                                <p className="text-sm" style={{ color: "#8a8070" }}>
+                                    Renews {formatDate(subscription.current_period_end)}
+                                </p>
+                            )}
                             {isCancelling && (
-                                <p
-                                    className="text-sm"
-                                    style={{ color: "#8a8070" }}
-                                >
+                                <p className="text-sm" style={{ color: "#8a8070" }}>
                                     Access continues until{" "}
-                                    {formatDate(
-                                        subscription?.current_period_end ??
-                                            null,
-                                    )}
+                                    {formatDate(subscription?.current_period_end ?? null)}
                                 </p>
                             )}
                         </div>
@@ -246,12 +255,42 @@ export default function BillingClient({
                                 fontFamily: "var(--font-head)",
                                 fontWeight: 900,
                                 fontSize: "2rem",
-                                color: "#1a7a4a",
+                                color: isCancelling ? "#c4bfb4" : "#1a7a4a",
+                                textDecoration: isCancelling ? "line-through" : "none",
                             }}
                         >
                             $15/mo
                         </div>
                     </div>
+
+                    {/* Cancellation notice banner */}
+                    {isCancelling && (
+                        <div
+                            className="rounded-[4px] px-5 py-4 mb-5 flex items-start gap-3"
+                            style={{
+                                background: "rgba(232,80,10,0.06)",
+                                border: "1.5px solid rgba(232,80,10,0.25)",
+                            }}
+                        >
+                            <Clock
+                                size={15}
+                                strokeWidth={2}
+                                style={{ color: "#e8500a", flexShrink: 0, marginTop: 1 }}
+                            />
+                            <div>
+                                <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
+                                    Your subscription is scheduled to end
+                                </p>
+                                <p className="text-sm mt-0.5" style={{ color: "#8a8070" }}>
+                                    All Pro features remain active until{" "}
+                                    <span style={{ color: "#1a1714", fontWeight: 500 }}>
+                                        {formatDate(subscription?.current_period_end ?? null)}
+                                    </span>
+                                    . Changed your mind? Reactivate below.
+                                </p>
+                            </div>
+                        </div>
+                    )}
 
                     {/* What's included */}
                     <div
@@ -269,21 +308,12 @@ export default function BillingClient({
                         </p>
                         <div className="grid grid-cols-2 gap-x-8 gap-y-2.5">
                             {PRO_FEATURES.map(({ text }) => (
-                                <div
-                                    key={text}
-                                    className="flex items-center gap-2"
-                                >
+                                <div key={text} className="flex items-center gap-2">
                                     <CheckCircle
                                         size={14}
-                                        style={{
-                                            color: "#1a7a4a",
-                                            flexShrink: 0,
-                                        }}
+                                        style={{ color: "#1a7a4a", flexShrink: 0 }}
                                     />
-                                    <span
-                                        className="text-sm"
-                                        style={{ color: "#3d3830" }}
-                                    >
+                                    <span className="text-sm" style={{ color: "#3d3830" }}>
                                         {text}
                                     </span>
                                 </div>
@@ -291,20 +321,40 @@ export default function BillingClient({
                         </div>
                     </div>
 
+                    {/* Footer actions */}
                     {!isCancelling && (
                         <div className="flex justify-end">
                             <button
                                 onClick={() => setShowCancelConfirm(true)}
-                                className="text-xs font-medium transition-colors cursor-pointer text-[#8a8070] hover:text-[#d32f2f]"
-                                style={{ color: "#8a8070" }}
+                                className="text-xs font-medium transition-colors cursor-pointer text-[#8a8070] hover:underline hover:text-[#1a1714]"
                             >
                                 Cancel subscription
                             </button>
                         </div>
                     )}
+                    {isCancelling && (
+                        <div className="flex items-center justify-between">
+                            <p className="text-xs" style={{ color: "#c4bfb4" }}>
+                                No further charges will be made
+                            </p>
+                            <button
+                                onClick={handleReactivate}
+                                disabled={reactivating}
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] text-sm font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{
+                                    background: "#1a1714",
+                                    color: "#f5f2eb",
+                                    border: "1.5px solid #1a1714",
+                                    boxShadow: reactivating ? "none" : "3px 3px 0 #8a8070",
+                                }}
+                            >
+                                <RotateCcw size={13} strokeWidth={2.5} />
+                                {reactivating ? "Reactivating…" : "Reactivate subscription"}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
-                {/* Cancel confirm modal */}
                 {showCancelConfirm && (
                     <CancelModal
                         cancelling={cancelling}
