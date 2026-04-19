@@ -53,8 +53,8 @@ type StatusPage = {
     slug: string;
 };
 
-import type { GraceInfo } from "@/lib/plan";
-import { PLAN_LIMITS } from "@/lib/plan";
+import type { GraceInfo } from "@/lib/plan-shared";
+import { PLAN_LIMITS } from "@/lib/plan-shared";
 
 type Props = {
     page: StatusPage;
@@ -132,7 +132,6 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
   src="${badgeUrl}"
   width="280"
   height="36"
-  frameborder="0"
   scrolling="no"
   style="border:none;overflow:hidden;"
   title="${slug} status"
@@ -250,9 +249,8 @@ function EmbedBadgeSection({ slug }: { slug: string }) {
                 >
                     <iframe
                         src={badgeUrl}
-                        width={280}
+                        width={320}
                         height={36}
-                        frameBorder={0}
                         scrolling="no"
                         style={{
                             border: "none",

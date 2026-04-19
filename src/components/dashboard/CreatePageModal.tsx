@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -29,9 +29,20 @@ export default function CreatePageModal({ onClose }: Props) {
     const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
     const [loading, setLoading] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [isRefreshing, startRefresh] = useTransition();
 
     const router = useRouter();
     const { success, error: showError } = useToast();
+
+    useEffect(() => {
+        if (submitted && !isRefreshing) {
+            success(`${name.trim()} created successfully!`);
+            setLoading(false);
+            setSubmitted(false);
+            onClose();
+        }
+    }, [submitted, isRefreshing, name, success, onClose]);
 
     function handleNameChange(val: string) {
         setName(val);
@@ -90,13 +101,10 @@ export default function CreatePageModal({ onClose }: Props) {
             return;
         }
 
-        success(`${name.trim()} created successfully!`);
-        router.refresh();
-
-        setTimeout(() => {
-            setLoading(false);
-            onClose();
-        }, 500);
+        setSubmitted(true);
+        startRefresh(() => {
+            router.refresh();
+        });
     }
 
     return (
@@ -128,15 +136,15 @@ export default function CreatePageModal({ onClose }: Props) {
                     </h2>
                     <button
                         onClick={onClose}
-                        disabled={loading}
+                        disabled={loading || isRefreshing}
                         className="transition-colors rounded-[4px] p-1 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                         style={{ color: "#8a8070" }}
                         onMouseEnter={(e) =>
-                            !loading &&
+                            !(loading || isRefreshing) &&
                             (e.currentTarget.style.color = "#1a1714")
                         }
                         onMouseLeave={(e) =>
-                            !loading &&
+                            !(loading || isRefreshing) &&
                             (e.currentTarget.style.color = "#8a8070")
                         }
                     >
@@ -163,7 +171,7 @@ export default function CreatePageModal({ onClose }: Props) {
                             value={name}
                             onChange={(e) => handleNameChange(e.target.value)}
                             placeholder="e.g. Acme Status"
-                            disabled={loading}
+                            disabled={loading || isRefreshing}
                             className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4] disabled:opacity-50"
                             style={{
                                 border: `1.5px solid ${fieldErrors.name ? "#e8500a" : "#e4dfd4"}`,
@@ -190,7 +198,7 @@ export default function CreatePageModal({ onClose }: Props) {
                             value={slug}
                             onChange={(e) => handleSlugChange(e.target.value)}
                             placeholder="your-slug"
-                            disabled={loading}
+                            disabled={loading || isRefreshing}
                             className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4] disabled:opacity-50"
                             style={{
                                 border: `1.5px solid ${fieldErrors.slug ? "#e8500a" : "#e4dfd4"}`,
@@ -220,7 +228,7 @@ export default function CreatePageModal({ onClose }: Props) {
                         <button
                             type="button"
                             onClick={onClose}
-                            disabled={loading}
+                            disabled={loading || isRefreshing}
                             className="flex-1 rounded-[4px] py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{
                                 border: "1.5px solid #e4dfd4",
@@ -241,16 +249,16 @@ export default function CreatePageModal({ onClose }: Props) {
                         </button>
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || isRefreshing}
                             className="flex-1 rounded-[4px] py-3 text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                             style={{
-                                background: loading ? "#8a8070" : "#1a1714",
+                                background: (loading || isRefreshing) ? "#8a8070" : "#1a1714",
                                 color: "#f5f2eb",
-                                border: `1.5px solid ${loading ? "#8a8070" : "#1a1714"}`,
+                                border: `1.5px solid ${(loading || isRefreshing) ? "#8a8070" : "#1a1714"}`,
                                 fontFamily: "var(--font-body)",
                             }}
                             onMouseEnter={(e) => {
-                                if (!loading) {
+                                if (!(loading || isRefreshing)) {
                                     e.currentTarget.style.background =
                                         "#e8500a";
                                     e.currentTarget.style.borderColor =
@@ -258,7 +266,7 @@ export default function CreatePageModal({ onClose }: Props) {
                                 }
                             }}
                             onMouseLeave={(e) => {
-                                if (!loading) {
+                                if (!(loading || isRefreshing)) {
                                     e.currentTarget.style.background =
                                         "#1a1714";
                                     e.currentTarget.style.borderColor =
@@ -266,7 +274,7 @@ export default function CreatePageModal({ onClose }: Props) {
                                 }
                             }}
                         >
-                            {loading ? "Creating..." : "Create page"}
+                            {(loading || isRefreshing) ? "Creating..." : "Create page"}
                         </button>
                     </div>
                 </form>

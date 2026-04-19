@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/use-toast";
@@ -18,9 +18,21 @@ export default function DeleteIncidentConfirm({
   onClose,
 }: Props) {
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [isRefreshing, startRefresh] = useTransition();
+
   const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
+
+  useEffect(() => {
+    if (submitted && !isRefreshing) {
+      success("Incident deleted.");
+      setLoading(false);
+      setSubmitted(false);
+      onClose();
+    }
+  }, [submitted, isRefreshing, success, onClose]);
 
   async function handleDelete() {
     setLoading(true);
@@ -36,13 +48,10 @@ export default function DeleteIncidentConfirm({
       return;
     }
 
-    router.refresh();
-
-    setTimeout(() => {
-      success("Incident deleted.");
-      setLoading(false);
-      onClose();
-    }, 500);
+    setSubmitted(true);
+    startRefresh(() => {
+      router.refresh();
+    });
   }
 
   return (
@@ -93,7 +102,7 @@ export default function DeleteIncidentConfirm({
           <button
             type="button"
             onClick={onClose}
-            disabled={loading}
+            disabled={loading || isRefreshing}
             className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               background: "white",
@@ -101,10 +110,10 @@ export default function DeleteIncidentConfirm({
               color: "#3d3830",
             }}
             onMouseEnter={(e) => {
-              if (!loading) e.currentTarget.style.background = "#f5f2eb";
+              if (!(loading || isRefreshing)) e.currentTarget.style.background = "#f5f2eb";
             }}
             onMouseLeave={(e) => {
-              if (!loading) e.currentTarget.style.background = "white";
+              if (!(loading || isRefreshing)) e.currentTarget.style.background = "white";
             }}
           >
             Cancel
@@ -112,27 +121,27 @@ export default function DeleteIncidentConfirm({
           <button
             type="button"
             onClick={handleDelete}
-            disabled={loading}
+            disabled={loading || isRefreshing}
             className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              background: loading ? "#8a8070" : "#d32f2f",
-              border: `1.5px solid ${loading ? "#8a8070" : "#d32f2f"}`,
+              background: (loading || isRefreshing) ? "#8a8070" : "#d32f2f",
+              border: `1.5px solid ${(loading || isRefreshing) ? "#8a8070" : "#d32f2f"}`,
               color: "white",
             }}
             onMouseEnter={(e) => {
-              if (!loading) {
+              if (!(loading || isRefreshing)) {
                 e.currentTarget.style.background = "#b71c1c";
                 e.currentTarget.style.borderColor = "#b71c1c";
               }
             }}
             onMouseLeave={(e) => {
-              if (!loading) {
+              if (!(loading || isRefreshing)) {
                 e.currentTarget.style.background = "#d32f2f";
                 e.currentTarget.style.borderColor = "#d32f2f";
               }
             }}
           >
-            {loading ? "Deleting..." : "Delete incident"}
+            {(loading || isRefreshing) ? "Deleting..." : "Delete incident"}
           </button>
         </div>
       </div>

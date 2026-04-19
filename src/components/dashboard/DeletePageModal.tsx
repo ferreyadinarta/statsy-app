@@ -13,15 +13,17 @@ type Props = {
   page: Page;
   onClose: () => void;
   onConfirm: () => Promise<void>;
+  isLoading?: boolean;
 };
 
-export default function DeletePageModal({ page, onClose, onConfirm }: Props) {
-  const [loading, setLoading] = useState(false);
+export default function DeletePageModal({ page, onClose, onConfirm, isLoading = false }: Props) {
+  const [localLoading, setLocalLoading] = useState(false);
+  const loading = isLoading || localLoading;
 
   async function handleDelete() {
-    setLoading(true);
+    setLocalLoading(true);
     await onConfirm();
-    setLoading(false);
+    setLocalLoading(false);
   }
 
   return (

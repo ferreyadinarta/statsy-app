@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, ChevronDown } from "lucide-react";
@@ -73,11 +73,22 @@ export default function PostUpdateModal({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [isRefreshing, startRefresh] = useTransition();
 
   const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (submitted && !isRefreshing) {
+      success("Update Posted Successfully!");
+      setLoading(false);
+      setSubmitted(false);
+      onClose();
+    }
+  }, [submitted, isRefreshing, success, onClose]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -159,13 +170,10 @@ export default function PostUpdateModal({
       }),
     }).catch((err) => console.error("Notification failed:", err));
 
-    router.refresh();
-
-    setTimeout(() => {
-      success("Update Posted Successfully!");
-      setLoading(false);
-      onClose();
-    }, 500);
+    setSubmitted(true);
+    startRefresh(() => {
+      router.refresh();
+    });
   }
 
   return (
@@ -358,7 +366,7 @@ export default function PostUpdateModal({
             <button
               type="button"
               onClick={onClose}
-              disabled={loading}
+              disabled={loading || isRefreshing}
               className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "white",
@@ -366,37 +374,37 @@ export default function PostUpdateModal({
                 color: "#3d3830",
               }}
               onMouseEnter={(e) => {
-                if (!loading) e.currentTarget.style.background = "#f5f2eb";
+                if (!(loading || isRefreshing)) e.currentTarget.style.background = "#f5f2eb";
               }}
               onMouseLeave={(e) => {
-                if (!loading) e.currentTarget.style.background = "white";
+                if (!(loading || isRefreshing)) e.currentTarget.style.background = "white";
               }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || isRefreshing}
               className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                background: loading ? "#8a8070" : "#1a1714",
+                background: (loading || isRefreshing) ? "#8a8070" : "#1a1714",
                 border: "1.5px solid #1a1714",
                 color: "#f5f2eb",
               }}
               onMouseEnter={(e) => {
-                if (!loading) {
+                if (!(loading || isRefreshing)) {
                   e.currentTarget.style.background = "#e8500a";
                   e.currentTarget.style.borderColor = "#e8500a";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!loading) {
+                if (!(loading || isRefreshing)) {
                   e.currentTarget.style.background = "#1a1714";
                   e.currentTarget.style.borderColor = "#1a1714";
                 }
               }}
             >
-              {loading ? "Posting..." : "Post update"}
+              {(loading || isRefreshing) ? "Posting..." : "Post update"}
             </button>
           </div>
         </form>

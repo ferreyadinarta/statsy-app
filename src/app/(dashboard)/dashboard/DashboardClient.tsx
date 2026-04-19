@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ExternalLink, Plus, FileText, Lock, Trash2 } from "lucide-react";
 import CreatePageModal from "../../../components/dashboard/CreatePageModal";
 import DeletePageModal from "../../../components/dashboard/DeletePageModal";
 import { useToast } from "@/lib/use-toast";
-import type { GraceInfo } from "@/lib/plan";
-import { PLAN_LIMITS } from "@/lib/plan";
+import type { GraceInfo } from "@/lib/plan-shared";
+import { PLAN_LIMITS } from "@/lib/plan-shared";
 
 type PageStatus = "operational" | "degraded" | "outage";
 
@@ -54,24 +54,38 @@ const STATUS_CONFIG: Record<
 export default function DashboardClient({ pages, plan, overLimitPageIds, graceInfo }: Props) {
     const [showModal, setShowModal] = useState(false);
     const [deletingPage, setDeletingPage] = useState<StatusPage | null>(null);
+    const [deleteApiLoading, setDeleteApiLoading] = useState(false);
+    const [isDeleteRefreshing, startDeleteRefresh] = useTransition();
+    const deleteWaitingRef = useRef(false);
     const router = useRouter();
     const { error: showError, success } = useToast();
     const atLimit = pages.length >= (plan === "pro" ? 3 : 1);
 
-    async function handleDeletePage() {
+    useEffect(() => {
+        if (deleteWaitingRef.current && !isDeleteRefreshing) {
+            deleteWaitingRef.current = false;
+            setDeletingPage(null);
+            success("Status page deleted.");
+        }
+    }, [isDeleteRefreshing, success]);
+
+    async function handleDeletePage(): Promise<void> {
         if (!deletingPage) return;
+        setDeleteApiLoading(true);
         const res = await fetch(`/api/status-page/${deletingPage.id}`, {
             method: "DELETE",
         });
+        setDeleteApiLoading(false);
         if (!res.ok) {
             const body = await res.json().catch(() => ({}));
             showError(body.error ?? "Failed to delete page.");
             setDeletingPage(null);
             return;
         }
-        setDeletingPage(null);
-        router.refresh();
-        setTimeout(() => success("Status page deleted."), 500);
+        deleteWaitingRef.current = true;
+        startDeleteRefresh(() => {
+            router.refresh();
+        });
     }
 
     return (
@@ -502,6 +516,7 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                     page={deletingPage}
                     onClose={() => setDeletingPage(null)}
                     onConfirm={handleDeletePage}
+                    isLoading={deleteApiLoading || isDeleteRefreshing}
                 />
             )}
         </>

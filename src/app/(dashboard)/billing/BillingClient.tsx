@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle, AlertCircle, Zap, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/use-toast";
-import { PLAN_LIMITS } from "@/lib/plan";
+import { PLAN_LIMITS } from "@/lib/plan-shared";
 
 declare global {
     interface Window {

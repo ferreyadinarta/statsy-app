@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX, useEffect, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
@@ -28,10 +28,21 @@ export default function EditServiceModal({ service, onClose }: Props) {
   const [status, setStatus] = useState<ServiceStatus>(service.status);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [isRefreshing, startRefresh] = useTransition();
 
   const supabase = createClient();
   const router = useRouter();
-  const { success, error: showError } = useToast(); 
+  const { success, error: showError } = useToast();
+
+  useEffect(() => {
+    if (submitted && !isRefreshing) {
+      success("Service Edited Successfully!");
+      setLoading(false);
+      setSubmitted(false);
+      onClose();
+    }
+  }, [submitted, isRefreshing, success, onClose]);
 
   function validate(): boolean {
     const errors: FieldErrors = {};
@@ -64,13 +75,10 @@ export default function EditServiceModal({ service, onClose }: Props) {
       return;
     }
 
-    router.refresh();
-
-    setTimeout(() => {
-      success("Service Edited Successfully!");
-      setLoading(false);
-      onClose();
-    }, 500);
+    setSubmitted(true);
+    startRefresh(() => {
+      router.refresh();
+    });
   }
 
   const statusOptions: {
@@ -253,7 +261,7 @@ export default function EditServiceModal({ service, onClose }: Props) {
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || isRefreshing}
               className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "#1a1714",
@@ -261,19 +269,19 @@ export default function EditServiceModal({ service, onClose }: Props) {
                 border: "1.5px solid #1a1714",
               }}
               onMouseEnter={(e) => {
-                if (!loading) {
+                if (!(loading || isRefreshing)) {
                   e.currentTarget.style.background = "#e8500a";
                   e.currentTarget.style.borderColor = "#e8500a";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!loading) {
+                if (!(loading || isRefreshing)) {
                   e.currentTarget.style.background = "#1a1714";
                   e.currentTarget.style.borderColor = "#1a1714";
                 }
               }}
             >
-              {loading ? "Saving..." : "Save changes"}
+              {(loading || isRefreshing) ? "Saving..." : "Save changes"}
             </button>
           </div>
         </form>

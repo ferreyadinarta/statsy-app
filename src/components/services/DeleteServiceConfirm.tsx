@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, AlertTriangle } from "lucide-react";
@@ -18,10 +18,21 @@ type Props = {
 
 export default function DeleteServiceConfirm({ service, onClose }: Props) {
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [isRefreshing, startRefresh] = useTransition();
 
   const supabase = createClient();
   const router = useRouter();
-  const { success, error: showError } = useToast(); 
+  const { success, error: showError } = useToast();
+
+  useEffect(() => {
+    if (submitted && !isRefreshing) {
+      success("Service Deleted Successfully!");
+      setLoading(false);
+      setSubmitted(false);
+      onClose();
+    }
+  }, [submitted, isRefreshing, success, onClose]);
 
   async function handleDelete() {
     setLoading(true);
@@ -37,13 +48,10 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
       return;
     }
 
-    router.refresh();
-
-    setTimeout(() => {
-      success("Service Deleted Successfully!");
-      setLoading(false);
-      onClose();
-    }, 500);
+    setSubmitted(true);
+    startRefresh(() => {
+      router.refresh();
+    });
   }
 
   return (
@@ -139,7 +147,7 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
             </button>
             <button
               onClick={handleDelete}
-              disabled={loading}
+              disabled={loading || isRefreshing}
               className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "#d32f2f",
@@ -147,19 +155,19 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
                 border: "1.5px solid #d32f2f",
               }}
               onMouseEnter={(e) => {
-                if (!loading) {
+                if (!(loading || isRefreshing)) {
                   e.currentTarget.style.background = "#b71c1c";
                   e.currentTarget.style.borderColor = "#b71c1c";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!loading) {
+                if (!(loading || isRefreshing)) {
                   e.currentTarget.style.background = "#d32f2f";
                   e.currentTarget.style.borderColor = "#d32f2f";
                 }
               }}
             >
-              {loading ? "Deleting..." : "Delete service"}
+              {(loading || isRefreshing) ? "Deleting..." : "Delete service"}
             </button>
           </div>
         </div>
