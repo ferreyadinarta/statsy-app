@@ -70,8 +70,7 @@ function ActiveIncidentsSection({ incidents }: { incidents: Incident[] }) {
       {hidden > 0 && !expanded && (
         <button
           onClick={() => setExpanded(true)}
-          className="mt-4 text-sm font-semibold cursor-pointer"
-          style={{ color: "#7c6f5e" }}
+          className="mt-4 text-sm font-semibold cursor-pointer text-[#7c6f5e] hover:text-[#282625]"
         >
           + {hidden} more incident{hidden !== 1 ? "s" : ""} ▾
         </button>
@@ -79,8 +78,7 @@ function ActiveIncidentsSection({ incidents }: { incidents: Incident[] }) {
       {expanded && incidents.length > INITIAL_SHOW && (
         <button
           onClick={() => setExpanded(false)}
-          className="mt-4 text-sm font-semibold cursor-pointer"
-          style={{ color: "#7c6f5e" }}
+          className="mt-4 text-sm font-semibold cursor-pointer text-[#7c6f5e] hover:text-[#282625]"
         >
           Show less ▴
         </button>
