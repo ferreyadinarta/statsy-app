@@ -10,6 +10,7 @@ interface SendIncidentNotificationParams {
   incidentStatus: string;
   incidentMessage: string;
   unsubscribeTokens: Record<string, string>; // email -> token
+  hideBranding?: boolean;
 }
 
 export async function sendIncidentNotification({
@@ -20,6 +21,7 @@ export async function sendIncidentNotification({
   incidentStatus,
   incidentMessage,
   unsubscribeTokens,
+  hideBranding = false,
 }: SendIncidentNotificationParams) {
   const results = await Promise.allSettled(
     to.map((email) => {
@@ -38,6 +40,7 @@ export async function sendIncidentNotification({
           incidentStatus,
           incidentMessage,
           unsubscribeUrl,
+          hideBranding,
         }),
       });
     }),
@@ -58,6 +61,7 @@ interface BuildEmailHtmlParams {
   incidentStatus: string;
   incidentMessage: string;
   unsubscribeUrl: string;
+  hideBranding: boolean;
 }
 
 function buildEmailHtml(p: BuildEmailHtmlParams): string {
@@ -136,12 +140,11 @@ function buildEmailHtml(p: BuildEmailHtmlParams): string {
                 &nbsp;·&nbsp;
                 <a href="${p.unsubscribeUrl}" style="color:#8a8070;text-decoration:underline;">Unsubscribe</a>
               </p>
-              <!-- Statsy branding — TODO (Chat 08): hide for Pro plan users -->
-              <p style="margin:8px 0 0;font-size:0.72rem;color:#c4bfb4;">
+              ${p.hideBranding ? "" : `<p style="margin:8px 0 0;font-size:0.72rem;color:#c4bfb4;">
                 Powered by
                 <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a>
                 — status pages for everyone
-              </p>
+              </p>`}
             </td>
           </tr>
 

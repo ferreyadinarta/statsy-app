@@ -8,6 +8,7 @@ import CreatePageModal from "../../../components/dashboard/CreatePageModal";
 import DeletePageModal from "../../../components/dashboard/DeletePageModal";
 import { useToast } from "@/lib/use-toast";
 import type { GraceInfo } from "@/lib/plan";
+import { PLAN_LIMITS } from "@/lib/plan";
 
 type PageStatus = "operational" | "degraded" | "outage";
 
@@ -416,7 +417,7 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                                 <span style={{ color: "#d32f2f", fontWeight: 600 }}>
                                     You&apos;re over your plan limit.
                                 </span>{" "}
-                                You have {pages.length} pages but the free plan allows 1. Your existing pages still work — delete down to 1 or upgrade to keep them all.
+                                You have {pages.length} pages but the free plan allows {PLAN_LIMITS.free.pages}. Your existing pages still work — delete down to {PLAN_LIMITS.free.pages} or upgrade to keep them all.
                             </p>
                             <Link
                                 href="/billing"

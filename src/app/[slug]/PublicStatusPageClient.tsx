@@ -36,12 +36,16 @@ type Props = {
   page: StatusPage;
   services: Service[];
   incidents: Incident[];
+  incidentDays: number;
+  lastUpdated: string | null;
 };
 
 export default function PublicStatusPageClient({
   page,
   services,
   incidents,
+  incidentDays,
+  lastUpdated,
 }: Props) {
   function getOverallStatus() {
     if (services.length === 0) return "operational";
@@ -125,30 +129,7 @@ export default function PublicStatusPageClient({
     }
   }
 
-  function getLastUpdated() {
-    const allDates = [
-      ...services.map((s) => new Date(s.created_at)),
-      ...incidents.map((i) => new Date(i.created_at)),
-      ...incidents.flatMap((i) =>
-        i.incident_updates.map((u) => new Date(u.created_at)),
-      ),
-    ];
-    if (allDates.length === 0) return null;
-    const latest = new Date(Math.max(...allDates.map((d) => d.getTime())));
-    const diffMs = Date.now() - latest.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60)
-      return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
-    if (diffHours < 24)
-      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
-    return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
-  }
-
   const statusConfig = getOverallStatusConfig();
-  const lastUpdated = getLastUpdated();
   const activeIncidents = incidents.filter((i) => i.status !== "resolved");
   const pastIncidents = incidents.filter((i) => i.status === "resolved");
 
@@ -313,7 +294,7 @@ export default function PublicStatusPageClient({
               style={{ background: "#1a7a4a" }}
             />
             <p className="text-sm font-medium" style={{ color: "#3d3830" }}>
-              No incidents in the past 7 days
+              No incidents in the past {incidentDays} days
             </p>
           </div>
         ) : (

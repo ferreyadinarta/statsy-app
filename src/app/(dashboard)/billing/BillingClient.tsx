@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle, AlertCircle, Zap, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/use-toast";
+import { PLAN_LIMITS } from "@/lib/plan";
 
 declare global {
     interface Window {
@@ -34,10 +35,10 @@ type Props = {
 };
 
 const PRO_FEATURES = [
-    { text: "3 status pages", note: "vs 1 on Free" },
-    { text: "10 services per page", note: "vs 3 on Free" },
-    { text: "500 subscribers per page", note: "vs 30 on Free" },
-    { text: "90-day incident history", note: "vs 7 days on Free" },
+    { text: `${PLAN_LIMITS.pro.pages} status pages`, note: `vs ${PLAN_LIMITS.free.pages} on Free` },
+    { text: `${PLAN_LIMITS.pro.services} services per page`, note: `vs ${PLAN_LIMITS.free.services} on Free` },
+    { text: `${PLAN_LIMITS.pro.subscribers} subscribers per page`, note: `vs ${PLAN_LIMITS.free.subscribers} on Free` },
+    { text: `${PLAN_LIMITS.pro.historyDays}-day incident history`, note: `vs ${PLAN_LIMITS.free.historyDays} days on Free` },
     { text: "Custom domain support", note: null },
     { text: "Embeddable status badge", note: null },
     { text: "Remove Statsy branding", note: null },
@@ -363,10 +364,10 @@ export default function BillingClient({
                         style={{ borderTop: "1px solid #f0ece4" }}
                     >
                         {[
-                            ["Status pages", "1"],
-                            ["Services per page", "3"],
-                            ["Subscribers", "30"],
-                            ["Incident history", "7 days"],
+                            ["Status pages", String(PLAN_LIMITS.free.pages)],
+                            ["Services per page", String(PLAN_LIMITS.free.services)],
+                            ["Subscribers", String(PLAN_LIMITS.free.subscribers)],
+                            ["Incident history", `${PLAN_LIMITS.free.historyDays} days`],
                         ].map(([label, value]) => (
                             <div
                                 key={label}

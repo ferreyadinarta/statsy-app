@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { sendIncidentNotification } from "@/lib/email";
+import { getUserPlan } from "@/lib/plan";
 import { NextRequest, NextResponse } from "next/server";
 
 // Service role client bypasses RLS to read subscribers
@@ -72,6 +73,8 @@ export async function POST(req: NextRequest) {
     subscribers.map((s) => [s.email, s.token]),
   );
 
+  const ownerPlan = await getUserPlan(page.user_id);
+
   await sendIncidentNotification({
     to: emails,
     pageSlug: page.slug,
@@ -80,6 +83,7 @@ export async function POST(req: NextRequest) {
     incidentStatus,
     incidentMessage,
     unsubscribeTokens,
+    hideBranding: ownerPlan === "pro",
   });
 
   return NextResponse.json({ sent: emails.length });

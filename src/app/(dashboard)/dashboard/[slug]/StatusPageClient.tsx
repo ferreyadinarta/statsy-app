@@ -54,6 +54,7 @@ type StatusPage = {
 };
 
 import type { GraceInfo } from "@/lib/plan";
+import { PLAN_LIMITS } from "@/lib/plan";
 
 type Props = {
     page: StatusPage;
@@ -824,8 +825,8 @@ export default function StatusPageClient({
                                 Over plan limit.
                             </span>{" "}
                             You have {services.length} services but free plan
-                            allows 3. Existing services still work — delete down
-                            to 3 or{" "}
+                            allows {PLAN_LIMITS.free.services}. Existing services still work — delete down
+                            to {PLAN_LIMITS.free.services} or{" "}
                             <Link
                                 href="/billing"
                                 style={{
@@ -835,14 +836,14 @@ export default function StatusPageClient({
                             >
                                 upgrade to Pro
                             </Link>{" "}
-                            for up to 10.
+                            for up to {PLAN_LIMITS.pro.services}.
                         </p>
                     </div>
                 )}
 
-                {atLimit && plan === "free" && services.length <= 3 && (
+                {atLimit && plan === "free" && services.length <= PLAN_LIMITS.free.services && (
                     <p className="text-xs mt-3" style={{ color: "#8a8070" }}>
-                        Free plan limit reached (3 services).{" "}
+                        Free plan limit reached ({PLAN_LIMITS.free.services} services).{" "}
                         <Link
                             href="/billing"
                             style={{
