@@ -87,27 +87,29 @@ export default async function SettingsPage({ params }: PageProps) {
             </header>
 
             <main className="max-w-2xl mx-auto px-8 py-10">
-                {/* Back link */}
-                <Link
-                    href={`/dashboard/${slug}`}
-                    className="inline-flex items-center gap-1.5 text-sm mb-8 no-underline transition-colors"
-                    style={{ color: "#8a8070" }}
-                >
-                    <ChevronLeft size={15} />
-                    Back to {page.name}
-                </Link>
-
-                {/* Heading */}
+                {/* Heading + breadcrumb */}
                 <div
                     className="mb-8 pb-7"
                     style={{ borderBottom: "1.5px solid #e4dfd4" }}
                 >
-                    <p
-                        className="text-xs font-semibold uppercase tracking-[0.12em] mb-2"
-                        style={{ color: "#e8500a" }}
-                    >
-                        Settings
-                    </p>
+                    <div className="flex items-center gap-2 mb-2">
+                        <Link
+                            href={`/dashboard/${slug}`}
+                            className="inline-flex items-center gap-1 no-underline text-[#8a8070] hover:text-[#e8500a] transition-colors"
+                        >
+                            <ChevronLeft size={12} strokeWidth={2.5} />
+                            <span className="text-xs font-semibold uppercase tracking-[0.12em]">
+                                Status Page
+                            </span>
+                        </Link>
+                        <span style={{ color: "#c4bfb4", fontSize: "10px" }}>/</span>
+                        <span
+                            className="text-xs font-semibold uppercase tracking-[0.12em]"
+                            style={{ color: "#e8500a" }}
+                        >
+                            Settings
+                        </span>
+                    </div>
                     <h1
                         style={{
                             fontFamily: "var(--font-head)",

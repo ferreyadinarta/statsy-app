@@ -3,8 +3,8 @@
 import { useEffect, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { X, AlertTriangle } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
-import { AlertTriangle } from "lucide-react";
 
 type Props = {
   incidentId: string;
@@ -61,7 +61,7 @@ export default function DeleteIncidentConfirm({
       onClick={() => !loading && onClose()}
     >
       <div
-        className="w-full max-w-sm bg-white rounded-[4px]"
+        className="w-full max-w-md bg-white rounded-[4px]"
         style={{
           border: "1.5px solid #1a1714",
           boxShadow: "6px 6px 0 #1a1714",
@@ -70,79 +70,113 @@ export default function DeleteIncidentConfirm({
       >
         {/* Header */}
         <div
-          className="px-8 pt-7 pb-6"
+          className="flex items-center justify-between px-8 pt-7 pb-6"
           style={{ borderBottom: "1.5px solid #e4dfd4" }}
         >
-          <div className="flex items-center gap-3 mb-2">
-            <AlertTriangle
-              size={18}
-              style={{ color: "#d32f2f", flexShrink: 0 }}
-            />
-            <h2
-              style={{
-                fontFamily: "var(--font-head)",
-                fontWeight: 900,
-                fontSize: "1.2rem",
-                letterSpacing: "-0.03em",
-                margin: 0,
-              }}
-            >
-              Delete incident
-            </h2>
-          </div>
-          <p className="text-sm" style={{ color: "#8a8070" }}>
-            Are you sure you want to delete{" "}
-            <strong style={{ color: "#1a1714" }}>"{incidentTitle}"</strong>?
-            This will also delete all its updates and cannot be undone.
-          </p>
+          <h2
+            style={{
+              fontFamily: "var(--font-head)",
+              fontWeight: 900,
+              fontSize: "1.4rem",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Delete incident
+          </h2>
+          <button
+            onClick={() => !loading && onClose()}
+            disabled={loading || isRefreshing}
+            className="transition-colors rounded-[4px] p-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ color: "#8a8070" }}
+            onMouseEnter={(e) => {
+              if (!(loading || isRefreshing)) e.currentTarget.style.color = "#1a1714";
+            }}
+            onMouseLeave={(e) => {
+              if (!(loading || isRefreshing)) e.currentTarget.style.color = "#8a8070";
+            }}
+          >
+            <X size={18} />
+          </button>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-3 px-8 py-6">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={loading || isRefreshing}
-            className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        {/* Content */}
+        <div className="px-8 py-6 flex flex-col gap-5">
+          {/* Warning */}
+          <div
+            className="flex gap-3 px-4 py-4 rounded-[4px]"
             style={{
-              background: "white",
-              border: "1.5px solid #e4dfd4",
-              color: "#3d3830",
-            }}
-            onMouseEnter={(e) => {
-              if (!(loading || isRefreshing)) e.currentTarget.style.background = "#f5f2eb";
-            }}
-            onMouseLeave={(e) => {
-              if (!(loading || isRefreshing)) e.currentTarget.style.background = "white";
+              background: "#fdeae8",
+              border: "1px solid #d32f2f",
             }}
           >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={loading || isRefreshing}
-            className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              background: (loading || isRefreshing) ? "#8a8070" : "#d32f2f",
-              border: `1.5px solid ${(loading || isRefreshing) ? "#8a8070" : "#d32f2f"}`,
-              color: "white",
-            }}
-            onMouseEnter={(e) => {
-              if (!(loading || isRefreshing)) {
-                e.currentTarget.style.background = "#b71c1c";
-                e.currentTarget.style.borderColor = "#b71c1c";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!(loading || isRefreshing)) {
-                e.currentTarget.style.background = "#d32f2f";
-                e.currentTarget.style.borderColor = "#d32f2f";
-              }
-            }}
-          >
-            {(loading || isRefreshing) ? "Deleting..." : "Delete incident"}
-          </button>
+            <AlertTriangle
+              size={20}
+              style={{ color: "#d32f2f", flexShrink: 0 }}
+            />
+            <div>
+              <p
+                className="text-sm font-semibold mb-1"
+                style={{ color: "#1a1714" }}
+              >
+                Are you sure?
+              </p>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: "#3d3830" }}
+              >
+                This will permanently delete{" "}
+                <strong>"{incidentTitle}"</strong> and all its updates. This
+                action cannot be undone.
+              </p>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading || isRefreshing}
+              className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: "white",
+                color: "#3d3830",
+                border: "1.5px solid #e4dfd4",
+              }}
+              onMouseEnter={(e) => {
+                if (!(loading || isRefreshing)) e.currentTarget.style.background = "#f5f2eb";
+              }}
+              onMouseLeave={(e) => {
+                if (!(loading || isRefreshing)) e.currentTarget.style.background = "white";
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={loading || isRefreshing}
+              className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: (loading || isRefreshing) ? "#8a8070" : "#d32f2f",
+                color: "white",
+                border: `1.5px solid ${(loading || isRefreshing) ? "#8a8070" : "#d32f2f"}`,
+              }}
+              onMouseEnter={(e) => {
+                if (!(loading || isRefreshing)) {
+                  e.currentTarget.style.background = "#b71c1c";
+                  e.currentTarget.style.borderColor = "#b71c1c";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!(loading || isRefreshing)) {
+                  e.currentTarget.style.background = "#d32f2f";
+                  e.currentTarget.style.borderColor = "#d32f2f";
+                }
+              }}
+            >
+              {(loading || isRefreshing) ? "Deleting…" : "Delete incident"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

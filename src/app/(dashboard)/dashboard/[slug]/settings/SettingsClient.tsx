@@ -182,7 +182,7 @@ export default function SettingsClient({ page, plan }: Props) {
                     ) : (
                         /* Pro plan — active state */
                         <div className="flex flex-col gap-5">
-                            {/* Input */}
+                            {/* Input + Save inline */}
                             <div className="flex flex-col gap-2">
                                 <label
                                     className="text-xs font-semibold uppercase tracking-[0.08em]"
@@ -190,21 +190,36 @@ export default function SettingsClient({ page, plan }: Props) {
                                 >
                                     Your domain
                                 </label>
-                                <input
-                                    type="text"
-                                    value={domain}
-                                    onChange={(e) => setDomain(e.target.value)}
-                                    placeholder="status.yoursite.com"
-                                    disabled={saving || removing}
-                                    className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4] disabled:opacity-50"
-                                    style={{
-                                        border: "1.5px solid #e4dfd4",
-                                        color: "#1a1714",
-                                    }}
-                                    onKeyDown={(e) =>
-                                        e.key === "Enter" && handleSave()
-                                    }
-                                />
+                                <div className="flex items-stretch gap-2">
+                                    <input
+                                        type="text"
+                                        value={domain}
+                                        onChange={(e) => setDomain(e.target.value)}
+                                        placeholder="status.yoursite.com"
+                                        disabled={saving || removing}
+                                        className="flex-1 rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4] disabled:opacity-50"
+                                        style={{
+                                            border: "1.5px solid #e4dfd4",
+                                            color: "#1a1714",
+                                        }}
+                                        onKeyDown={(e) =>
+                                            e.key === "Enter" && handleSave()
+                                        }
+                                    />
+                                    <button
+                                        onClick={handleSave}
+                                        disabled={
+                                            saving || removing || !domain.trim()
+                                        }
+                                        className="px-5 rounded-[4px] text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-[#1a1714] text-[#f5f2eb] border-[1.5px] border-[#1a1714] hover:bg-[#e8500a] hover:border-[#e8500a] whitespace-nowrap"
+                                    >
+                                        {saving
+                                            ? "Saving…"
+                                            : hasExistingDomain
+                                              ? "Update domain"
+                                              : "Save domain"}
+                                    </button>
+                                </div>
                                 <p
                                     className="text-xs"
                                     style={{ color: "#8a8070" }}
@@ -216,43 +231,23 @@ export default function SettingsClient({ page, plan }: Props) {
                                 </p>
                             </div>
 
-                            {/* Buttons */}
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={handleSave}
-                                    disabled={
-                                        saving || removing || !domain.trim()
-                                    }
-                                    className="px-5 py-2.5 rounded-[4px] text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                                    style={{
-                                        background: "#1a1714",
-                                        color: "#f5f2eb",
-                                        border: "1.5px solid #1a1714",
-                                        boxShadow: "3px 3px 0 #8a8070",
-                                    }}
-                                >
-                                    {saving
-                                        ? "Saving…"
-                                        : hasExistingDomain
-                                          ? "Update domain"
-                                          : "Save domain"}
-                                </button>
-
-                                {hasExistingDomain && (
+                            {/* Remove button — only when domain exists */}
+                            {hasExistingDomain && (
+                                <div>
                                     <button
                                         onClick={handleRemove}
                                         disabled={saving || removing}
-                                        className="px-5 py-2.5 rounded-[4px] text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                        className="px-5 py-2 rounded-[4px] text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                         style={{
                                             background: "transparent",
                                             color: "#d32f2f",
                                             border: "1.5px solid #e4dfd4",
                                         }}
                                     >
-                                        {removing ? "Removing…" : "Remove"}
+                                        {removing ? "Removing…" : "Remove domain"}
                                     </button>
-                                )}
-                            </div>
+                                </div>
+                            )}
 
                             {/* DNS Instructions — only show after domain is saved */}
                             {hasExistingDomain && (

@@ -26,6 +26,11 @@ export default function SubscribeButton({ statusPageId }: Props) {
       return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setMessage({ type: "error", text: "Please enter a valid email address." });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -175,7 +180,7 @@ export default function SubscribeButton({ statusPageId }: Props) {
                 ) : (
                   <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                     <input
-                      type="email"
+                      type="text"
                       placeholder="you@example.com"
                       value={email}
                       onChange={(e) => {

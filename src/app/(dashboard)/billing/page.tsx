@@ -90,7 +90,7 @@ export default async function BillingPage() {
               className="text-xs font-semibold uppercase tracking-[0.12em]"
               style={{ color: "#e8500a" }}
             >
-              Account
+              Billing
             </span>
           </div>
 

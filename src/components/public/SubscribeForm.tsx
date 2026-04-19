@@ -23,6 +23,11 @@ export default function SubscribeForm({ statusPageId }: SubscribeFormProps) {
       return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setMessage({ type: "error", text: "Please enter a valid email address." });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -89,7 +94,7 @@ export default function SubscribeForm({ statusPageId }: SubscribeFormProps) {
           className="flex items-center gap-2 flex-1 justify-end"
         >
           <input
-            type="email"
+            type="text"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

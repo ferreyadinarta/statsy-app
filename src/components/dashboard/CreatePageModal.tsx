@@ -49,6 +49,7 @@ export default function CreatePageModal({ onClose }: Props) {
         setFieldErrors((prev) => ({ ...prev, name: undefined }));
         if (!slugManuallyEdited) {
             setSlug(slugify(val));
+            setFieldErrors((prev) => ({ ...prev, slug: undefined }));
         }
     }
 

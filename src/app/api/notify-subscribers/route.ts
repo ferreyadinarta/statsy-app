@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     !status_page_id ||
     !incidentTitle ||
     !incidentStatus ||
-    !incidentMessage
+    incidentMessage == null
   ) {
     return NextResponse.json({ error: "Missing fields." }, { status: 400 });
   }
