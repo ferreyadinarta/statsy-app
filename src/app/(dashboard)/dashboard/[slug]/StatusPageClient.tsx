@@ -23,7 +23,6 @@ import EditServiceModal from "@/components/services/EditServiceModal";
 import CreateIncidentModal from "@/components/incidents/CreateIncidentModal";
 import IncidentCard from "@/components/incidents/IncidentCard";
 
-
 type IncidentUpdate = {
     id: string;
     message: string;
@@ -497,28 +496,50 @@ export default function StatusPageClient({
                     }}
                 >
                     <div className="flex flex-col gap-1">
-                        <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
-                            ⚠ Payment failed — {graceInfo.daysLeft} day{graceInfo.daysLeft === 1 ? "" : "s"} left in your grace period
+                        <p
+                            className="text-sm font-semibold"
+                            style={{ color: "#1a1714" }}
+                        >
+                            ⚠ Payment failed — {graceInfo.daysLeft} day
+                            {graceInfo.daysLeft === 1 ? "" : "s"} left in your
+                            grace period
                         </p>
                         <p className="text-xs" style={{ color: "#8a8070" }}>
-                            Your Pro features are still active. If payment isn&apos;t resolved by{" "}
+                            Your Pro features are still active. If payment
+                            isn&apos;t resolved by{" "}
                             <span style={{ color: "#1a1714", fontWeight: 600 }}>
-                                {graceInfo.endsAt?.toLocaleDateString("en-US", { month: "long", day: "numeric" })}
+                                {graceInfo.endsAt?.toLocaleDateString("en-US", {
+                                    month: "long",
+                                    day: "numeric",
+                                })}
                             </span>
-                            , services over the free plan limit will be paused automatically.
+                            , services over the free plan limit will be paused
+                            automatically.
                         </p>
                     </div>
                     <Link
                         href="/billing"
                         className="flex-shrink-0 text-xs font-semibold rounded-[4px] px-3.5 py-2 transition-colors duration-150"
-                        style={{ background: "#e8500a", color: "white", border: "1.5px solid #e8500a" }}
+                        style={{
+                            background: "#e8500a",
+                            color: "white",
+                            border: "1.5px solid #e8500a",
+                        }}
                         onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLAnchorElement).style.background = "#c94008";
-                            (e.currentTarget as HTMLAnchorElement).style.borderColor = "#c94008";
+                            (
+                                e.currentTarget as HTMLAnchorElement
+                            ).style.background = "#c94008";
+                            (
+                                e.currentTarget as HTMLAnchorElement
+                            ).style.borderColor = "#c94008";
                         }}
                         onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLAnchorElement).style.background = "#e8500a";
-                            (e.currentTarget as HTMLAnchorElement).style.borderColor = "#e8500a";
+                            (
+                                e.currentTarget as HTMLAnchorElement
+                            ).style.background = "#e8500a";
+                            (
+                                e.currentTarget as HTMLAnchorElement
+                            ).style.borderColor = "#e8500a";
                         }}
                     >
                         Update payment &rarr;
@@ -553,7 +574,7 @@ export default function StatusPageClient({
                     href={`https://${page.slug}.statsy.page`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 rounded-[4px] px-3 py-2 text-sm font-semibold uppercase tracking-wider transition-all no-underline"
+                    className="flex items-center gap-1.5 rounded-[4px] px-3 py-2 text-sm font-semibold tracking-wider transition-all"
                     style={{
                         border: "1.5px solid #e4dfd4",
                         color: "#3d3830",
@@ -578,6 +599,14 @@ export default function StatusPageClient({
                         border: "1.5px solid #e4dfd4",
                         color: "#3d3830",
                         background: "white",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "#1a1714";
+                        e.currentTarget.style.color = "#1a1714";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#e4dfd4";
+                        e.currentTarget.style.color = "#3d3830";
                     }}
                 >
                     <Settings size={14} />
@@ -680,13 +709,21 @@ export default function StatusPageClient({
                                     className="flex items-center justify-between px-5 py-4 rounded-[4px]"
                                     style={{
                                         border: "1.5px solid #e4dfd4",
-                                        background: paused ? "#faf9f5" : "white",
+                                        background: paused
+                                            ? "#faf9f5"
+                                            : "white",
                                         borderLeft: `4px solid ${paused ? "#e4dfd4" : colors.border}`,
                                         opacity: paused ? 0.6 : 1,
                                     }}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <span style={{ color: paused ? "#c4bfb4" : colors.text }}>
+                                        <span
+                                            style={{
+                                                color: paused
+                                                    ? "#c4bfb4"
+                                                    : colors.text,
+                                            }}
+                                        >
                                             {getStatusIcon(service.status)}
                                         </span>
                                         <span
@@ -702,7 +739,8 @@ export default function StatusPageClient({
                                             <span
                                                 className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
                                                 style={{
-                                                    background: "rgba(211,47,47,0.08)",
+                                                    background:
+                                                        "rgba(211,47,47,0.08)",
                                                     color: "#d32f2f",
                                                     border: "1.5px solid rgba(211,47,47,0.3)",
                                                 }}
@@ -723,22 +761,45 @@ export default function StatusPageClient({
                                         )}
 
                                         <button
-                                            onClick={() => !paused && setEditingService(service)}
+                                            onClick={() =>
+                                                !paused &&
+                                                setEditingService(service)
+                                            }
                                             disabled={paused}
                                             className="rounded-[4px] p-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                                             style={{ color: "#8a8070" }}
-                                            onMouseEnter={(e) => { if (!paused) e.currentTarget.style.color = "#1a1714"; }}
-                                            onMouseLeave={(e) => { if (!paused) e.currentTarget.style.color = "#8a8070"; }}
-                                            title={paused ? "Upgrade to edit" : "Edit service"}
+                                            onMouseEnter={(e) => {
+                                                if (!paused)
+                                                    e.currentTarget.style.color =
+                                                        "#1a1714";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!paused)
+                                                    e.currentTarget.style.color =
+                                                        "#8a8070";
+                                            }}
+                                            title={
+                                                paused
+                                                    ? "Upgrade to edit"
+                                                    : "Edit service"
+                                            }
                                         >
                                             <Edit2 size={14} strokeWidth={2} />
                                         </button>
                                         <button
-                                            onClick={() => setDeletingService(service)}
+                                            onClick={() =>
+                                                setDeletingService(service)
+                                            }
                                             className="rounded-[4px] p-1.5 transition-colors cursor-pointer"
                                             style={{ color: "#8a8070" }}
-                                            onMouseEnter={(e) => (e.currentTarget.style.color = "#d32f2f")}
-                                            onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8070")}
+                                            onMouseEnter={(e) =>
+                                                (e.currentTarget.style.color =
+                                                    "#d32f2f")
+                                            }
+                                            onMouseLeave={(e) =>
+                                                (e.currentTarget.style.color =
+                                                    "#8a8070")
+                                            }
                                             title="Delete service"
                                         >
                                             <Trash2 size={14} strokeWidth={2} />
@@ -762,8 +823,16 @@ export default function StatusPageClient({
                             <span style={{ color: "#d32f2f", fontWeight: 600 }}>
                                 Over plan limit.
                             </span>{" "}
-                            You have {services.length} services but free plan allows 3. Existing services still work — delete down to 3 or{" "}
-                            <Link href="/billing" style={{ color: "#e8500a", textDecoration: "underline" }}>
+                            You have {services.length} services but free plan
+                            allows 3. Existing services still work — delete down
+                            to 3 or{" "}
+                            <Link
+                                href="/billing"
+                                style={{
+                                    color: "#e8500a",
+                                    textDecoration: "underline",
+                                }}
+                            >
                                 upgrade to Pro
                             </Link>{" "}
                             for up to 10.
