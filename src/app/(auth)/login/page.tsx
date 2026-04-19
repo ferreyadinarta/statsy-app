@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -22,6 +22,8 @@ export default function LoginPage() {
 
   const supabase = createClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackError = searchParams.get("error");
 
   function validate(): boolean {
     const errors: FieldErrors = {};
@@ -121,6 +123,18 @@ export default function LoginPage() {
           noValidate
           className="px-8 py-6 flex flex-col gap-5"
         >
+          {callbackError === "auth_callback_failed" && (
+            <p
+              className="text-sm px-4 py-2.5 rounded-[4px]"
+              style={{
+                color: "#e8500a",
+                background: "rgba(232,80,10,0.06)",
+                border: "1.5px solid rgba(232,80,10,0.2)",
+              }}
+            >
+              Email confirmation failed. The link may have expired — request a new one.
+            </p>
+          )}
           <div className="flex flex-col gap-2">
             <label
               className="text-xs font-semibold uppercase tracking-[0.08em]"
