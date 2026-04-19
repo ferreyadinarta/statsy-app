@@ -155,6 +155,39 @@ export default function PublicStatusPageClient({
     }
   }
 
+  function computeUptimeBars() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const badDays = new Set<string>();
+    incidents.forEach((incident) => {
+      const d = new Date(incident.created_at);
+      d.setHours(0, 0, 0, 0);
+      badDays.add(d.toISOString().split("T")[0]);
+    });
+
+    const bars: { date: Date; status: "operational" | "incident" }[] = [];
+    for (let i = incidentDays - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      bars.push({
+        date: d,
+        status: badDays.has(d.toISOString().split("T")[0])
+          ? "incident"
+          : "operational",
+      });
+    }
+
+    const goodDays = bars.filter((b) => b.status === "operational").length;
+    const uptimePct =
+      incidentDays > 0
+        ? ((goodDays / incidentDays) * 100).toFixed(1)
+        : "100.0";
+
+    return { bars, uptimePct };
+  }
+
+  const { bars: uptimeBars, uptimePct } = computeUptimeBars();
   const statusConfig = getOverallStatusConfig();
   const activeIncidents = incidents.filter((i) => i.status !== "resolved");
   const pastIncidents = incidents.filter((i) => i.status === "resolved");
@@ -272,6 +305,35 @@ export default function PublicStatusPageClient({
           </div>
         )}
       </section>
+
+      {/* ── UPTIME BARS ── */}
+      {services.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-2.5">
+            <span
+              className="text-sm font-medium"
+              style={{ color: "#8a8070" }}
+            >
+              {incidentDays}-day uptime — {uptimePct}%
+            </span>
+          </div>
+          <div className="flex gap-[3px]">
+            {uptimeBars.map((bar, i) => (
+              <div
+                key={i}
+                className="flex-1 rounded-[3px] transition-opacity hover:opacity-70 cursor-default"
+                style={{
+                  height: "32px",
+                  minWidth: 0,
+                  background:
+                    bar.status === "operational" ? "#1a7a4a" : "#e8500a",
+                }}
+                title={`${bar.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}: ${bar.status === "operational" ? "Operational" : "Incident"}`}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── ACTIVE INCIDENTS ── */}
       {activeIncidents.length > 0 && (
