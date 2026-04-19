@@ -1,7 +1,6 @@
 "use client";
 
 import { JSX, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -23,7 +22,6 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
 
-  const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
   function validate(): boolean {
@@ -43,25 +41,16 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
 
     setLoading(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      showError("Not authenticated. Please log in again.");
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.from("services").insert({
-      name: name.trim(),
-      status,
-      status_page_id: pageId,
-      user_id: user.id,
+    const res = await fetch("/api/services", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: name.trim(), status, status_page_id: pageId }),
     });
 
-    if (error) {
+    if (!res.ok) {
+      const { error } = await res.json();
       setLoading(false);
-      showError("Failed to add service. Please try again.");
+      showError(error ?? "Failed to add service. Please try again.");
       return;
     }
 

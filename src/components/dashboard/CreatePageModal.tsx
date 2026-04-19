@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -31,7 +30,6 @@ export default function CreatePageModal({ onClose }: Props) {
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
     const [loading, setLoading] = useState(false);
 
-    const supabase = createClient();
     const router = useRouter();
     const { success, error: showError } = useToast();
 
@@ -71,31 +69,23 @@ export default function CreatePageModal({ onClose }: Props) {
 
         setLoading(true);
 
-        const {
-            data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) {
-            showError("Not authenticated. Please log in again.");
-            setLoading(false);
-            return;
-        }
-
-        const { error } = await supabase.from("status_pages").insert({
-            name: name.trim(),
-            slug: slug.trim(),
-            user_id: user.id,
+        const res = await fetch("/api/status-pages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: name.trim(), slug: slug.trim() }),
         });
 
-        if (error) {
+        if (!res.ok) {
+            const { error } = await res.json();
             setLoading(false);
-            if (error.code === "23505") {
+            if (res.status === 409) {
                 setFieldErrors((prev) => ({
                     ...prev,
                     slug: "This slug is already taken. Try another.",
                 }));
                 showError("This slug is already taken.");
             } else {
-                showError("Something went wrong. Please try again.");
+                showError(error ?? "Something went wrong. Please try again.");
             }
             return;
         }

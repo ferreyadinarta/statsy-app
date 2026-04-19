@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, ChevronDown } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -67,7 +66,6 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
   const [loading, setLoading] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
 
@@ -106,26 +104,21 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
 
     setLoading(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      showError("Not authenticated. Please log in again.");
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.from("incidents").insert({
-      title: title.trim(),
-      description: description.trim() || null,
-      status,
-      status_page_id: pageId,
-      user_id: user.id,
+    const res = await fetch("/api/incidents", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: title.trim(),
+        description: description.trim() || null,
+        status,
+        status_page_id: pageId,
+      }),
     });
 
-    if (error) {
+    if (!res.ok) {
+      const { error } = await res.json();
       setLoading(false);
-      showError("Failed to post incident. Please try again.");
+      showError(error ?? "Failed to post incident. Please try again.");
       return;
     }
 

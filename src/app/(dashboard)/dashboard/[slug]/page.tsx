@@ -29,30 +29,28 @@ export default async function StatusPageManagePage({ params }: PageProps) {
 
     if (pageError || !page) notFound();
 
-    // Fetch plan, services, incidents, subscriber count in parallel
+    const plan = await getUserPlan(user.id);
+
+    const daysToShow = plan === "pro" ? 90 : 7;
+    const dateThreshold = new Date();
+    dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
+
     const [
-        plan,
         { data: services },
         { data: incidents },
         { count: subscriberCount },
     ] = await Promise.all([
-        getUserPlan(user.id),
         supabase
             .from("services")
             .select("*")
             .eq("status_page_id", page.id)
             .order("created_at", { ascending: true }),
-        (async () => {
-            const daysToShow = 7;
-            const dateThreshold = new Date();
-            dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
-            return supabase
-                .from("incidents")
-                .select(`*, incident_updates(id, message, status, created_at)`)
-                .eq("status_page_id", page.id)
-                .gte("created_at", dateThreshold.toISOString())
-                .order("created_at", { ascending: false });
-        })(),
+        supabase
+            .from("incidents")
+            .select(`*, incident_updates(id, message, status, created_at)`)
+            .eq("status_page_id", page.id)
+            .gte("created_at", dateThreshold.toISOString())
+            .order("created_at", { ascending: false }),
         supabase
             .from("subscribers")
             .select("*", { count: "exact", head: true })

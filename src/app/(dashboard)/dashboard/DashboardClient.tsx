@@ -8,7 +8,6 @@ import CreatePageModal from "../../../components/dashboard/CreatePageModal";
 import DeletePageModal from "../../../components/dashboard/DeletePageModal";
 import { useToast } from "@/lib/use-toast";
 
-const FREE_PAGE_LIMIT = 1;
 
 type PageStatus = "operational" | "degraded" | "outage";
 
@@ -54,7 +53,7 @@ export default function DashboardClient({ pages, plan }: Props) {
     const [deletingPage, setDeletingPage] = useState<StatusPage | null>(null);
     const router = useRouter();
     const { error: showError, success } = useToast();
-    const atLimit = pages.length >= FREE_PAGE_LIMIT;
+    const atLimit = pages.length >= (plan === "pro" ? 3 : 1);
 
     async function handleDeletePage() {
         if (!deletingPage) return;
@@ -138,7 +137,7 @@ export default function DashboardClient({ pages, plan }: Props) {
                             className="text-xs uppercase tracking-wider font-semibold"
                             style={{ color: "#8a8070" }}
                         >
-                            {pages.length} / {FREE_PAGE_LIMIT}{" "}
+                            {pages.length} / {plan === "pro" ? 3 : 1}{" "}
                             {pages.length === 1 ? "page" : "pages"} used
                         </p>
                         <button

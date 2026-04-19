@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import PublicStatusPageClient from "./PublicStatusPageClient";
 import SubscribeButton from "@/components/public/SubscribeButton";
 import type { Metadata } from "next";
+import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
 
 type PageProps = {
     params: Promise<{ slug: string }>;
@@ -67,7 +68,8 @@ export default async function PublicStatusPage({ params }: PageProps) {
         .eq("status_page_id", page.id)
         .order("created_at", { ascending: true });
 
-    const daysToShow = 7;
+    const ownerPlan = await getUserPlan(page.user_id);
+    const daysToShow = PLAN_LIMITS[ownerPlan].historyDays;
     const dateThreshold = new Date();
     dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
 
