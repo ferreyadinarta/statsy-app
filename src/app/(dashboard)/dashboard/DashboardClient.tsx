@@ -241,8 +241,8 @@ export default function DashboardClient({ pages, plan }: Props) {
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <a
-                                    href={`/${page.slug}`}
+                                <Link
+                                    href={`https://${page.slug}.statsy.page`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-1.5 text-xs font-medium transition-colors duration-150 px-3 py-2 rounded-[4px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8500a]"
@@ -269,7 +269,7 @@ export default function DashboardClient({ pages, plan }: Props) {
                                 >
                                     <ExternalLink size={13} />
                                     Public page
-                                </a>
+                                </Link>
                                 <Link
                                     href={`/dashboard/${page.slug}`}
                                     className="flex items-center gap-1.5 rounded-[4px] px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8500a]"
