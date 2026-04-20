@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     incidentStatus,
     incidentMessage,
     unsubscribeTokens,
-    hideBranding: ownerPlan === "pro",
+    isPro: ownerPlan === "pro",
   });
 
   return NextResponse.json({ sent: emails.length });
