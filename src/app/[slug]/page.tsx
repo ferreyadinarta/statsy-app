@@ -126,7 +126,7 @@ export default async function PublicStatusPage({ params }: PageProps) {
     const lastUpdated = computeLastUpdated(services ?? [], incidents ?? []);
 
     return (
-        <div className="min-h-screen bg-[#f5f2eb]">
+        <div className="min-h-screen bg-[#f5f2eb] overflow-x-hidden">
             <header
                 className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
                 style={{
