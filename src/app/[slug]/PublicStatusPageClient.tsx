@@ -254,14 +254,14 @@ export default function PublicStatusPageClient({
     <>
       {/* Header */}
       <div className="mb-10">
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8 gap-3">
           <div>
             <h1
               className="mb-2"
               style={{
                 fontFamily: "var(--font-head)",
                 fontWeight: 900,
-                fontSize: "3rem",
+                fontSize: "clamp(1.75rem, 6vw, 3rem)",
                 letterSpacing: "-0.04em",
                 lineHeight: "1",
                 color: "#1a1714",
@@ -281,7 +281,7 @@ export default function PublicStatusPageClient({
           </div>
 
           <div
-            className="flex items-center gap-2.5 px-5 py-3 rounded-full flex-shrink-0"
+            className="flex items-center gap-2.5 px-5 py-3 rounded-full flex-shrink-0 self-start"
             style={{
               background: statusConfig.bg,
               border: `1.5px solid ${statusConfig.border}`,
@@ -321,7 +321,7 @@ export default function PublicStatusPageClient({
               return (
                 <div
                   key={service.id}
-                  className="flex items-center justify-between px-6 py-5 rounded-[4px] transition-all cursor-default"
+                  className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 rounded-[4px] transition-all cursor-default"
                   style={{
                     border: "1.5px solid #e4dfd4",
                     background: "white",
@@ -330,16 +330,14 @@ export default function PublicStatusPageClient({
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = "#1a1714";
                     e.currentTarget.style.borderLeftColor = colors.border;
-                    e.currentTarget.style.transform = "translateX(2px)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "#e4dfd4";
                     e.currentTarget.style.borderLeftColor = colors.border;
-                    e.currentTarget.style.transform = "translateX(0)";
                   }}
                 >
                   <span
-                    className="text-lg font-bold"
+                    className="text-base sm:text-lg font-bold min-w-0 truncate mr-3"
                     style={{
                       fontFamily: "var(--font-head)",
                       color: "#1a1714",
@@ -348,10 +346,10 @@ export default function PublicStatusPageClient({
                   >
                     {service.name}
                   </span>
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {getServiceStatusDot(service.status)}
                     <span
-                      className="text-base font-bold"
+                      className="text-sm sm:text-base font-bold"
                       style={{ color: colors.text }}
                     >
                       {getServiceStatusLabel(service.status)}

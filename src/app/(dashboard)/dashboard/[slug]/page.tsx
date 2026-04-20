@@ -63,7 +63,7 @@ export default async function StatusPageManagePage({ params }: PageProps) {
     return (
         <div className="min-h-screen bg-[#f5f2eb]">
             <header
-                className="sticky top-0 z-50 flex items-center justify-between px-8 py-4"
+                className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
                 style={{
                     borderBottom: "1.5px solid #1a1714",
                     background: "rgba(245,242,235,0.95)",
@@ -116,7 +116,7 @@ export default async function StatusPageManagePage({ params }: PageProps) {
                 </div>
             </header>
 
-            <main className="max-w-5xl mx-auto px-8 pt-8 pb-14">
+            <main className="max-w-5xl mx-auto px-4 sm:px-8 pt-8 pb-14">
                 <div
                     className="mb-6 pb-6"
                     style={{ borderBottom: "1.5px solid #e4dfd4" }}
@@ -147,7 +147,7 @@ export default async function StatusPageManagePage({ params }: PageProps) {
                         style={{
                             fontFamily: "var(--font-head)",
                             fontWeight: 900,
-                            fontSize: "2.2rem",
+                            fontSize: "clamp(1.5rem, 5vw, 2.2rem)",
                             letterSpacing: "-0.04em",
                             lineHeight: "1",
                             color: "#1a1714",

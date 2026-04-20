@@ -3,7 +3,7 @@ export default function StatusPageLoading() {
     <div className="min-h-screen bg-[#f5f2eb]">
       {/* Nav skeleton */}
       <header
-        className="sticky top-0 z-50 flex items-center justify-between px-8 py-4"
+        className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
         style={{
           borderBottom: "1.5px solid #1a1714",
           background: "rgba(245,242,235,0.95)",
@@ -19,11 +19,11 @@ export default function StatusPageLoading() {
         </div>
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-full bg-[#e4dfd4] animate-pulse" />
-          <div className="h-4 w-20 rounded-[2px] bg-[#e4dfd4] animate-pulse" />
+          <div className="h-4 w-20 rounded-[2px] bg-[#e4dfd4] animate-pulse hidden sm:block" />
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 py-14">
+      <main className="max-w-5xl mx-auto px-4 sm:px-8 py-14">
         {/* Heading skeleton */}
         <div
           className="mb-10 pb-10"
@@ -31,7 +31,7 @@ export default function StatusPageLoading() {
         >
           <div className="h-3 w-24 rounded-[2px] bg-[#e4dfd4] animate-pulse mb-3" />
           <div className="h-10 w-64 rounded-[2px] bg-[#e4dfd4] animate-pulse mb-3" />
-          <div className="h-4 w-96 rounded-[2px] bg-[#e4dfd4] animate-pulse" />
+          <div className="h-4 w-full max-w-sm rounded-[2px] bg-[#e4dfd4] animate-pulse" />
         </div>
 
         {/* Services skeleton */}

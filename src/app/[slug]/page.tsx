@@ -128,7 +128,7 @@ export default async function PublicStatusPage({ params }: PageProps) {
     return (
         <div className="min-h-screen bg-[#f5f2eb]">
             <header
-                className="sticky top-0 z-50 flex items-center justify-between px-8 py-4"
+                className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
                 style={{
                     background: "rgba(245,242,235,0.95)",
                     backdropFilter: "blur(10px)",
@@ -163,7 +163,7 @@ export default async function PublicStatusPage({ params }: PageProps) {
                 </a>
             </header>
 
-            <main className="max-w-5xl mx-auto px-8 pt-12 pb-20">
+            <main className="max-w-5xl mx-auto px-4 sm:px-8 pt-12 pb-20 overflow-x-hidden">
                 {pagePaused ? (
                     <div className="flex flex-col items-center justify-center py-24 text-center">
                         <div

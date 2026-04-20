@@ -240,7 +240,7 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                             onClick={() =>
                                 !paused && router.push(`/dashboard/${page.slug}`)
                             }
-                            className="flex items-center justify-between px-6 py-5 rounded-[4px]"
+                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-6 py-4 sm:py-5 rounded-[4px]"
                             style={{
                                 background: paused ? "#faf9f5" : "white",
                                 border: `1.5px solid ${paused ? "#e4dfd4" : "#e4dfd4"}`,
@@ -261,7 +261,8 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                                 }
                             }}
                         >
-                            <div className="flex items-center gap-4">
+                            {/* Top row: monogram + name/status */}
+                            <div className="flex items-center gap-4 min-w-0">
                                 {/* Monogram icon */}
                                 <div
                                     className="w-9 h-9 rounded-[4px] flex items-center justify-center flex-shrink-0 text-sm font-bold"
@@ -274,13 +275,14 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                                 >
                                     {page.name[0].toUpperCase()}
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     {(() => {
                                         const s =
                                             STATUS_CONFIG[page.overallStatus];
                                         return (
-                                            <div className="flex items-center gap-2.5">
+                                            <div className="flex flex-wrap items-center gap-2">
                                                 <p
+                                                    className="truncate"
                                                     style={{
                                                         fontFamily:
                                                             "var(--font-head)",
@@ -295,7 +297,7 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                                                 </p>
                                                 {paused ? (
                                                     <span
-                                                        className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px]"
+                                                        className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px] flex-shrink-0"
                                                         style={{
                                                             background: "rgba(211,47,47,0.08)",
                                                             color: "#d32f2f",
@@ -306,7 +308,7 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                                                     </span>
                                                 ) : (
                                                 <span
-                                                    className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px]"
+                                                    className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px] flex-shrink-0"
                                                     style={{
                                                         background: s.bg,
                                                         color: s.color,
@@ -326,7 +328,7 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                                         );
                                     })()}
                                     <p
-                                        className="text-xs mt-0.5"
+                                        className="text-xs mt-0.5 truncate"
                                         style={{ color: "#8a8070" }}
                                     >
                                         {page.slug}.statsy.page
@@ -334,7 +336,8 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            {/* Action buttons — indented on mobile to align with name */}
+                            <div className="flex items-center gap-2 sm:flex-shrink-0 pl-[52px] sm:pl-0">
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -387,7 +390,7 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
                                     onClick={(e) => e.stopPropagation()}
                                 >
                                     <ExternalLink size={13} />
-                                    Public page
+                                    <span className="hidden sm:inline">Public page</span>
                                 </Link>
                                 <Link
                                     href={paused ? "#" : `/dashboard/${page.slug}`}

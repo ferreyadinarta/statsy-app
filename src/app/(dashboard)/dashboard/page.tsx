@@ -67,7 +67,7 @@ export default async function DashboardPage() {
         <div className="min-h-screen bg-[#f5f2eb]">
             {/* Nav */}
             <header
-                className="sticky top-0 z-50 flex items-center justify-between px-8 py-4"
+                className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
                 style={{
                     borderBottom: "1.5px solid #1a1714",
                     background: "rgba(245,242,235,0.95)",
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
                 </div>
             </header>
 
-            <main className="max-w-5xl mx-auto px-8 py-10">
+            <main className="max-w-5xl mx-auto px-4 sm:px-8 py-10">
                 {/* Heading */}
                 <div
                     className="mb-7 pb-7"
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
                         style={{
                             fontFamily: "var(--font-head)",
                             fontWeight: 900,
-                            fontSize: "2.2rem",
+                            fontSize: "clamp(1.5rem, 5vw, 2.2rem)",
                             letterSpacing: "-0.04em",
                             color: "#1a1714",
                         }}
@@ -159,62 +159,88 @@ export default async function DashboardPage() {
                 {/* Plan bar — hidden when upgrade callout is already shown */}
                 {!(atLimit && plan === "free") && (
                     <div
-                        className="mt-6 flex items-center justify-between px-6 py-4 rounded-[4px] flex-wrap gap-4"
+                        className="mt-6 rounded-[4px] overflow-hidden"
                         style={{
                             background: "#ede9e0",
                             border: "1.5px solid #e4dfd4",
                         }}
                     >
-                        <div className="flex items-center gap-3">
-                            <span
-                                className="text-xs font-semibold uppercase tracking-wider"
-                                style={{ color: "#8a8070" }}
-                            >
-                                Plan
-                            </span>
-                            <span
-                                className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
-                                style={{
-                                    background:
-                                        plan === "pro" ? "#e8f5ee" : "white",
-                                    border: `1.5px solid ${plan === "pro" ? "#1a7a4a" : "#1a1714"}`,
-                                    color:
-                                        plan === "pro" ? "#1a7a4a" : "#1a1714",
-                                }}
-                            >
-                                {plan === "pro" ? "Pro" : "Free"}
-                            </span>
-                        </div>
+                        {/* Header row: plan badge + action link */}
                         <div
-                            className="flex items-center gap-3 text-xs"
-                            style={{ color: "#8a8070" }}
+                            className="flex items-center justify-between px-5 py-3"
+                            style={{ borderBottom: "1.5px solid #e4dfd4" }}
                         >
-                            <span>
-                                {limits.pages}{" "}
-                                {limits.pages === 1 ? "page" : "pages"}
-                            </span>
-                            <span style={{ color: "#c4bfb4" }}>·</span>
-                            <span>{limits.services} services per page</span>
-                            <span style={{ color: "#c4bfb4" }}>·</span>
-                            <span>{limits.subscribers} subscribers</span>
+                            <div className="flex items-center gap-2.5">
+                                <span
+                                    className="text-xs font-semibold uppercase tracking-wider"
+                                    style={{ color: "#8a8070" }}
+                                >
+                                    Plan
+                                </span>
+                                <span
+                                    className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
+                                    style={{
+                                        background: plan === "pro" ? "#e8f5ee" : "white",
+                                        border: `1.5px solid ${plan === "pro" ? "#1a7a4a" : "#1a1714"}`,
+                                        color: plan === "pro" ? "#1a7a4a" : "#1a1714",
+                                    }}
+                                >
+                                    {plan === "pro" ? "Pro" : "Free"}
+                                </span>
+                            </div>
+                            {plan === "free" && !atLimit && (
+                                <Link
+                                    href="/billing"
+                                    className="text-xs font-semibold hover:underline underline-offset-2"
+                                    style={{ color: "#e8500a" }}
+                                >
+                                    Upgrade to Pro &rarr;
+                                </Link>
+                            )}
+                            {plan === "pro" && (
+                                <Link
+                                    href="/billing"
+                                    className="text-xs font-semibold hover:underline underline-offset-2"
+                                    style={{ color: "#8a8070" }}
+                                >
+                                    Manage billing &rarr;
+                                </Link>
+                            )}
                         </div>
-                        {plan === "free" && !atLimit && (
-                            <Link
-                                href="/billing"
-                                className="text-xs font-semibold hover:underline underline-offset-2"
-                                style={{ color: "#e8500a" }}
-                            >
-                                Upgrade to Pro &rarr;
-                            </Link>
-                        )}
-                        {plan === "pro" && (
-                            <Link
-                                href="/billing"
-                                className="text-xs font-semibold text-[#8a8070] hover:text-[#e8500a] hover:underline underline-offset-2"
-                            >
-                                Manage billing &rarr;
-                            </Link>
-                        )}
+
+                        {/* Stats grid */}
+                        <div className="grid grid-cols-3">
+                            {[
+                                { value: limits.pages, label: limits.pages === 1 ? "page" : "pages" },
+                                { value: limits.services, label: "services/page" },
+                                { value: limits.subscribers, label: "subscribers" },
+                            ].map((stat, i) => (
+                                <div
+                                    key={i}
+                                    className="flex flex-col items-center py-4"
+                                    style={{
+                                        borderRight: i < 2 ? "1.5px solid #e4dfd4" : undefined,
+                                    }}
+                                >
+                                    <span
+                                        className="text-lg font-black"
+                                        style={{
+                                            fontFamily: "var(--font-head)",
+                                            color: "#1a1714",
+                                            letterSpacing: "-0.03em",
+                                        }}
+                                    >
+                                        {stat.value}
+                                    </span>
+                                    <span
+                                        className="text-[11px] font-medium mt-0.5 text-center"
+                                        style={{ color: "#8a8070" }}
+                                    >
+                                        {stat.label}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </main>

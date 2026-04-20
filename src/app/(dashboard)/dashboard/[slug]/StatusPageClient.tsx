@@ -555,7 +555,7 @@ export default function StatusPageClient({
             )}
 
             {/* Top bar — View public page + subscriber count */}
-            <div className="flex items-center justify-between mb-10">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-10">
                 <div
                     className="flex items-center gap-2 px-3 py-2 rounded-[4px]"
                     style={{
@@ -577,48 +577,51 @@ export default function StatusPageClient({
                     </span>
                 </div>
 
-                <a
-                    href={`https://${page.slug}.statsy.page`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 rounded-[4px] px-3 py-2 text-sm font-semibold tracking-wider transition-all"
-                    style={{
-                        border: "1.5px solid #e4dfd4",
-                        color: "#3d3830",
-                        background: "white",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "#1a1714";
-                        e.currentTarget.style.color = "#1a1714";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#e4dfd4";
-                        e.currentTarget.style.color = "#3d3830";
-                    }}
-                >
-                    <ExternalLink size={12} strokeWidth={2.5} />
-                    View public page
-                </a>
-                <Link
-                    href={`/dashboard/${page.slug}/settings`}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] text-sm font-medium no-underline transition-colors"
-                    style={{
-                        border: "1.5px solid #e4dfd4",
-                        color: "#3d3830",
-                        background: "white",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "#1a1714";
-                        e.currentTarget.style.color = "#1a1714";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#e4dfd4";
-                        e.currentTarget.style.color = "#3d3830";
-                    }}
-                >
-                    <Settings size={14} />
-                    Settings
-                </Link>
+                <div className="flex items-center gap-2">
+                    <a
+                        href={`https://${page.slug}.statsy.page`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 rounded-[4px] px-3 py-2 text-sm font-semibold tracking-wider transition-all"
+                        style={{
+                            border: "1.5px solid #e4dfd4",
+                            color: "#3d3830",
+                            background: "white",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = "#1a1714";
+                            e.currentTarget.style.color = "#1a1714";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "#e4dfd4";
+                            e.currentTarget.style.color = "#3d3830";
+                        }}
+                    >
+                        <ExternalLink size={12} strokeWidth={2.5} />
+                        <span className="hidden sm:inline">View public page</span>
+                        <span className="sm:hidden">View</span>
+                    </a>
+                    <Link
+                        href={`/dashboard/${page.slug}/settings`}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] text-sm font-medium no-underline transition-colors"
+                        style={{
+                            border: "1.5px solid #e4dfd4",
+                            color: "#3d3830",
+                            background: "white",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = "#1a1714";
+                            e.currentTarget.style.color = "#1a1714";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "#e4dfd4";
+                            e.currentTarget.style.color = "#3d3830";
+                        }}
+                    >
+                        <Settings size={14} />
+                        Settings
+                    </Link>
+                </div>
             </div>
 
             {/* ── SERVICES ── */}
@@ -713,7 +716,7 @@ export default function StatusPageClient({
                             return (
                                 <div
                                     key={service.id}
-                                    className="flex items-center justify-between px-5 py-4 rounded-[4px]"
+                                    className="flex items-center justify-between gap-3 px-5 py-4 rounded-[4px]"
                                     style={{
                                         border: "1.5px solid #e4dfd4",
                                         background: paused
@@ -723,8 +726,9 @@ export default function StatusPageClient({
                                         opacity: paused ? 0.6 : 1,
                                     }}
                                 >
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3 min-w-0">
                                         <span
+                                            className="flex-shrink-0"
                                             style={{
                                                 color: paused
                                                     ? "#c4bfb4"
@@ -734,17 +738,17 @@ export default function StatusPageClient({
                                             {getStatusIcon(service.status)}
                                         </span>
                                         <span
-                                            className="text-sm font-semibold"
+                                            className="text-sm font-semibold truncate"
                                             style={{ color: "#1a1714" }}
                                         >
                                             {service.name}
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2 flex-shrink-0">
                                         {paused ? (
                                             <span
-                                                className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
+                                                className="hidden sm:inline text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
                                                 style={{
                                                     background:
                                                         "rgba(211,47,47,0.08)",
@@ -756,7 +760,7 @@ export default function StatusPageClient({
                                             </span>
                                         ) : (
                                             <span
-                                                className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
+                                                className="hidden sm:inline text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
                                                 style={{
                                                     background: colors.bg,
                                                     color: colors.text,

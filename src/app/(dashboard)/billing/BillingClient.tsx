@@ -187,7 +187,7 @@ export default function BillingClient({
         return (
             <>
                 <div
-                    className="rounded-[4px] p-8"
+                    className="rounded-[4px] p-5 sm:p-8"
                     style={{ background: "white", border: cardBorder }}
                 >
                     {/* Header row */}
@@ -306,7 +306,7 @@ export default function BillingClient({
                         >
                             Your plan includes
                         </p>
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-2.5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
                             {PRO_FEATURES.map(({ text }) => (
                                 <div key={text} className="flex items-center gap-2">
                                     <CheckCircle
