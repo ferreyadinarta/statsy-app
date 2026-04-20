@@ -269,13 +269,13 @@ export default function PublicStatusPageClient({
             >
               {page.name}
             </h1>
-            <p className="text-sm font-medium" style={{ color: "#8a8070" }}>
+            <p className="text-sm font-medium break-words" style={{ color: "#8a8070" }}>
               Current system status and incident updates
               {lastUpdated && (
-                <span style={{ color: "#8a8070" }}>
-                  {" "}
-                  · Last updated {lastUpdated}
-                </span>
+                <>
+                  <span className="hidden sm:inline"> · Last updated {lastUpdated}</span>
+                  <span className="block sm:hidden mt-0.5">Last updated {lastUpdated}</span>
+                </>
               )}
             </p>
           </div>
@@ -349,7 +349,7 @@ export default function PublicStatusPageClient({
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {getServiceStatusDot(service.status)}
                     <span
-                      className="text-sm sm:text-base font-bold"
+                      className="text-xs sm:text-base font-bold"
                       style={{ color: colors.text }}
                     >
                       {getServiceStatusLabel(service.status)}
@@ -365,7 +365,7 @@ export default function PublicStatusPageClient({
       {/* ── UPTIME BARS ── */}
       {services.length > 0 && (
         <section className="mb-10">
-          <div className="flex items-center justify-between mb-2.5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2.5 gap-0.5">
             <span
               className="text-sm font-medium"
               style={{ color: "#8a8070" }}

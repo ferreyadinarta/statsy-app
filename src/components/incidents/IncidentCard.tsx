@@ -100,19 +100,13 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="mb-2">
                 <span
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wider"
                   style={{ background: colors.border, color: "white" }}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   {statusLabels[incident.status]}
-                </span>
-                <span
-                  className="text-xs font-medium"
-                  style={{ color: "#8a8070" }}
-                >
-                  Posted {formatDate(incident.created_at)}
                 </span>
               </div>
               <h3
@@ -126,6 +120,12 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
               >
                 {incident.title}
               </h3>
+              <span
+                className="text-xs font-medium mt-1 block"
+                style={{ color: "#8a8070" }}
+              >
+                Posted {formatDate(incident.created_at)}
+              </span>
             </div>
 
             {/* Owner actions */}
