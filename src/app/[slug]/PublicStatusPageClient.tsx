@@ -45,6 +45,63 @@ const POLL_INTERVAL = 60_000;
 
 const INITIAL_SHOW = 3;
 
+type UptimeBar = { date: Date; status: "operational" | "incident" };
+
+function UptimeBarTrack({
+  bars,
+  barHeight,
+  gap,
+  showLabel,
+  labelText,
+  className = "",
+}: {
+  bars: UptimeBar[];
+  barHeight: number;
+  gap: number;
+  showLabel?: boolean;
+  labelText?: string;
+  className?: string;
+}) {
+  return (
+    <div className={`w-full ${className}`}>
+      <div className="flex" style={{ gap: `${gap}px` }}>
+        {bars.map((bar, i) => {
+          const total = bars.length;
+          const isFirst = i < 4;
+          const isLast = i > total - 5;
+          const tooltipAlign = isFirst ? "left-0" : isLast ? "right-0" : "left-1/2 -translate-x-1/2";
+          const arrowAlign = isFirst ? "left-3" : isLast ? "right-3" : "left-1/2 -translate-x-1/2";
+          return (
+            <div key={i} className="flex-1 relative group" style={{ minWidth: 0 }}>
+              <div
+                className="w-full rounded-[3px] cursor-default transition-all duration-150 group-hover:brightness-125 group-hover:scale-y-110 origin-bottom"
+                style={{
+                  height: `${barHeight}px`,
+                  background: bar.status === "operational" ? "#1a7a4a" : "#e8500a",
+                }}
+              />
+              <div className={`absolute bottom-full mb-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20 ${tooltipAlign}`}>
+                <div className="px-2.5 py-1.5 rounded-[5px] shadow-xl" style={{ background: "#1a1714", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <p className="text-[11px] font-bold whitespace-nowrap" style={{ color: "#f5f2eb" }}>
+                    {bar.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </p>
+                  <p className="text-[11px] font-medium whitespace-nowrap" style={{ color: bar.status === "operational" ? "#4ade80" : "#fb923c" }}>
+                    {bar.status === "operational" ? "Operational" : "Incident"}
+                  </p>
+                </div>
+                <div className={`absolute top-full ${arrowAlign} w-0 h-0`} style={{ borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "5px solid #1a1714" }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {showLabel && labelText && (
+        <p className="text-[11px] mt-1.5" style={{ color: "#b0a898" }}>{labelText}</p>
+      )}
+    </div>
+  );
+}
+
 function ActiveIncidentsSection({ incidents }: { incidents: Incident[] }) {
   const [expanded, setExpanded] = useState(false);
   const visible = expanded ? incidents : incidents.slice(0, INITIAL_SHOW);
@@ -365,97 +422,36 @@ export default function PublicStatusPageClient({
       {/* ── UPTIME BARS ── */}
       {services.length > 0 && (
         <section className="mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2.5 gap-0.5">
-            <span
-              className="text-sm font-medium"
-              style={{ color: "#8a8070" }}
-            >
-              {incidentDays}-day uptime — {uptimePct}%
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-0.5">
+            <span className="text-sm font-medium" style={{ color: "#8a8070" }}>
+              {incidentDays}-day uptime —{" "}
+              <span className="font-bold" style={{ color: "#1a1714" }}>
+                {uptimePct}%
+              </span>
             </span>
-            <span
-              className="text-sm font-semibold"
-              style={{ color: "#1a7a4a" }}
-            >
+            <span className="text-sm font-semibold" style={{ color: "#1a7a4a" }}>
               {streak === 0
                 ? "Incident today"
                 : `${streak} day${streak === 1 ? "" : "s"} without incident`}
             </span>
           </div>
-          <div className="flex gap-[3px]">
-            {uptimeBars.map((bar, i) => {
-              const isFirst = i < 4;
-              const isLast = i > uptimeBars.length - 5;
-              const tooltipAlign = isFirst
-                ? "left-0"
-                : isLast
-                  ? "right-0"
-                  : "left-1/2 -translate-x-1/2";
-              const arrowAlign = isFirst
-                ? "left-3"
-                : isLast
-                  ? "right-3"
-                  : "left-1/2 -translate-x-1/2";
-              return (
-                <div
-                  key={i}
-                  className="flex-1 relative group"
-                  style={{ minWidth: 0 }}
-                >
-                  <div
-                    className="w-full rounded-[3px] cursor-default transition-all duration-150 group-hover:brightness-125 group-hover:scale-y-110 origin-bottom"
-                    style={{
-                      height: "32px",
-                      background:
-                        bar.status === "operational" ? "#1a7a4a" : "#e8500a",
-                    }}
-                  />
-                  {/* Tooltip */}
-                  <div
-                    className={`absolute bottom-full mb-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20 ${tooltipAlign}`}
-                  >
-                    <div
-                      className="px-2.5 py-1.5 rounded-[5px] shadow-xl"
-                      style={{
-                        background: "#1a1714",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                      }}
-                    >
-                      <p
-                        className="text-[11px] font-bold whitespace-nowrap"
-                        style={{ color: "#f5f2eb" }}
-                      >
-                        {bar.date.toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </p>
-                      <p
-                        className="text-[11px] font-medium whitespace-nowrap"
-                        style={{
-                          color:
-                            bar.status === "operational"
-                              ? "#4ade80"
-                              : "#fb923c",
-                        }}
-                      >
-                        {bar.status === "operational"
-                          ? "Operational"
-                          : "Incident"}
-                      </p>
-                    </div>
-                    <div
-                      className={`absolute top-full ${arrowAlign} w-0 h-0`}
-                      style={{
-                        borderLeft: "5px solid transparent",
-                        borderRight: "5px solid transparent",
-                        borderTop: "5px solid #1a1714",
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+
+          {/* Mobile: last 30 bars */}
+          <UptimeBarTrack
+            bars={uptimeBars.slice(-30)}
+            barHeight={36}
+            gap={3}
+            showLabel={incidentDays > 30}
+            labelText="last 30 days"
+            className="sm:hidden"
+          />
+          {/* Desktop: all bars */}
+          <UptimeBarTrack
+            bars={uptimeBars}
+            barHeight={32}
+            gap={3}
+            className="hidden sm:flex"
+          />
         </section>
       )}
 
