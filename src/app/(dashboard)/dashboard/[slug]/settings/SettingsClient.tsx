@@ -99,10 +99,10 @@ export default function SettingsClient({ page, plan }: Props) {
             >
                 {/* Card header */}
                 <div
-                    className="px-7 py-5"
+                    className="px-4 sm:px-7 py-4 sm:py-5"
                     style={{ borderBottom: "1.5px solid #e4dfd4" }}
                 >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-start sm:items-center justify-between gap-3">
                         <div>
                             <h2
                                 style={{
@@ -136,7 +136,7 @@ export default function SettingsClient({ page, plan }: Props) {
                     </div>
                 </div>
 
-                <div className="px-7 py-6">
+                <div className="px-4 sm:px-7 py-5 sm:py-6">
                     {!isPro ? (
                         /* Free plan — locked state */
                         <div
@@ -190,7 +190,7 @@ export default function SettingsClient({ page, plan }: Props) {
                                 >
                                     Your domain
                                 </label>
-                                <div className="flex items-stretch gap-2">
+                                <div className="flex flex-col sm:flex-row items-stretch gap-2">
                                     <input
                                         type="text"
                                         value={domain}
@@ -211,7 +211,7 @@ export default function SettingsClient({ page, plan }: Props) {
                                         disabled={
                                             saving || removing || !domain.trim()
                                         }
-                                        className="px-5 rounded-[4px] text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-[#1a1714] text-[#f5f2eb] border-[1.5px] border-[#1a1714] hover:bg-[#e8500a] hover:border-[#e8500a] whitespace-nowrap"
+                                        className="px-5 py-3 rounded-[4px] text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-[#1a1714] text-[#f5f2eb] border-[1.5px] border-[#1a1714] hover:bg-[#e8500a] hover:border-[#e8500a] whitespace-nowrap"
                                     >
                                         {saving
                                             ? "Saving…"
@@ -277,11 +277,12 @@ export default function SettingsClient({ page, plan }: Props) {
 
                                     {/* DNS record table */}
                                     <div
-                                        className="rounded-[4px] overflow-hidden"
+                                        className="rounded-[4px] overflow-x-auto"
                                         style={{
                                             border: "1.5px solid #e4dfd4",
                                         }}
                                     >
+                                        <div className="min-w-[320px]">
                                         <div
                                             className="grid grid-cols-3 px-4 py-2"
                                             style={{
@@ -312,7 +313,7 @@ export default function SettingsClient({ page, plan }: Props) {
                                                 CNAME
                                             </span>
                                             <span
-                                                className="text-sm font-mono"
+                                                className="text-sm font-mono break-all"
                                                 style={{ color: "#1a1714" }}
                                             >
                                                 {page.custom_domain
@@ -322,11 +323,12 @@ export default function SettingsClient({ page, plan }: Props) {
                                                     page.custom_domain}
                                             </span>
                                             <span
-                                                className="text-sm font-mono"
+                                                className="text-sm font-mono break-all"
                                                 style={{ color: "#1a1714" }}
                                             >
                                                 cname.vercel-dns.com
                                             </span>
+                                        </div>
                                         </div>
                                     </div>
 
