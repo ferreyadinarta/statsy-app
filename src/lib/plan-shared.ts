@@ -11,7 +11,7 @@ export const PLAN_LIMITS = {
     pages: 1,
     services: 3,
     subscribers: 30,
-    historyDays: 7,
+    historyDays: 30,
   },
   pro: {
     pages: 3,
