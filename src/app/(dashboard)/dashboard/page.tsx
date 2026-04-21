@@ -22,6 +22,7 @@ export default async function DashboardPage() {
     const { data: pages } = await supabase
         .from("status_pages")
         .select("*")
+        .eq("user_id", user.id)
         .order("created_at", { ascending: true });
 
     // Compute overall status per page based on services + open incidents

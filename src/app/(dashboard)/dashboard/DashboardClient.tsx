@@ -59,7 +59,7 @@ export default function DashboardClient({ pages, plan, overLimitPageIds, graceIn
     const deleteWaitingRef = useRef(false);
     const router = useRouter();
     const { error: showError, success } = useToast();
-    const atLimit = pages.length >= (plan === "pro" ? 3 : 1);
+    const atLimit = pages.length >= (PLAN_LIMITS[plan as keyof typeof PLAN_LIMITS]?.pages ?? 1);
 
     useEffect(() => {
         if (deleteWaitingRef.current && !isDeleteRefreshing) {
