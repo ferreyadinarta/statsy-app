@@ -95,6 +95,16 @@ export default async function DashboardPage() {
                     >
                         Statsy
                     </span>
+                    <span
+                        className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px]"
+                        style={{
+                            background: "rgba(232,80,10,0.1)",
+                            border: "1px solid rgba(232,80,10,0.25)",
+                            color: "#e8500a",
+                        }}
+                    >
+                        Beta
+                    </span>
                 </Link>
 
                 {/* Right — user info + logout */}
