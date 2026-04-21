@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle, AlertCircle, Zap, ArrowRight, Clock, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/use-toast";
@@ -67,6 +67,19 @@ export default function BillingClient({
     const [cancelling, setCancelling] = useState(false);
     const [reactivating, setReactivating] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+    const [inlineCTAVisible, setInlineCTAVisible] = useState(false);
+    const inlineCTARef = useRef<HTMLButtonElement>(null);
+
+    useEffect(() => {
+        const el = inlineCTARef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => setInlineCTAVisible(entry.isIntersecting),
+            { threshold: 0.5 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
     const { success, error: showError } = useToast();
     const router = useRouter();
 
@@ -369,7 +382,7 @@ export default function BillingClient({
     // ── FREE VIEW ─────────────────────────────────────────────────────────────
     return (
         <>
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start pb-24 lg:pb-0">
                 {/* Left — current plan (2/5 width) */}
                 <div
                     className="lg:col-span-2 rounded-[4px] p-6"
@@ -535,6 +548,7 @@ export default function BillingClient({
                     {/* CTA */}
                     <div className="px-6 py-5" style={{ background: "white" }}>
                         <button
+                            ref={inlineCTARef}
                             onClick={handleUpgrade}
                             disabled={!paddleReady}
                             className="w-full flex items-center justify-center gap-2 rounded-[4px] px-6 py-3.5 text-sm font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -557,6 +571,32 @@ export default function BillingClient({
                         </p>
                     </div>
                 </div>
+            </div>
+
+            {/* Sticky upgrade CTA — mobile only, hidden when inline CTA is visible */}
+            <div
+                className={`lg:hidden fixed bottom-0 left-0 right-0 p-4 z-50 transition-transform duration-300 ${inlineCTAVisible ? "translate-y-full" : "translate-y-0"}`}
+                style={{
+                    background: "rgba(245, 242, 235, 0.95)",
+                    backdropFilter: "blur(8px)",
+                    borderTop: "1.5px solid #e4dfd4",
+                }}
+            >
+                <button
+                    onClick={handleUpgrade}
+                    disabled={!paddleReady}
+                    className="w-full flex items-center justify-center gap-2 rounded-[4px] px-6 py-3.5 text-sm font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                        background: "#e8500a",
+                        color: "white",
+                        border: "1.5px solid #e8500a",
+                        boxShadow: "3px 3px 0 #1a1714",
+                    }}
+                >
+                    <Zap size={15} strokeWidth={2.5} />
+                    Upgrade to Pro — $15/mo
+                    <ArrowRight size={15} strokeWidth={2.5} />
+                </button>
             </div>
 
             {showCancelConfirm && (
