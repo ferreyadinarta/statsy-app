@@ -159,12 +159,7 @@ export default function PublicStatusPageClient({
   useEffect(() => {
     const poll = async () => {
       try {
-        const host = window.location.hostname;
-        const parts = host.split(".");
-        const apiBase = parts.length > 2
-          ? `${window.location.protocol}//${parts.slice(1).join(".")}`
-          : window.location.origin;
-        const res = await fetch(`${apiBase}/api/public-status/${page.slug}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/public-status/${page.slug}`);
         if (!res.ok) return;
         const data = await res.json();
         setServices(data.services);

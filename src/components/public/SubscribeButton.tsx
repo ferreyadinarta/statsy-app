@@ -34,12 +34,7 @@ export default function SubscribeButton({ statusPageId }: Props) {
     setLoading(true);
 
     try {
-      const host = window.location.hostname;
-      const parts = host.split(".");
-      const apiBase = parts.length > 2
-        ? `${window.location.protocol}//${parts.slice(1).join(".")}`
-        : window.location.origin;
-      const res = await fetch(`${apiBase}/api/subscribe`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
