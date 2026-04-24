@@ -28,7 +28,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Page not found." }, { status: 404 });
   }
 
-  // Fetch incident IDs for this page
+  // Fetch incident IDs so we can delete their child updates
   const { data: incidents } = await supabase
     .from("incidents")
     .select("id")
@@ -36,37 +36,30 @@ export async function DELETE(
 
   const incidentIds = (incidents ?? []).map((i) => i.id);
 
-  // Delete incident_updates
-  if (incidentIds.length > 0) {
-    const { error } = await supabase
-      .from("incident_updates")
-      .delete()
-      .in("incident_id", incidentIds);
+  // Delete incident_updates, subscribers, and services in parallel
+  // (they are independent of each other — only incidents must go last)
+  const [updatesResult, subResult, svcResult] = await Promise.all([
+    incidentIds.length > 0
+      ? supabase.from("incident_updates").delete().in("incident_id", incidentIds)
+      : Promise.resolve({ error: null }),
+    supabase.from("subscribers").delete().eq("status_page_id", id),
+    supabase.from("services").delete().eq("status_page_id", id),
+  ]);
 
-    if (error) {
-      console.error("Failed to delete incident_updates:", error);
-      return NextResponse.json(
-        { error: "Failed to delete incident updates." },
-        { status: 500 }
-      );
-    }
+  if (updatesResult.error) {
+    console.error("Failed to delete incident_updates:", updatesResult.error);
+    return NextResponse.json({ error: "Failed to delete incident updates." }, { status: 500 });
+  }
+  if (subResult.error) {
+    console.error("Failed to delete subscribers:", subResult.error);
+    return NextResponse.json({ error: "Failed to delete subscribers." }, { status: 500 });
+  }
+  if (svcResult.error) {
+    console.error("Failed to delete services:", svcResult.error);
+    return NextResponse.json({ error: "Failed to delete services." }, { status: 500 });
   }
 
-  // Delete subscribers
-  const { error: subError } = await supabase
-    .from("subscribers")
-    .delete()
-    .eq("status_page_id", id);
-
-  if (subError) {
-    console.error("Failed to delete subscribers:", subError);
-    return NextResponse.json(
-      { error: "Failed to delete subscribers." },
-      { status: 500 }
-    );
-  }
-
-  // Delete incidents
+  // Delete incidents before the parent page
   const { error: incError } = await supabase
     .from("incidents")
     .delete()
@@ -74,27 +67,10 @@ export async function DELETE(
 
   if (incError) {
     console.error("Failed to delete incidents:", incError);
-    return NextResponse.json(
-      { error: "Failed to delete incidents." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete incidents." }, { status: 500 });
   }
 
-  // Delete services
-  const { error: svcError } = await supabase
-    .from("services")
-    .delete()
-    .eq("status_page_id", id);
-
-  if (svcError) {
-    console.error("Failed to delete services:", svcError);
-    return NextResponse.json(
-      { error: "Failed to delete services." },
-      { status: 500 }
-    );
-  }
-
-  // Delete the status page
+  // Delete the status page last
   const { error: pageDeleteError } = await supabase
     .from("status_pages")
     .delete()
@@ -103,10 +79,7 @@ export async function DELETE(
 
   if (pageDeleteError) {
     console.error("Failed to delete status page:", pageDeleteError);
-    return NextResponse.json(
-      { error: "Failed to delete status page." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete status page." }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
