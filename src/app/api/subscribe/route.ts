@@ -48,18 +48,7 @@ export async function POST(req: NextRequest) {
   const plan = await getUserPlan(page.user_id);
   const limit = PLAN_LIMITS[plan].subscribers;
 
-  const { count } = await supabase
-    .from("subscribers")
-    .select("*", { count: "exact", head: true })
-    .eq("status_page_id", status_page_id);
-
-  if ((count ?? 0) >= limit) {
-    return NextResponse.json(
-      { error: "This page has reached its subscriber limit." },
-      { status: 403, headers: CORS_HEADERS },
-    );
-  }
-
+  // Insert first, then count-check to avoid TOCTOU race condition.
   const { error: insertError } = await supabase
     .from("subscribers")
     .insert({ email, status_page_id });
@@ -75,6 +64,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500, headers: CORS_HEADERS },
+    );
+  }
+
+  // Count after insert — if over limit, remove the row we just added.
+  const { count } = await supabase
+    .from("subscribers")
+    .select("*", { count: "exact", head: true })
+    .eq("status_page_id", status_page_id);
+
+  if ((count ?? 0) > limit) {
+    await supabase
+      .from("subscribers")
+      .delete()
+      .eq("status_page_id", status_page_id)
+      .eq("email", email);
+
+    return NextResponse.json(
+      { error: "This page has reached its subscriber limit." },
+      { status: 403, headers: CORS_HEADERS },
     );
   }
 

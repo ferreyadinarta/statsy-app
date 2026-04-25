@@ -87,7 +87,10 @@ export async function POST(req: NextRequest) {
 
   const vercelData = await vercelRes.json();
 
-  // 409 means domain already added to Vercel — that's fine, continue
+  // 409 means domain already added to Vercel — that's fine, continue.
+  // Track whether we freshly added it so we know whether to clean up on DB failure.
+  const vercelFreshlyAdded = vercelRes.ok;
+
   if (!vercelRes.ok && vercelRes.status !== 409) {
     console.error("Vercel domain add error:", vercelData);
     return NextResponse.json(
@@ -104,8 +107,10 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.id);
 
   if (updateError) {
-    // Compensate: remove the domain from Vercel since the DB claim failed
-    await removeVercelDomain(cleanDomain);
+    // Only remove from Vercel if we added it — don't touch pre-existing registrations.
+    if (vercelFreshlyAdded) {
+      await removeVercelDomain(cleanDomain);
+    }
 
     if (updateError.code === "23505") {
       return NextResponse.json(

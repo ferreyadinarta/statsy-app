@@ -1,16 +1,26 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const SUCCESS_RESPONSE = new NextResponse(
+  renderPage(
+    "Unsubscribed",
+    "You've been successfully unsubscribed. You won't receive any more notifications from this page.",
+  ),
+  { status: 200, headers: { "Content-Type": "text/html" } },
+);
+
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
 
-  if (!token) {
+  // Reject missing or non-UUID tokens immediately — prevents brute-force enumeration.
+  // Always return the same success page for valid-format tokens regardless of whether
+  // the token existed, to prevent timing-based token discovery.
+  if (!token || !UUID_REGEX.test(token)) {
     return new NextResponse(
       renderPage("Invalid link", "This unsubscribe link is invalid."),
-      {
-        status: 400,
-        headers: { "Content-Type": "text/html" },
-      },
+      { status: 400, headers: { "Content-Type": "text/html" } },
     );
   }
 
@@ -32,13 +42,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  return new NextResponse(
-    renderPage(
-      "Unsubscribed",
-      "You've been successfully unsubscribed. You won't receive any more notifications from this page.",
-    ),
-    { status: 200, headers: { "Content-Type": "text/html" } },
-  );
+  return SUCCESS_RESPONSE;
 }
 
 function renderPage(title: string, message: string): string {

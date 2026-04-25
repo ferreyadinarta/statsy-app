@@ -1,7 +1,6 @@
 "use client";
 
 import { JSX, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -31,7 +30,6 @@ export default function EditServiceModal({ service, onClose, onSuccess }: Props)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
 
-  const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
 
@@ -52,12 +50,13 @@ export default function EditServiceModal({ service, onClose, onSuccess }: Props)
 
     setLoading(true);
 
-    const { error } = await supabase
-      .from("services")
-      .update({ name: name.trim(), status })
-      .eq("id", service.id);
+    const res = await fetch(`/api/services/${service.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: name.trim(), status }),
+    });
 
-    if (error) {
+    if (!res.ok) {
       setLoading(false);
       showError("Failed To Edit Service. Please try again.");
       return;

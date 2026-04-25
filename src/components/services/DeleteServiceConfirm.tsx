@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, AlertTriangle } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -20,19 +19,15 @@ type Props = {
 export default function DeleteServiceConfirm({ service, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
-  const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
 
   async function handleDelete() {
     setLoading(true);
 
-    const { error } = await supabase
-      .from("services")
-      .delete()
-      .eq("id", service.id);
+    const res = await fetch(`/api/services/${service.id}`, { method: "DELETE" });
 
-    if (error) {
+    if (!res.ok) {
       setLoading(false);
       showError("Failed to delete service. Please try again.");
       return;
