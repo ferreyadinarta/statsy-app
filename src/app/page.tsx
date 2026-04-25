@@ -10,6 +10,6 @@ export default async function Home() {
   if (user) {
     redirect("/dashboard");
   } else {
-    redirect("https://landing.statsy.page");
+    redirect(process.env.NEXT_PUBLIC_LANDING_URL || "/login");
   }
 }
