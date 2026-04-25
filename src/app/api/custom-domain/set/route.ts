@@ -9,6 +9,18 @@ function getVercelApiBase() {
   return teamId ? `${base}?teamId=${teamId}` : base;
 }
 
+async function removeVercelDomain(domain: string) {
+  const teamId = process.env.VERCEL_TEAM_ID;
+  const projectId = process.env.VERCEL_PROJECT_ID;
+  const url = teamId
+    ? `https://api.vercel.com/v10/projects/${projectId}/domains/${domain}?teamId=${teamId}`
+    : `https://api.vercel.com/v10/projects/${projectId}/domains/${domain}`;
+  await fetch(url, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${process.env.VERCEL_API_TOKEN}` },
+  });
+}
+
 function isValidDomain(domain: string): boolean {
   // Must look like a real hostname — no protocol, no path, no port
   const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
@@ -92,7 +104,9 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.id);
 
   if (updateError) {
-    // Unique constraint violation — domain already claimed by another page
+    // Compensate: remove the domain from Vercel since the DB claim failed
+    await removeVercelDomain(cleanDomain);
+
     if (updateError.code === "23505") {
       return NextResponse.json(
         { error: "This domain is already linked to another status page." },

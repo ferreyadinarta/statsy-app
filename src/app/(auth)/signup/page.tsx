@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
@@ -23,6 +23,12 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const emailParam = params.get("email");
+    if (emailParam) setEmail(emailParam);
+  }, []);
 
   function validate(): boolean {
     const errors: FieldErrors = {};

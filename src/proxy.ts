@@ -21,10 +21,31 @@ function isStatsyHost(host: string): boolean {
     );
 }
 
+const CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Max-Age": "86400",
+};
+
+const PUBLIC_API_ROUTES = ["/api/subscribe", "/api/public-status/"];
+
 export async function proxy(request: NextRequest) {
     const host = request.headers.get("host") ?? "";
     const { pathname } = request.nextUrl;
     console.log("PROXY HIT:", host, pathname);
+
+    // ── CORS for public API routes ─────────────────────────────────────────────
+    const isPublicApi = PUBLIC_API_ROUTES.some((r) => pathname.startsWith(r));
+    if (isPublicApi) {
+        if (request.method === "OPTIONS") {
+            return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+        }
+        const res = NextResponse.next();
+        Object.entries(CORS_HEADERS).forEach(([k, v]) => res.headers.set(k, v));
+        return res;
+    }
+
     // ── Wildcard subdomain routing ─────────────────────────────────────────────
     if (host.endsWith(".statsy.page") && host !== "www.statsy.page") {
         const slug = host.replace(".statsy.page", "");

@@ -450,7 +450,7 @@ export default function PublicStatusPageClient({
             bars={uptimeBars}
             barHeight={32}
             gap={3}
-            className="hidden sm:flex"
+            className="hidden sm:block"
           />
         </section>
       )}

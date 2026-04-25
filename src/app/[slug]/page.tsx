@@ -125,7 +125,25 @@ export default async function PublicStatusPage({ params }: PageProps) {
 
     const lastUpdated = computeLastUpdated(services ?? [], incidents ?? []);
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: `${page.name} Status`,
+        description: `Live status and incident updates for ${page.name}. Check if all systems are operational.`,
+        url: `https://${slug}.statsy.page`,
+        publisher: {
+            "@type": "Organization",
+            name: "Statsy",
+            url: "https://statsy.page",
+        },
+    };
+
     return (
+        <>
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <div className="min-h-screen bg-[#f5f2eb] overflow-x-hidden">
             <header
                 className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4"
@@ -211,5 +229,6 @@ export default async function PublicStatusPage({ params }: PageProps) {
                 )}
             </main>
         </div>
+        </>
     );
 }

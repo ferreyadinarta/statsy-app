@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
+
 import { useRouter } from "next/navigation";
 import { X, AlertTriangle } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -19,19 +20,15 @@ export default function DeleteIncidentConfirm({
 }: Props) {
   const [loading, setLoading] = useState(false);
 
-  const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
 
   async function handleDelete() {
     setLoading(true);
 
-    const { error } = await supabase
-      .from("incidents")
-      .delete()
-      .eq("id", incidentId);
+    const res = await fetch(`/api/incidents?id=${incidentId}`, { method: "DELETE" });
 
-    if (error) {
+    if (!res.ok) {
       setLoading(false);
       showError("Failed to delete incident. Please try again.");
       return;

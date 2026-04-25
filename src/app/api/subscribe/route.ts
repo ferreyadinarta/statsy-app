@@ -2,13 +2,23 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new Response(null, { headers: CORS_HEADERS });
+}
+
 export async function POST(req: NextRequest) {
   const { email, status_page_id } = await req.json();
 
   if (!email || !status_page_id) {
     return NextResponse.json(
       { error: "Missing required fields." },
-      { status: 400 },
+      { status: 400, headers: CORS_HEADERS },
     );
   }
 
@@ -16,7 +26,7 @@ export async function POST(req: NextRequest) {
   if (!emailRegex.test(email)) {
     return NextResponse.json(
       { error: "Please enter a valid email address." },
-      { status: 400 },
+      { status: 400, headers: CORS_HEADERS },
     );
   }
 
@@ -31,11 +41,10 @@ export async function POST(req: NextRequest) {
   if (pageError || !page) {
     return NextResponse.json(
       { error: "Status page not found." },
-      { status: 404 },
+      { status: 404, headers: CORS_HEADERS },
     );
   }
 
-  // Respect the page owner's plan limit
   const plan = await getUserPlan(page.user_id);
   const limit = PLAN_LIMITS[plan].subscribers;
 
@@ -47,7 +56,7 @@ export async function POST(req: NextRequest) {
   if ((count ?? 0) >= limit) {
     return NextResponse.json(
       { error: "This page has reached its subscriber limit." },
-      { status: 403 },
+      { status: 403, headers: CORS_HEADERS },
     );
   }
 
@@ -59,15 +68,15 @@ export async function POST(req: NextRequest) {
     if (insertError.code === "23505") {
       return NextResponse.json(
         { error: "This email is already subscribed." },
-        { status: 409 },
+        { status: 409, headers: CORS_HEADERS },
       );
     }
     console.error("Subscribe insert error:", insertError);
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
-      { status: 500 },
+      { status: 500, headers: CORS_HEADERS },
     );
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true }, { headers: CORS_HEADERS });
 }
