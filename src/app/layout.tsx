@@ -3,7 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-    title: "Statsy — Status Pages for Everyone",
+    title: "Statsy - Status Pages for Everyone",
     description:
         "Simple, affordable status pages for developers and small teams.",
     icons: {
