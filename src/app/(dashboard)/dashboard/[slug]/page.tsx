@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import StatusPageClient from "./StatusPageClient";
-import { getUserPlan, getGraceInfo } from "@/lib/plan";
+import { getUserPlanAndGrace } from "@/lib/plan";
 
 type PageProps = {
     params: Promise<{ slug: string }>;
@@ -20,15 +20,14 @@ export default async function StatusPageManagePage({ params }: PageProps) {
 
     if (!user) redirect("/login");
 
-    const [{ data: page, error: pageError }, plan, graceInfo] = await Promise.all([
+    const [{ data: page, error: pageError }, { plan, graceInfo }] = await Promise.all([
         supabase
             .from("status_pages")
             .select("*")
             .eq("slug", slug)
             .eq("user_id", user.id)
             .single(),
-        getUserPlan(user.id),
-        getGraceInfo(user.id),
+        getUserPlanAndGrace(user.id),
     ]);
 
     if (pageError || !page) notFound();

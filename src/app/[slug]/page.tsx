@@ -4,6 +4,19 @@ import PublicStatusPageClient from "./PublicStatusPageClient";
 import SubscribeButton from "@/components/public/SubscribeButton";
 import type { Metadata } from "next";
 import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
+import { cache } from "react";
+
+// cache() deduplicates this call between generateMetadata and the page component,
+// which share the same React render tree root per request in Next.js App Router.
+const getStatusPage = cache(async (slug: string) => {
+    const supabase = await createClient();
+    const { data: page, error } = await supabase
+        .from("status_pages")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+    return { page: error ? null : page };
+});
 
 function computeLastUpdated(
     services: { created_at: string }[],
@@ -40,13 +53,7 @@ export async function generateMetadata({
     params,
 }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const supabase = await createClient();
-
-    const { data: page } = await supabase
-        .from("status_pages")
-        .select("name")
-        .eq("slug", slug)
-        .single();
+    const { page } = await getStatusPage(slug);
 
     if (!page) {
         return { title: "Status Page | Statsy" };
@@ -79,31 +86,24 @@ export async function generateMetadata({
 
 export default async function PublicStatusPage({ params }: PageProps) {
     const { slug } = await params;
+    const { page } = await getStatusPage(slug);
+
+    if (!page) notFound();
+
     const supabase = await createClient();
 
-    const { data: page, error: pageError } = await supabase
-        .from("status_pages")
-        .select("*")
-        .eq("slug", slug)
-        .single();
-
-    if (pageError || !page) notFound();
-
-    const { data: services } = await supabase
-        .from("services")
-        .select("*")
-        .eq("status_page_id", page.id)
-        .order("created_at", { ascending: true });
-
-    const [ownerPlan, { data: ownerPages }] = await Promise.all([
+    const [{ data: services }, ownerPlan, { data: ownerPages }] = await Promise.all([
+        supabase
+            .from("services")
+            .select("*")
+            .eq("status_page_id", page.id)
+            .order("created_at", { ascending: true }),
         getUserPlan(page.user_id),
-        createClient().then((sb) =>
-            sb
-                .from("status_pages")
-                .select("id")
-                .eq("user_id", page.user_id)
-                .order("created_at", { ascending: true }),
-        ),
+        supabase
+            .from("status_pages")
+            .select("id")
+            .eq("user_id", page.user_id)
+            .order("created_at", { ascending: true }),
     ]);
 
     const pageLimit = PLAN_LIMITS[ownerPlan].pages;
@@ -116,6 +116,8 @@ export default async function PublicStatusPage({ params }: PageProps) {
     const dateThreshold = new Date();
     dateThreshold.setDate(dateThreshold.getDate() - daysToShow);
 
+    // Sequential after ownerPlan resolves — daysToShow depends on plan.
+    // Fetching max history (90d) and trimming would save a round trip but wastes bandwidth for free users.
     const { data: incidents } = await supabase
         .from("incidents")
         .select(`*, incident_updates(*)`)

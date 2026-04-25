@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "../../../components/dashboard/LogoutButton";
 import DashboardClient from "./DashboardClient";
-import { getUserPlan, PLAN_LIMITS, getGraceInfo } from "@/lib/plan";
+import { getUserPlanAndGrace, PLAN_LIMITS } from "@/lib/plan";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -13,9 +13,8 @@ export default async function DashboardPage() {
 
     if (!user) redirect("/login");
 
-    const [plan, graceInfo, { data: pages }] = await Promise.all([
-        getUserPlan(user.id),
-        getGraceInfo(user.id),
+    const [{ plan, graceInfo }, { data: pages }] = await Promise.all([
+        getUserPlanAndGrace(user.id),
         supabase
             .from("status_pages")
             .select("*")
