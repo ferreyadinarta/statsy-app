@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, AlertTriangle } from "lucide-react";
@@ -18,21 +18,10 @@ export default function DeleteIncidentConfirm({
   onClose,
 }: Props) {
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [isRefreshing, startRefresh] = useTransition();
 
   const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
-
-  useEffect(() => {
-    if (submitted && !isRefreshing) {
-      success("Incident deleted.");
-      setLoading(false);
-      setSubmitted(false);
-      onClose();
-    }
-  }, [submitted, isRefreshing, success, onClose]);
 
   async function handleDelete() {
     setLoading(true);
@@ -48,10 +37,9 @@ export default function DeleteIncidentConfirm({
       return;
     }
 
-    setSubmitted(true);
-    startRefresh(() => {
-      router.refresh();
-    });
+    success("Incident deleted.");
+    onClose();
+    router.refresh();
   }
 
   return (
@@ -85,14 +73,14 @@ export default function DeleteIncidentConfirm({
           </h2>
           <button
             onClick={() => !loading && onClose()}
-            disabled={loading || isRefreshing}
+            disabled={loading || loading}
             className="transition-colors rounded-[4px] p-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ color: "#8a8070" }}
             onMouseEnter={(e) => {
-              if (!(loading || isRefreshing)) e.currentTarget.style.color = "#1a1714";
+              if (!(loading || loading)) e.currentTarget.style.color = "#1a1714";
             }}
             onMouseLeave={(e) => {
-              if (!(loading || isRefreshing)) e.currentTarget.style.color = "#8a8070";
+              if (!(loading || loading)) e.currentTarget.style.color = "#8a8070";
             }}
           >
             <X size={18} />
@@ -136,7 +124,7 @@ export default function DeleteIncidentConfirm({
             <button
               type="button"
               onClick={onClose}
-              disabled={loading || isRefreshing}
+              disabled={loading || loading}
               className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "white",
@@ -144,37 +132,37 @@ export default function DeleteIncidentConfirm({
                 border: "1.5px solid #e4dfd4",
               }}
               onMouseEnter={(e) => {
-                if (!(loading || isRefreshing)) e.currentTarget.style.background = "#f5f2eb";
+                if (!(loading || loading)) e.currentTarget.style.background = "#f5f2eb";
               }}
               onMouseLeave={(e) => {
-                if (!(loading || isRefreshing)) e.currentTarget.style.background = "white";
+                if (!(loading || loading)) e.currentTarget.style.background = "white";
               }}
             >
               Cancel
             </button>
             <button
               onClick={handleDelete}
-              disabled={loading || isRefreshing}
+              disabled={loading || loading}
               className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                background: (loading || isRefreshing) ? "#8a8070" : "#d32f2f",
+                background: (loading || loading) ? "#8a8070" : "#d32f2f",
                 color: "white",
-                border: `1.5px solid ${(loading || isRefreshing) ? "#8a8070" : "#d32f2f"}`,
+                border: `1.5px solid ${(loading || loading) ? "#8a8070" : "#d32f2f"}`,
               }}
               onMouseEnter={(e) => {
-                if (!(loading || isRefreshing)) {
+                if (!(loading || loading)) {
                   e.currentTarget.style.background = "#b71c1c";
                   e.currentTarget.style.borderColor = "#b71c1c";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!(loading || isRefreshing)) {
+                if (!(loading || loading)) {
                   e.currentTarget.style.background = "#d32f2f";
                   e.currentTarget.style.borderColor = "#d32f2f";
                 }
               }}
             >
-              {(loading || isRefreshing) ? "Deleting…" : "Delete incident"}
+              {(loading || loading) ? "Deleting…" : "Delete incident"}
             </button>
           </div>
         </div>

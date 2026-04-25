@@ -55,7 +55,7 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/callback`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
       },
     });
     setLoading(false);
