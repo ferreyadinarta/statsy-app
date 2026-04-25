@@ -1,20 +1,34 @@
 "use client";
 
-import { useState, useRef, useEffect, useTransition } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, ChevronDown } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
 
+type IncidentStatus = "investigating" | "identified" | "monitoring" | "resolved";
+
+type IncidentUpdate = {
+  id: string;
+  message: string;
+  status: IncidentStatus;
+  created_at: string;
+};
+
+type Incident = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: IncidentStatus;
+  status_page_id: string;
+  created_at: string;
+  incident_updates: IncidentUpdate[];
+};
+
 type Props = {
   pageId: string;
   onClose: () => void;
+  onSuccess: (incident: Incident) => void;
 };
-
-type IncidentStatus =
-  | "investigating"
-  | "identified"
-  | "monitoring"
-  | "resolved";
 
 type FieldErrors = {
   title?: string;
@@ -57,38 +71,23 @@ const statusOptions: {
   },
 ];
 
-export default function CreateIncidentModal({ pageId, onClose }: Props) {
+export default function CreateIncidentModal({ pageId, onClose, onSuccess }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<IncidentStatus>("investigating");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [isRefreshing, startRefresh] = useTransition();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { success, error: showError } = useToast();
 
-  useEffect(() => {
-    if (submitted && !isRefreshing) {
-      success("Incident Posted Successfully!");
-      setLoading(false);
-      setSubmitted(false);
-      onClose();
-    }
-  }, [submitted, isRefreshing, success, onClose]);
-
   const selectedOption = statusOptions.find((o) => o.value === status)!;
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
     }
@@ -109,7 +108,7 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
     return Object.keys(errors).length === 0;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
     if (!validate()) return;
 
@@ -133,6 +132,8 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
       return;
     }
 
+    const { incident } = await res.json();
+
     fetch("/api/notify-subscribers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -144,10 +145,11 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
       }),
     }).catch((err) => console.error("Notification failed:", err));
 
-    setSubmitted(true);
-    startRefresh(() => {
-      router.refresh();
-    });
+    onSuccess({ ...incident, incident_updates: [] });
+    success("Incident Posted Successfully!");
+    setLoading(false);
+    onClose();
+    router.refresh();
   }
 
   return (
@@ -258,7 +260,6 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
               Initial status
             </label>
             <div className="relative" ref={dropdownRef}>
-              {/* Trigger */}
               <button
                 type="button"
                 onClick={() => setDropdownOpen((prev) => !prev)}
@@ -267,12 +268,9 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
                   border: `1.5px solid ${dropdownOpen ? "#1a1714" : "#e4dfd4"}`,
                   background: "white",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.borderColor = "#1a1714")
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#1a1714")}
                 onMouseLeave={(e) => {
-                  if (!dropdownOpen)
-                    e.currentTarget.style.borderColor = "#e4dfd4";
+                  if (!dropdownOpen) e.currentTarget.style.borderColor = "#e4dfd4";
                 }}
               >
                 <span
@@ -283,10 +281,7 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
                     border: `1.5px solid ${selectedOption.border}`,
                   }}
                 >
-                  <span
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: selectedOption.color }}
-                  />
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: selectedOption.color }} />
                   {selectedOption.label}
                 </span>
                 <ChevronDown
@@ -299,7 +294,6 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
                 />
               </button>
 
-              {/* Dropdown options */}
               {dropdownOpen && (
                 <div
                   className="absolute top-full left-0 right-0 mt-1 rounded-[4px] overflow-hidden z-10"
@@ -319,16 +313,12 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
                       }}
                       className="w-full flex items-center gap-2.5 px-4 py-3 text-left cursor-pointer transition-colors"
                       style={{
-                        background:
-                          status === option.value ? "#f5f2eb" : "white",
+                        background: status === option.value ? "#f5f2eb" : "white",
                         borderBottom: "1px solid #e4dfd4",
                       }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.background = "#f5f2eb")
-                      }
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f2eb")}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background =
-                          status === option.value ? "#f5f2eb" : "white";
+                        e.currentTarget.style.background = status === option.value ? "#f5f2eb" : "white";
                       }}
                     >
                       <span
@@ -339,10 +329,7 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
                           border: `1.5px solid ${option.border}`,
                         }}
                       >
-                        <span
-                          className="w-1.5 h-1.5 rounded-full"
-                          style={{ background: option.color }}
-                        />
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: option.color }} />
                         {option.label}
                       </span>
                     </button>
@@ -360,7 +347,7 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              disabled={loading || isRefreshing}
+              disabled={loading}
               className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "white",
@@ -368,37 +355,37 @@ export default function CreateIncidentModal({ pageId, onClose }: Props) {
                 color: "#3d3830",
               }}
               onMouseEnter={(e) => {
-                if (!(loading || isRefreshing)) e.currentTarget.style.background = "#f5f2eb";
+                if (!loading) e.currentTarget.style.background = "#f5f2eb";
               }}
               onMouseLeave={(e) => {
-                if (!(loading || isRefreshing)) e.currentTarget.style.background = "white";
+                if (!loading) e.currentTarget.style.background = "white";
               }}
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={loading || isRefreshing}
+              disabled={loading}
               className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                background: (loading || isRefreshing) ? "#8a8070" : "#1a1714",
+                background: loading ? "#8a8070" : "#1a1714",
                 border: "1.5px solid #1a1714",
                 color: "#f5f2eb",
               }}
               onMouseEnter={(e) => {
-                if (!(loading || isRefreshing)) {
+                if (!loading) {
                   e.currentTarget.style.background = "#e8500a";
                   e.currentTarget.style.borderColor = "#e8500a";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!(loading || isRefreshing)) {
+                if (!loading) {
                   e.currentTarget.style.background = "#1a1714";
                   e.currentTarget.style.borderColor = "#1a1714";
                 }
               }}
             >
-              {(loading || isRefreshing) ? "Posting..." : "Post incident"}
+              {loading ? "Posting..." : "Post incident"}
             </button>
           </div>
         </form>

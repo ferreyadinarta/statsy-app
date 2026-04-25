@@ -14,9 +14,10 @@ type Service = {
 type Props = {
   service: Service;
   onClose: () => void;
+  onSuccess: (serviceId: string) => void;
 };
 
-export default function DeleteServiceConfirm({ service, onClose }: Props) {
+export default function DeleteServiceConfirm({ service, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
@@ -33,10 +34,11 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
 
     if (error) {
       setLoading(false);
-      showError("Failed");
+      showError("Failed to delete service. Please try again.");
       return;
     }
 
+    onSuccess(service.id);
     success("Service Deleted Successfully!");
     onClose();
     router.refresh();
@@ -84,7 +86,6 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
 
         {/* Content */}
         <div className="px-8 py-6 flex flex-col gap-5">
-          {/* Warning */}
           <div
             className="flex gap-3 px-4 py-4 rounded-[4px]"
             style={{
@@ -92,23 +93,14 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
               border: "1px solid #d32f2f",
             }}
           >
-            <AlertTriangle
-              size={20}
-              style={{ color: "#d32f2f", flexShrink: 0 }}
-            />
+            <AlertTriangle size={20} style={{ color: "#d32f2f", flexShrink: 0 }} />
             <div>
-              <p
-                className="text-sm font-semibold mb-1"
-                style={{ color: "#1a1714" }}
-              >
+              <p className="text-sm font-semibold mb-1" style={{ color: "#1a1714" }}>
                 Are you sure?
               </p>
-              <p
-                className="text-sm leading-relaxed"
-                style={{ color: "#3d3830" }}
-              >
+              <p className="text-sm leading-relaxed" style={{ color: "#3d3830" }}>
                 This will permanently delete the service{" "}
-                <strong>"{service.name}"</strong>. This action cannot be undone.
+                <strong>&quot;{service.name}&quot;</strong>. This action cannot be undone.
               </p>
             </div>
           </div>
@@ -118,44 +110,45 @@ export default function DeleteServiceConfirm({ service, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer"
+              disabled={loading}
+              className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "white",
                 color: "#3d3830",
                 border: "1.5px solid #e4dfd4",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#f5f2eb";
+                if (!loading) e.currentTarget.style.background = "#f5f2eb";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "white";
+                if (!loading) e.currentTarget.style.background = "white";
               }}
             >
               Cancel
             </button>
             <button
               onClick={handleDelete}
-              disabled={loading || loading}
+              disabled={loading}
               className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                background: "#d32f2f",
+                background: loading ? "#8a8070" : "#d32f2f",
                 color: "white",
-                border: "1.5px solid #d32f2f",
+                border: `1.5px solid ${loading ? "#8a8070" : "#d32f2f"}`,
               }}
               onMouseEnter={(e) => {
-                if (!(loading || loading)) {
+                if (!loading) {
                   e.currentTarget.style.background = "#b71c1c";
                   e.currentTarget.style.borderColor = "#b71c1c";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!(loading || loading)) {
+                if (!loading) {
                   e.currentTarget.style.background = "#d32f2f";
                   e.currentTarget.style.borderColor = "#d32f2f";
                 }
               }}
             >
-              {(loading || loading) ? "Deleting..." : "Delete service"}
+              {loading ? "Deleting..." : "Delete service"}
             </button>
           </div>
         </div>

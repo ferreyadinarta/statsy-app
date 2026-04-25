@@ -1,40 +1,38 @@
 "use client";
 
-import { JSX, useEffect, useState, useTransition } from "react";
+import { JSX, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
 
-type Props = {
-  pageId: string;
-  onClose: () => void;
-};
-
 type ServiceStatus = "operational" | "degraded" | "outage";
+
+type Service = {
+  id: string;
+  name: string;
+  status: ServiceStatus;
+  created_at: string;
+};
 
 type FieldErrors = {
   name?: string;
 };
 
-export default function AddServiceModal({ pageId, onClose }: Props) {
+type Props = {
+  pageId: string;
+  onClose: () => void;
+  onSuccess: (service: Service) => void;
+};
+
+export default function AddServiceModal({ pageId, onClose, onSuccess }: Props) {
   const [name, setName] = useState("");
   const [status, setStatus] = useState<ServiceStatus>("operational");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [isRefreshing, startRefresh] = useTransition();
 
   const router = useRouter();
   const { success, error: showError } = useToast();
 
-  useEffect(() => {
-    if (submitted && !isRefreshing) {
-      success("Service Added Successfully!");
-      setLoading(false);
-      setSubmitted(false);
-      onClose();
-    }
-  }, [submitted, isRefreshing, success, onClose]);
   function validate(): boolean {
     const errors: FieldErrors = {};
     if (!name.trim()) {
@@ -65,10 +63,12 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
       return;
     }
 
-    setSubmitted(true);
-    startRefresh(() => {
-      router.refresh();
-    });
+    const { service } = await res.json();
+    onSuccess(service);
+    success("Service Added Successfully!");
+    setLoading(false);
+    onClose();
+    router.refresh();
   }
 
   const statusOptions: {
@@ -251,7 +251,7 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
             </button>
             <button
               type="submit"
-              disabled={loading || isRefreshing}
+              disabled={loading}
               className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "#1a1714",
@@ -259,19 +259,19 @@ export default function AddServiceModal({ pageId, onClose }: Props) {
                 border: "1.5px solid #1a1714",
               }}
               onMouseEnter={(e) => {
-                if (!(loading || isRefreshing)) {
+                if (!loading) {
                   e.currentTarget.style.background = "#e8500a";
                   e.currentTarget.style.borderColor = "#e8500a";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!(loading || isRefreshing)) {
+                if (!loading) {
                   e.currentTarget.style.background = "#1a1714";
                   e.currentTarget.style.borderColor = "#1a1714";
                 }
               }}
             >
-              {(loading || isRefreshing) ? "Adding..." : "Add service"}
+              {loading ? "Adding..." : "Add service"}
             </button>
           </div>
         </form>

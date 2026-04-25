@@ -1,48 +1,39 @@
 "use client";
 
-import { JSX, useEffect, useState, useTransition } from "react";
+import { JSX, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
 
+type ServiceStatus = "operational" | "degraded" | "outage";
+
 type Service = {
   id: string;
   name: string;
-  status: "operational" | "degraded" | "outage";
+  status: ServiceStatus;
+  created_at: string;
 };
-
-type Props = {
-  service: Service;
-  onClose: () => void;
-};
-
-type ServiceStatus = "operational" | "degraded" | "outage";
 
 type FieldErrors = {
   name?: string;
 };
 
-export default function EditServiceModal({ service, onClose }: Props) {
+type Props = {
+  service: Service;
+  onClose: () => void;
+  onSuccess: (service: Service) => void;
+};
+
+export default function EditServiceModal({ service, onClose, onSuccess }: Props) {
   const [name, setName] = useState(service.name);
   const [status, setStatus] = useState<ServiceStatus>(service.status);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [isRefreshing, startRefresh] = useTransition();
 
   const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
-
-  useEffect(() => {
-    if (submitted && !isRefreshing) {
-      success("Service Edited Successfully!");
-      setLoading(false);
-      setSubmitted(false);
-      onClose();
-    }
-  }, [submitted, isRefreshing, success, onClose]);
 
   function validate(): boolean {
     const errors: FieldErrors = {};
@@ -63,10 +54,7 @@ export default function EditServiceModal({ service, onClose }: Props) {
 
     const { error } = await supabase
       .from("services")
-      .update({
-        name: name.trim(),
-        status,
-      })
+      .update({ name: name.trim(), status })
       .eq("id", service.id);
 
     if (error) {
@@ -75,10 +63,11 @@ export default function EditServiceModal({ service, onClose }: Props) {
       return;
     }
 
-    setSubmitted(true);
-    startRefresh(() => {
-      router.refresh();
-    });
+    onSuccess({ ...service, name: name.trim(), status });
+    success("Service Edited Successfully!");
+    setLoading(false);
+    onClose();
+    router.refresh();
   }
 
   const statusOptions: {
@@ -261,7 +250,7 @@ export default function EditServiceModal({ service, onClose }: Props) {
             </button>
             <button
               type="submit"
-              disabled={loading || isRefreshing}
+              disabled={loading}
               className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: "#1a1714",
@@ -269,19 +258,19 @@ export default function EditServiceModal({ service, onClose }: Props) {
                 border: "1.5px solid #1a1714",
               }}
               onMouseEnter={(e) => {
-                if (!(loading || isRefreshing)) {
+                if (!loading) {
                   e.currentTarget.style.background = "#e8500a";
                   e.currentTarget.style.borderColor = "#e8500a";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!(loading || isRefreshing)) {
+                if (!loading) {
                   e.currentTarget.style.background = "#1a1714";
                   e.currentTarget.style.borderColor = "#1a1714";
                 }
               }}
             >
-              {(loading || isRefreshing) ? "Saving..." : "Save changes"}
+              {loading ? "Saving..." : "Save changes"}
             </button>
           </div>
         </form>

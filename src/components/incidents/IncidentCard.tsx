@@ -5,10 +5,12 @@ import { Trash2 } from "lucide-react";
 import PostUpdateModal from "./PostUpdateModal";
 import DeleteIncidentConfirm from "./DeleteIncidentsConfirm";
 
+type IncidentStatus = "investigating" | "identified" | "monitoring" | "resolved";
+
 type IncidentUpdate = {
   id: string;
   message: string;
-  status: "investigating" | "identified" | "monitoring" | "resolved";
+  status: IncidentStatus;
   created_at: string;
 };
 
@@ -16,7 +18,7 @@ type Incident = {
   id: string;
   title: string;
   description: string | null;
-  status: "investigating" | "identified" | "monitoring" | "resolved";
+  status: IncidentStatus;
   created_at: string;
   status_page_id: string;
   incident_updates: IncidentUpdate[];
@@ -25,19 +27,13 @@ type Incident = {
 type Props = {
   incident: Incident;
   isOwner?: boolean;
+  onDeleted?: (id: string) => void;
+  onUpdated?: (id: string, newStatus: IncidentStatus, update: IncidentUpdate) => void;
 };
 
 const statusColors = {
-  investigating: {
-    bg: "rgba(232,80,10,0.08)",
-    border: "#e8500a",
-    text: "#e8500a",
-  },
-  identified: {
-    bg: "rgba(251,140,0,0.08)",
-    border: "#fb8c00",
-    text: "#fb8c00",
-  },
+  investigating: { bg: "rgba(232,80,10,0.08)", border: "#e8500a", text: "#e8500a" },
+  identified: { bg: "rgba(251,140,0,0.08)", border: "#fb8c00", text: "#fb8c00" },
   monitoring: { bg: "#e8f5ee", border: "#1a7a4a", text: "#1a7a4a" },
   resolved: { bg: "#e8f5ee", border: "#1a7a4a", text: "#1a7a4a" },
 };
@@ -69,15 +65,14 @@ function formatDate(dateString: string): string {
   });
 }
 
-export default function IncidentCard({ incident, isOwner = false }: Props) {
+export default function IncidentCard({ incident, isOwner = false, onDeleted, onUpdated }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const colors = statusColors[incident.status];
 
   const sortedUpdates = [...incident.incident_updates].sort(
-    (a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 
   return (
@@ -179,10 +174,7 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
 
         {/* Description */}
         {incident.description && (
-          <div
-            className="px-6 py-5"
-            style={{ borderBottom: "1.5px solid #e4dfd4" }}
-          >
+          <div className="px-6 py-5" style={{ borderBottom: "1.5px solid #e4dfd4" }}>
             <p
               className="text-base leading-relaxed whitespace-pre-wrap break-words"
               style={{ color: "#3d3830" }}
@@ -213,11 +205,7 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
             <div className="relative">
               <div
                 className="absolute left-[11px] top-3 bottom-3"
-                style={{
-                  width: "3px",
-                  background: "#e4dfd4",
-                  borderRadius: "3px",
-                }}
+                style={{ width: "3px", background: "#e4dfd4", borderRadius: "3px" }}
               />
 
               <div className="space-y-6">
@@ -234,17 +222,12 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
                         <div
                           className="w-6 h-6 rounded-full flex items-center justify-center"
                           style={{
-                            background: isLatest
-                              ? updateColors.border
-                              : "white",
+                            background: isLatest ? updateColors.border : "white",
                             border: `3px solid ${isLatest ? updateColors.border : "#e4dfd4"}`,
                           }}
                         >
                           {isLatest && (
-                            <div
-                              className="w-2 h-2 rounded-full"
-                              style={{ background: "white" }}
-                            />
+                            <div className="w-2 h-2 rounded-full" style={{ background: "white" }} />
                           )}
                         </div>
                       </div>
@@ -259,16 +242,10 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
                               border: `1.5px solid ${updateColors.border}`,
                             }}
                           >
-                            <span
-                              className="w-1.5 h-1.5 rounded-full"
-                              style={{ background: updateColors.text }}
-                            />
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: updateColors.text }} />
                             {statusLabels[update.status]}
                           </span>
-                          <span
-                            className="text-xs font-semibold"
-                            style={{ color: "#8a8070" }}
-                          >
+                          <span className="text-xs font-semibold" style={{ color: "#8a8070" }}>
                             {formatDate(update.created_at)}
                           </span>
                         </div>
@@ -295,6 +272,10 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
           statusPageId={incident.status_page_id}
           onClose={() => setShowUpdateModal(false)}
           incidentTitle={incident.title}
+          onSuccess={(id, newStatus, update) => {
+            onUpdated?.(id, newStatus, update);
+            setShowUpdateModal(false);
+          }}
         />
       )}
 
@@ -303,6 +284,10 @@ export default function IncidentCard({ incident, isOwner = false }: Props) {
           incidentId={incident.id}
           incidentTitle={incident.title}
           onClose={() => setShowDeleteConfirm(false)}
+          onSuccess={(id) => {
+            onDeleted?.(id);
+            setShowDeleteConfirm(false);
+          }}
         />
       )}
     </>

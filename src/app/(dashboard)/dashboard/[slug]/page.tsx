@@ -20,19 +20,18 @@ export default async function StatusPageManagePage({ params }: PageProps) {
 
     if (!user) redirect("/login");
 
-    const { data: page, error: pageError } = await supabase
-        .from("status_pages")
-        .select("*")
-        .eq("slug", slug)
-        .eq("user_id", user.id)
-        .single();
-
-    if (pageError || !page) notFound();
-
-    const [plan, graceInfo] = await Promise.all([
+    const [{ data: page, error: pageError }, plan, graceInfo] = await Promise.all([
+        supabase
+            .from("status_pages")
+            .select("*")
+            .eq("slug", slug)
+            .eq("user_id", user.id)
+            .single(),
         getUserPlan(user.id),
         getGraceInfo(user.id),
     ]);
+
+    if (pageError || !page) notFound();
 
     const daysToShow = plan === "pro" ? 90 : 7;
     const dateThreshold = new Date();
@@ -177,7 +176,6 @@ export default async function StatusPageManagePage({ params }: PageProps) {
                     incidents={incidents ?? []}
                     subscriberCount={subscriberCount ?? 0}
                     plan={plan}
-                    overLimitServiceIds={new Set((services ?? []).slice(plan === "pro" ? 10 : 3).map((s) => s.id))}
                     graceInfo={graceInfo}
                 />
             </main>

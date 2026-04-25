@@ -13,17 +13,16 @@ export default async function DashboardPage() {
 
     if (!user) redirect("/login");
 
-    const [plan, graceInfo] = await Promise.all([
+    const [plan, graceInfo, { data: pages }] = await Promise.all([
         getUserPlan(user.id),
         getGraceInfo(user.id),
+        supabase
+            .from("status_pages")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: true }),
     ]);
     const limits = PLAN_LIMITS[plan];
-
-    const { data: pages } = await supabase
-        .from("status_pages")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true });
 
     // Compute overall status per page based on services + open incidents
     const pageIds = (pages ?? []).map((p) => p.id);

@@ -1,7 +1,8 @@
 // src/app/(dashboard)/dashboard/[slug]/StatusPageClient.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
     Plus,
@@ -23,10 +24,12 @@ import EditServiceModal from "@/components/services/EditServiceModal";
 import CreateIncidentModal from "@/components/incidents/CreateIncidentModal";
 import IncidentCard from "@/components/incidents/IncidentCard";
 
+type IncidentStatus = "investigating" | "identified" | "monitoring" | "resolved";
+
 type IncidentUpdate = {
     id: string;
     message: string;
-    status: "investigating" | "identified" | "monitoring" | "resolved";
+    status: IncidentStatus;
     created_at: string;
 };
 
@@ -34,7 +37,7 @@ type Incident = {
     id: string;
     title: string;
     description: string | null;
-    status: "investigating" | "identified" | "monitoring" | "resolved";
+    status: IncidentStatus;
     status_page_id: string;
     created_at: string;
     incident_updates: IncidentUpdate[];
@@ -62,7 +65,6 @@ type Props = {
     incidents: Incident[];
     subscriberCount: number;
     plan: "free" | "pro";
-    overLimitServiceIds: Set<string>;
     graceInfo: GraceInfo;
 };
 
@@ -435,25 +437,67 @@ function EmbedBadgeSection({ slug, services }: { slug: string; services: { id: s
 
 export default function StatusPageClient({
     page,
-    services,
-    incidents,
+    services: initialServices,
+    incidents: initialIncidents,
     subscriberCount,
     plan,
-    overLimitServiceIds,
     graceInfo,
 }: Props) {
+    const router = useRouter();
+
+    const [localServices, setLocalServices] = useState<Service[]>(initialServices);
+    const [localIncidents, setLocalIncidents] = useState<Incident[]>(initialIncidents);
+
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingService, setEditingService] = useState<Service | null>(null);
-    const [deletingService, setDeletingService] = useState<Service | null>(
-        null,
-    );
+    const [deletingService, setDeletingService] = useState<Service | null>(null);
     const [showCreateIncident, setShowCreateIncident] = useState(false);
 
-    const atLimit = services.length >= (plan === "pro" ? 10 : 3);
+    const overLimitServiceIds = useMemo(
+        () => new Set(localServices.slice(plan === "pro" ? 10 : 3).map((s) => s.id)),
+        [localServices, plan],
+    );
 
-    // Split incidents into active and resolved
-    const activeIncidents = incidents.filter((i) => i.status !== "resolved");
-    const resolvedIncidents = incidents.filter((i) => i.status === "resolved");
+    const atLimit = localServices.length >= (plan === "pro" ? PLAN_LIMITS.pro.services : PLAN_LIMITS.free.services);
+
+    const activeIncidents = localIncidents.filter((i) => i.status !== "resolved");
+    const resolvedIncidents = localIncidents.filter((i) => i.status === "resolved");
+
+    function handleServiceAdded(service: Service) {
+        setLocalServices((prev) => [...prev, service]);
+        router.refresh();
+    }
+
+    function handleServiceEdited(service: Service) {
+        setLocalServices((prev) => prev.map((s) => (s.id === service.id ? service : s)));
+        router.refresh();
+    }
+
+    function handleServiceDeleted(serviceId: string) {
+        setLocalServices((prev) => prev.filter((s) => s.id !== serviceId));
+        router.refresh();
+    }
+
+    function handleIncidentCreated(incident: Incident) {
+        setLocalIncidents((prev) => [incident, ...prev]);
+        router.refresh();
+    }
+
+    function handleIncidentDeleted(incidentId: string) {
+        setLocalIncidents((prev) => prev.filter((i) => i.id !== incidentId));
+        router.refresh();
+    }
+
+    function handleIncidentUpdated(incidentId: string, newStatus: IncidentStatus, update: IncidentUpdate) {
+        setLocalIncidents((prev) =>
+            prev.map((i) =>
+                i.id === incidentId
+                    ? { ...i, status: newStatus, incident_updates: [update, ...i.incident_updates] }
+                    : i,
+            ),
+        );
+        router.refresh();
+    }
 
     function getStatusColor(status: Service["status"]) {
         switch (status) {
@@ -642,9 +686,9 @@ export default function StatusPageClient({
                             className="text-sm font-medium"
                             style={{ color: "#8a8070" }}
                         >
-                            {services.length === 0
+                            {localServices.length === 0
                                 ? "No services yet — add your first one"
-                                : `${services.length} service${services.length === 1 ? "" : "s"}`}
+                                : `${localServices.length} service${localServices.length === 1 ? "" : "s"}`}
                         </p>
                     </div>
 
@@ -681,7 +725,7 @@ export default function StatusPageClient({
                     </button>
                 </div>
 
-                {services.length === 0 ? (
+                {localServices.length === 0 ? (
                     <div
                         className="flex flex-col items-center justify-center py-14 rounded-[4px]"
                         style={{
@@ -710,7 +754,7 @@ export default function StatusPageClient({
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3">
-                        {services.map((service) => {
+                        {localServices.map((service) => {
                             const paused = overLimitServiceIds.has(service.id);
                             const colors = getStatusColor(service.status);
                             return (
@@ -822,7 +866,7 @@ export default function StatusPageClient({
                     </div>
                 )}
 
-                {plan === "free" && services.length > 3 && (
+                {plan === "free" && localServices.length > 3 && (
                     <div
                         className="flex items-center justify-between px-4 py-3 rounded-[4px] mt-3"
                         style={{
@@ -834,7 +878,7 @@ export default function StatusPageClient({
                             <span style={{ color: "#d32f2f", fontWeight: 600 }}>
                                 Over plan limit.
                             </span>{" "}
-                            You have {services.length} services but free plan
+                            You have {localServices.length} services but free plan
                             allows {PLAN_LIMITS.free.services}. Existing services still work — delete down
                             to {PLAN_LIMITS.free.services} or{" "}
                             <Link
@@ -851,7 +895,7 @@ export default function StatusPageClient({
                     </div>
                 )}
 
-                {atLimit && plan === "free" && services.length <= PLAN_LIMITS.free.services && (
+                {atLimit && plan === "free" && localServices.length <= PLAN_LIMITS.free.services && (
                     <p className="text-xs mt-3" style={{ color: "#8a8070" }}>
                         Free plan limit reached ({PLAN_LIMITS.free.services} services).{" "}
                         <Link
@@ -947,6 +991,8 @@ export default function StatusPageClient({
                                 key={incident.id}
                                 incident={incident}
                                 isOwner={true}
+                                onDeleted={handleIncidentDeleted}
+                                onUpdated={handleIncidentUpdated}
                             />
                         ))}
                     </div>
@@ -972,6 +1018,8 @@ export default function StatusPageClient({
                                 key={incident.id}
                                 incident={incident}
                                 isOwner={true}
+                                onDeleted={handleIncidentDeleted}
+                                onUpdated={handleIncidentUpdated}
                             />
                         ))}
                     </div>
@@ -980,7 +1028,7 @@ export default function StatusPageClient({
 
             {/* ── EMBED BADGE (Pro only) ── */}
             {plan === "pro" ? (
-                <EmbedBadgeSection slug={page.slug} services={services} />
+                <EmbedBadgeSection slug={page.slug} services={localServices} />
             ) : (
                 <section className="mb-10">
                     <div
@@ -1037,24 +1085,28 @@ export default function StatusPageClient({
                 <AddServiceModal
                     pageId={page.id}
                     onClose={() => setShowAddModal(false)}
+                    onSuccess={handleServiceAdded}
                 />
             )}
             {editingService && (
                 <EditServiceModal
                     service={editingService}
                     onClose={() => setEditingService(null)}
+                    onSuccess={handleServiceEdited}
                 />
             )}
             {deletingService && (
                 <DeleteServiceConfirm
                     service={deletingService}
                     onClose={() => setDeletingService(null)}
+                    onSuccess={handleServiceDeleted}
                 />
             )}
             {showCreateIncident && (
                 <CreateIncidentModal
                     pageId={page.id}
                     onClose={() => setShowCreateIncident(false)}
+                    onSuccess={handleIncidentCreated}
                 />
             )}
         </>
