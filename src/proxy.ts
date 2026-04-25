@@ -33,7 +33,6 @@ const PUBLIC_API_ROUTES = ["/api/subscribe", "/api/public-status/"];
 export async function proxy(request: NextRequest) {
     const host = request.headers.get("host") ?? "";
     const { pathname } = request.nextUrl;
-    console.log("PROXY HIT:", host, pathname);
 
     // ── CORS for public API routes ─────────────────────────────────────────────
     const isPublicApi = PUBLIC_API_ROUTES.some((r) => pathname.startsWith(r));
@@ -49,7 +48,6 @@ export async function proxy(request: NextRequest) {
     // ── Wildcard subdomain routing ─────────────────────────────────────────────
     if (host.endsWith(".statsy.page") && host !== "www.statsy.page") {
         const slug = host.replace(".statsy.page", "");
-        console.log("WILDCARD HIT - slug:", slug, "rewriting to:", `/${slug}`);
         const url = request.nextUrl.clone();
         url.pathname = `/${slug}${pathname === "/" ? "" : pathname}`;
         return NextResponse.rewrite(url);
