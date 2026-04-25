@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 export async function POST() {
     const supabase = await createClient();
@@ -58,6 +59,7 @@ export async function POST() {
                 .from("subscriptions")
                 .update({ status: "cancelled" })
                 .eq("user_id", user.id);
+            revalidateTag(`user-plan-${user.id}`, "seconds");
             return NextResponse.json({ success: true });
         }
         return NextResponse.json(
@@ -71,6 +73,7 @@ export async function POST() {
         .from("subscriptions")
         .update({ status: "cancelled" })
         .eq("user_id", user.id);
+    revalidateTag(`user-plan-${user.id}`, "seconds");
 
     return NextResponse.json({ success: true });
 }

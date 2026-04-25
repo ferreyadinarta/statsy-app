@@ -19,16 +19,18 @@ export default async function SettingsPage({ params }: PageProps) {
     } = await supabase.auth.getUser();
     if (!user) redirect("/login");
 
-    const { data: page, error } = await supabase
-        .from("status_pages")
-        .select("id, name, slug, custom_domain")
-        .eq("slug", slug)
-        .eq("user_id", user.id)
-        .single();
+    const [{ data: page, error }, plan] = await Promise.all([
+        supabase
+            .from("status_pages")
+            .select("id, name, slug, custom_domain")
+            .eq("slug", slug)
+            .eq("user_id", user.id)
+            .single(),
+        getUserPlan(user.id),
+    ]);
 
-    if (error || !page) notFound();
-
-    const plan = await getUserPlan(user.id);
+    if (error && error.code !== "PGRST116") throw error;
+    if (!page) notFound();
 
     return (
         <div className="min-h-screen bg-[#f5f2eb]">

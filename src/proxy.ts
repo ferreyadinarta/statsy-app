@@ -102,17 +102,27 @@ export async function proxy(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
-    // Not logged in + trying to access dashboard → send to login
-    if (!user && pathname.startsWith("/dashboard")) {
+    // Not logged in + trying to access protected routes → send to login
+    if (!user && (pathname.startsWith("/dashboard") || pathname.startsWith("/billing"))) {
         const url = request.nextUrl.clone();
         url.pathname = "/login";
         return NextResponse.redirect(url);
     }
 
-    // Logged in + visiting login or signup → send to dashboard
-    if (user && (pathname === "/login" || pathname === "/signup")) {
+    // Logged in + visiting login, signup, or root → send to dashboard
+    if (user && (pathname === "/" || pathname === "/login" || pathname === "/signup")) {
         const url = request.nextUrl.clone();
         url.pathname = "/dashboard";
+        return NextResponse.redirect(url);
+    }
+
+    // Not logged in at root → send to landing/login
+    // NEXT_PUBLIC_LANDING_URL must be an absolute URL (e.g. https://statsy.page)
+    if (!user && pathname === "/") {
+        const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL;
+        if (landingUrl) return NextResponse.redirect(landingUrl);
+        const url = request.nextUrl.clone();
+        url.pathname = "/login";
         return NextResponse.redirect(url);
     }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { revalidateTag } from "next/cache";
 
 function getServiceClient() {
     return createClient(
@@ -118,6 +119,7 @@ export async function POST(req: NextRequest) {
             console.error("Supabase upsert error:", error);
             return NextResponse.json({ error: "DB error" }, { status: 500 });
         }
+        revalidateTag(`user-plan-${userId}`, "seconds");
     }
 
     if (eventType === "subscription.cancelled") {
@@ -137,6 +139,7 @@ export async function POST(req: NextRequest) {
             console.error("Supabase upsert error:", error);
             return NextResponse.json({ error: "DB error" }, { status: 500 });
         }
+        revalidateTag(`user-plan-${userId}`, "seconds");
     }
 
     return NextResponse.json({ received: true });

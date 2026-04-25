@@ -1,18 +1,39 @@
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
 import type { Plan, GraceInfo } from "@/lib/plan-shared";
 export type { Plan, GraceInfo } from "@/lib/plan-shared";
 export { PLAN_LIMITS } from "@/lib/plan-shared";
 
-export async function getUserPlanAndGrace(
-  userId: string,
-): Promise<{ plan: Plan; graceInfo: GraceInfo }> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("subscriptions")
-    .select("plan, status, current_period_end")
-    .eq("user_id", userId)
-    .single();
+type SubscriptionRow = {
+  plan: string;
+  status: string;
+  current_period_end: string | null;
+} | null;
 
+// Per-user cached subscription fetch — invalidated by Paddle webhook via
+// revalidateTag(`user-plan-${userId}`). Service role client used so no
+// session cookies are baked into the cache entry.
+function getSubscriptionCache(userId: string) {
+  return unstable_cache(
+    async (): Promise<SubscriptionRow> => {
+      const supabase = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      );
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("plan, status, current_period_end")
+        .eq("user_id", userId)
+        .single();
+      return data ?? null;
+    },
+    [`subscription-${userId}`],
+    { tags: [`user-plan-${userId}`], revalidate: 3600 },
+  );
+}
+
+function computePlanAndGrace(data: SubscriptionRow): { plan: Plan; graceInfo: GraceInfo } {
   if (!data) {
     return { plan: "free", graceInfo: { inGrace: false, endsAt: null, daysLeft: 0 } };
   }
@@ -40,6 +61,13 @@ export async function getUserPlanAndGrace(
   }
 
   return { plan, graceInfo };
+}
+
+export async function getUserPlanAndGrace(
+  userId: string,
+): Promise<{ plan: Plan; graceInfo: GraceInfo }> {
+  const data = await getSubscriptionCache(userId)();
+  return computePlanAndGrace(data);
 }
 
 // Used by API routes and pages that need plan only (no grace info needed).
