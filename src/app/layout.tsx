@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
     title: "Statsy - Status Pages for Everyone",
@@ -36,6 +37,7 @@ export default function RootLayout({
             <body className="min-h-full flex flex-col overflow-x-hidden">
                 {children}
                 <Toaster />
+                <Analytics />
             </body>
         </html>
     );
