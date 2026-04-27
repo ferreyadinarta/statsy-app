@@ -28,17 +28,6 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Incident not found." }, { status: 404 });
   }
 
-  // Delete child updates first
-  const { error: updatesError } = await supabase
-    .from("incident_updates")
-    .delete()
-    .eq("incident_id", incidentId);
-
-  if (updatesError) {
-    console.error("Failed to delete incident_updates:", updatesError);
-    return NextResponse.json({ error: "Failed to delete incident updates." }, { status: 500 });
-  }
-
   const { error: incidentError } = await supabase
     .from("incidents")
     .delete()
