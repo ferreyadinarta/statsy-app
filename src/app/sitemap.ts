@@ -10,10 +10,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select("slug, created_at")
     .order("created_at", { ascending: false });
 
-  return (pages ?? []).map((page) => ({
-    url: `https://${page.slug}.statsy.page`,
-    lastModified: new Date(page.created_at),
-    changeFrequency: "hourly" as const,
-    priority: 0.8,
-  }));
+  return [
+    {
+      url: "https://statsy.page",
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 1.0,
+    },
+    ...(pages ?? []).map((page) => ({
+      url: `https://${page.slug}.statsy.page`,
+      lastModified: new Date(page.created_at),
+      changeFrequency: "hourly" as const,
+      priority: 0.8,
+    })),
+  ];
 }
