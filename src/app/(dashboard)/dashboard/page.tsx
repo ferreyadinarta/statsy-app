@@ -57,7 +57,6 @@ export default async function DashboardPage() {
         overallStatus: pageStatusMap[p.id] ?? "operational",
     }));
 
-    const atLimit = pagesWithStatus.length >= limits.pages;
     const overLimitPageIds = new Set(
         pagesWithStatus.slice(limits.pages).map((p) => p.id),
     );
@@ -165,8 +164,8 @@ export default async function DashboardPage() {
 
                 <DashboardClient pages={pagesWithStatus} plan={plan} overLimitPageIds={overLimitPageIds} graceInfo={graceInfo} />
 
-                {/* Plan bar — hidden when upgrade callout is already shown */}
-                {!(atLimit && plan === "free") && (
+                {/* Plan bar */}
+                {(
                     <div
                         className="mt-6 rounded-[4px] overflow-hidden"
                         style={{
@@ -197,7 +196,7 @@ export default async function DashboardPage() {
                                     {plan === "pro" ? "Pro" : "Free"}
                                 </span>
                             </div>
-                            {plan === "free" && !atLimit && (
+                            {plan === "free" && (
                                 <Link
                                     href="/billing"
                                     className="text-xs font-semibold hover:underline underline-offset-2"
@@ -218,17 +217,18 @@ export default async function DashboardPage() {
                         </div>
 
                         {/* Stats grid */}
-                        <div className="grid grid-cols-3">
+                        <div className="grid grid-cols-4">
                             {[
                                 { value: limits.pages, label: limits.pages === 1 ? "page" : "pages" },
                                 { value: limits.services, label: "services/page" },
                                 { value: limits.subscribers, label: "subscribers" },
+                                { value: `${limits.historyDays}d`, label: "incident history" },
                             ].map((stat, i) => (
                                 <div
                                     key={i}
                                     className="flex flex-col items-center py-4"
                                     style={{
-                                        borderRight: i < 2 ? "1.5px solid #e4dfd4" : undefined,
+                                        borderRight: i < 3 ? "1.5px solid #e4dfd4" : undefined,
                                     }}
                                 >
                                     <span

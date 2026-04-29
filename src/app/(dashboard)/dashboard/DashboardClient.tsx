@@ -345,61 +345,6 @@ export default function DashboardClient({ pages: initialPages, plan, overLimitPa
                         );
                     })}
 
-                    {plan === "free" && localPages.length > 1 && (
-                        <div
-                            className="flex items-center justify-between px-5 py-3.5 rounded-[4px] mt-1"
-                            style={{ background: "rgba(211,47,47,0.05)", border: "1.5px solid rgba(211,47,47,0.25)" }}
-                        >
-                            <p className="text-xs" style={{ color: "#8a8070" }}>
-                                <span style={{ color: "#d32f2f", fontWeight: 600 }}>
-                                    You&apos;re over your plan limit.
-                                </span>{" "}
-                                You have {localPages.length} pages but the free plan allows {PLAN_LIMITS.free.pages}. Your existing pages still work — delete down to {PLAN_LIMITS.free.pages} or upgrade to keep them all.
-                            </p>
-                            <Link
-                                href="/billing"
-                                className="flex-shrink-0 ml-6 text-xs font-semibold rounded-[4px] px-3.5 py-2 transition-colors duration-150"
-                                style={{ background: "#e8500a", color: "white", border: "1.5px solid #e8500a" }}
-                                onMouseEnter={(e) => {
-                                    (e.currentTarget as HTMLAnchorElement).style.background = "#c94008";
-                                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "#c94008";
-                                }}
-                                onMouseLeave={(e) => {
-                                    (e.currentTarget as HTMLAnchorElement).style.background = "#e8500a";
-                                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "#e8500a";
-                                }}
-                            >
-                                Upgrade to Pro &rarr;
-                            </Link>
-                        </div>
-                    )}
-
-                    {atLimit && plan === "free" && localPages.length <= 1 && (
-                        <div
-                            className="flex items-center justify-between px-5 py-3.5 rounded-[4px] mt-1"
-                            style={{ background: "rgba(232,80,10,0.05)", border: "1.5px solid rgba(232,80,10,0.2)" }}
-                        >
-                            <p className="text-xs" style={{ color: "#8a8070" }}>
-                                <span style={{ color: "#1a1714", fontWeight: 600 }}>Free plan limit reached.</span>{" "}
-                                Unlock unlimited pages, more services, and priority support.
-                            </p>
-                            <Link
-                                href="/billing"
-                                className="flex-shrink-0 ml-6 text-xs font-semibold rounded-[4px] px-3.5 py-2 transition-colors duration-150"
-                                style={{ background: "#e8500a", color: "white", border: "1.5px solid #e8500a" }}
-                                onMouseEnter={(e) => {
-                                    (e.currentTarget as HTMLAnchorElement).style.background = "#c94008";
-                                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "#c94008";
-                                }}
-                                onMouseLeave={(e) => {
-                                    (e.currentTarget as HTMLAnchorElement).style.background = "#e8500a";
-                                    (e.currentTarget as HTMLAnchorElement).style.borderColor = "#e8500a";
-                                }}
-                            >
-                                Upgrade to Pro &rarr;
-                            </Link>
-                        </div>
-                    )}
                 </div>
             )}
 

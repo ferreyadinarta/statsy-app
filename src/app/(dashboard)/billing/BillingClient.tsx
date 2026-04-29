@@ -34,6 +34,13 @@ type Props = {
     subscription: Subscription;
 };
 
+const FREE_FEATURES = [
+    { text: `${PLAN_LIMITS.free.pages} status page` },
+    { text: `${PLAN_LIMITS.free.services} services per page` },
+    { text: `${PLAN_LIMITS.free.subscribers} subscribers per page` },
+    { text: `${PLAN_LIMITS.free.historyDays}-day incident history` },
+];
+
 const PRO_FEATURES = [
     { text: `${PLAN_LIMITS.pro.pages} status pages`, note: `vs ${PLAN_LIMITS.free.pages} on Free` },
     { text: `${PLAN_LIMITS.pro.services} services per page`, note: `vs ${PLAN_LIMITS.free.services} on Free` },
@@ -397,7 +404,7 @@ export default function BillingClient({
                     >
                         Current plan
                     </p>
-                    <div className="flex items-baseline justify-between mb-6">
+                    <div className="flex items-baseline justify-between mb-4">
                         <h2
                             style={{
                                 fontFamily: "var(--font-head)",
@@ -421,36 +428,33 @@ export default function BillingClient({
                         </span>
                     </div>
 
-                    {/* Limits */}
+                    {/* What's included */}
                     <div
-                        className="flex flex-col gap-0"
-                        style={{ borderTop: "1px solid #f0ece4" }}
+                        className="rounded-[4px] p-6"
+                        style={{
+                            background: "#f5f2eb",
+                            border: "1.5px solid #e4dfd4",
+                        }}
                     >
-                        {[
-                            ["Status pages", String(PLAN_LIMITS.free.pages)],
-                            ["Services per page", String(PLAN_LIMITS.free.services)],
-                            ["Subscribers", String(PLAN_LIMITS.free.subscribers)],
-                            ["Incident history", `${PLAN_LIMITS.free.historyDays} days`],
-                        ].map(([label, value]) => (
-                            <div
-                                key={label}
-                                className="flex items-center justify-between py-3"
-                                style={{ borderBottom: "1px solid #f0ece4" }}
-                            >
-                                <span
-                                    className="text-sm"
-                                    style={{ color: "#8a8070" }}
-                                >
-                                    {label}
-                                </span>
-                                <span
-                                    className="text-sm font-bold"
-                                    style={{ color: "#1a1714" }}
-                                >
-                                    {value}
-                                </span>
-                            </div>
-                        ))}
+                        <p
+                            className="text-xs font-bold uppercase tracking-wider mb-4"
+                            style={{ color: "#8a8070" }}
+                        >
+                            Your plan includes
+                        </p>
+                        <div className="grid grid-cols-1 gap-y-2.5">
+                            {FREE_FEATURES.map(({ text }) => (
+                                <div key={text} className="flex items-center gap-2">
+                                    <CheckCircle
+                                        size={14}
+                                        style={{ color: "#1a7a4a", flexShrink: 0 }}
+                                    />
+                                    <span className="text-sm" style={{ color: "#3d3830" }}>
+                                        {text}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
