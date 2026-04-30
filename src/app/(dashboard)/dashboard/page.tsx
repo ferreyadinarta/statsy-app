@@ -4,42 +4,32 @@ import Link from "next/link";
 import LogoutButton from "../../../components/dashboard/LogoutButton";
 import DashboardClient from "./DashboardClient";
 import { getUserPlanAndGrace, PLAN_LIMITS } from "@/lib/plan";
+import { getUserFromHeaders } from "@/lib/auth";
 
 export default async function DashboardPage() {
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
+    const user = await getUserFromHeaders();
     if (!user) redirect("/login");
 
-    const [{ plan, graceInfo }, { data: pages }] = await Promise.all([
+    const supabase = await createClient();
+
+    const [{ plan, graceInfo }, { data: pagesRaw }] = await Promise.all([
         getUserPlanAndGrace(user.id),
         supabase
             .from("status_pages")
-            .select("*")
+            .select("*, services(status_page_id, status), incidents(status_page_id, status)")
             .eq("user_id", user.id)
+            .neq("incidents.status", "resolved")
             .order("created_at", { ascending: true }),
     ]);
     const limits = PLAN_LIMITS[plan];
 
-    // Compute overall status per page based on services + open incidents
-    const pageIds = (pages ?? []).map((p) => p.id);
-    const [{ data: services }, { data: openIncidents }] = await Promise.all([
-        supabase
-            .from("services")
-            .select("status_page_id, status")
-            .in("status_page_id", pageIds.length ? pageIds : [""]),
-        supabase
-            .from("incidents")
-            .select("status_page_id, status")
-            .in("status_page_id", pageIds.length ? pageIds : [""])
-            .neq("status", "resolved"),
-    ]);
+    const pages = pagesRaw?.map(({ services: svcs, incidents: incs, ...p }) => ({ ...p })) ?? [];
+    const services = pagesRaw?.flatMap((p) => (p.services as { status_page_id: string; status: string }[] ?? [])) ?? [];
+    const openIncidents = pagesRaw?.flatMap((p) => (p.incidents as { status_page_id: string; status: string }[] ?? [])) ?? [];
 
     type PageStatus = "operational" | "degraded" | "outage";
     const pageStatusMap: Record<string, PageStatus> = {};
-    for (const id of pageIds) {
+    for (const id of pages.map((p) => p.id)) {
         const svcStatuses = (services ?? [])
             .filter((s) => s.status_page_id === id)
             .map((s) => s.status);

@@ -1,16 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
+import { getUserFromRequest } from "@/lib/auth";
 
-export async function POST() {
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
+export async function POST(req: NextRequest) {
+    const user = getUserFromRequest(req);
     if (!user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const supabase = await createClient();
 
     const { data: sub } = await supabase
         .from("subscriptions")

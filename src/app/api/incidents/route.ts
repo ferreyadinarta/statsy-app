@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { getUserFromRequest } from "@/lib/auth";
 
 export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -9,12 +10,12 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Missing incident id." }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
+  const user = getUserFromRequest(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
+
+  const supabase = await createClient();
 
   // Confirm ownership via the parent status page
   const { data: incident, error: fetchError } = await supabase
@@ -51,15 +52,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = getUserFromRequest(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
+
+  const supabase = await createClient();
 
   const { data: page, error: pageError } = await supabase
     .from("status_pages")

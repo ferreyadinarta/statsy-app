@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
+import { getUserFromRequest } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   const { name, slug } = await req.json();
@@ -12,15 +13,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = getUserFromRequest(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
+
+  const supabase = await createClient();
 
   const plan = await getUserPlan(user.id);
   const limit = PLAN_LIMITS[plan].pages;

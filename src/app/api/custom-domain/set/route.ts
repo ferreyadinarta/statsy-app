@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserPlan } from "@/lib/plan";
+import { getUserFromRequest } from "@/lib/auth";
 
 function getVercelApiBase() {
   const teamId = process.env.VERCEL_TEAM_ID;
@@ -28,12 +29,12 @@ function isValidDomain(domain: string): boolean {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
+  const user = getUserFromRequest(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const supabase = await createClient();
 
   const plan = await getUserPlan(user.id);
   if (plan !== "pro") {

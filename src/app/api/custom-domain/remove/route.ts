@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { getUserFromRequest } from "@/lib/auth";
 
 function getVercelDeleteUrl(domain: string) {
   const teamId = process.env.VERCEL_TEAM_ID;
@@ -9,13 +10,12 @@ function getVercelDeleteUrl(domain: string) {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
+  const user = getUserFromRequest(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const supabase = await createClient();
   const { status_page_id } = await req.json();
 
   if (!status_page_id) {

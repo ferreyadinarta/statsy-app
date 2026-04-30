@@ -5,6 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import { getUserPlan } from "@/lib/plan";
 import SettingsClient from "./SettingsClient";
+import { getUserFromHeaders } from "@/lib/auth";
 
 type PageProps = {
     params: Promise<{ slug: string }>;
@@ -12,12 +13,10 @@ type PageProps = {
 
 export default async function SettingsPage({ params }: PageProps) {
     const { slug } = await params;
-    const supabase = await createClient();
-
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getUserFromHeaders();
     if (!user) redirect("/login");
+
+    const supabase = await createClient();
 
     const [{ data: page, error }, plan] = await Promise.all([
         supabase

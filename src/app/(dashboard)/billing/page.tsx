@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getUserFromHeaders } from "@/lib/auth";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
@@ -7,13 +8,10 @@ import BillingClient from "./BillingClient";
 import { getUserPlanFull } from "@/lib/plan";
 
 export default async function BillingPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await getUserFromHeaders();
   if (!user) redirect("/login");
 
+  const supabase = await createClient();
   const subscription = await getUserPlanFull(user.id);
 
   return (

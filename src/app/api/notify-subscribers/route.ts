@@ -3,6 +3,7 @@ import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { sendIncidentNotification } from "@/lib/email";
 import { getUserPlan } from "@/lib/plan";
 import { NextRequest, NextResponse } from "next/server";
+import { getUserFromRequest } from "@/lib/auth";
 
 // Service role client bypasses RLS to read subscribers
 function getServiceClient() {
@@ -25,15 +26,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing fields." }, { status: 400 });
   }
 
-  // Verify caller owns this status page
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = getUserFromRequest(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
+
+  const supabase = await createClient();
 
   const { data: page } = await supabase
     .from("status_pages")

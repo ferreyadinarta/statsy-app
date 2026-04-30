@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
     Plus,
@@ -443,8 +442,6 @@ export default function StatusPageClient({
     plan,
     graceInfo,
 }: Props) {
-    const router = useRouter();
-
     const [localServices, setLocalServices] = useState<Service[]>(initialServices);
     const [localIncidents, setLocalIncidents] = useState<Incident[]>(initialIncidents);
 
@@ -465,27 +462,22 @@ export default function StatusPageClient({
 
     function handleServiceAdded(service: Service) {
         setLocalServices((prev) => [...prev, service]);
-        router.refresh();
     }
 
     function handleServiceEdited(service: Service) {
         setLocalServices((prev) => prev.map((s) => (s.id === service.id ? service : s)));
-        router.refresh();
     }
 
     function handleServiceDeleted(serviceId: string) {
         setLocalServices((prev) => prev.filter((s) => s.id !== serviceId));
-        router.refresh();
     }
 
     function handleIncidentCreated(incident: Incident) {
         setLocalIncidents((prev) => [incident, ...prev]);
-        router.refresh();
     }
 
     function handleIncidentDeleted(incidentId: string) {
         setLocalIncidents((prev) => prev.filter((i) => i.id !== incidentId));
-        router.refresh();
     }
 
     function handleIncidentUpdated(incidentId: string, newStatus: IncidentStatus, update: IncidentUpdate) {
@@ -496,7 +488,6 @@ export default function StatusPageClient({
                     : i,
             ),
         );
-        router.refresh();
     }
 
     function getStatusColor(status: Service["status"]) {

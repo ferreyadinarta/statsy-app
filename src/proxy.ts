@@ -2,7 +2,6 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Service role client for custom domain lookups — no user session needed
 function getServiceClient() {
     return createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,7 +9,6 @@ function getServiceClient() {
     );
 }
 
-// Hosts that belong to Statsy itself — not custom domains
 function isStatsyHost(host: string): boolean {
     return (
         host === "statsy-app.vercel.app" ||
@@ -34,7 +32,7 @@ export async function proxy(request: NextRequest) {
     const host = request.headers.get("host") ?? "";
     const { pathname } = request.nextUrl;
 
-    // ── CORS for public API routes ─────────────────────────────────────────────
+    // ── CORS for public API routes ────────────────────────────────────────────
     const isPublicApi = PUBLIC_API_ROUTES.some((r) => pathname.startsWith(r));
     if (isPublicApi) {
         if (request.method === "OPTIONS") {
@@ -45,7 +43,7 @@ export async function proxy(request: NextRequest) {
         return res;
     }
 
-    // ── Wildcard subdomain routing ─────────────────────────────────────────────
+    // ── Wildcard subdomain routing ────────────────────────────────────────────
     if (host.endsWith(".statsy.page") && host !== "www.statsy.page") {
         const slug = host.replace(".statsy.page", "");
         const url = request.nextUrl.clone();
@@ -53,10 +51,9 @@ export async function proxy(request: NextRequest) {
         return NextResponse.rewrite(url);
     }
 
-    // ── Custom domain routing ──────────────────────────────────────────────────
+    // ── Custom domain routing ─────────────────────────────────────────────────
     if (!isStatsyHost(host)) {
         const supabase = getServiceClient();
-
         const { data: page } = await supabase
             .from("status_pages")
             .select("slug")
@@ -69,12 +66,16 @@ export async function proxy(request: NextRequest) {
             return NextResponse.rewrite(url);
         }
 
-        // Custom domain not found — show 404
         return new NextResponse("Not found", { status: 404 });
     }
 
-    // ── Normal Statsy routing ──────────────────────────────────────────────────
-    let supabaseResponse = NextResponse.next({ request });
+    // ── Normal Statsy routing — auth check + header injection ─────────────────
+    // Strip any client-supplied user headers to prevent spoofing
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.delete("x-user-id");
+    requestHeaders.delete("x-user-email");
+
+    const setCookies: Array<{ name: string; value: string; options: Record<string, unknown> }> = [];
 
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -85,39 +86,35 @@ export async function proxy(request: NextRequest) {
                     return request.cookies.getAll();
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) =>
-                        request.cookies.set(name, value),
-                    );
-                    supabaseResponse = NextResponse.next({ request });
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        supabaseResponse.cookies.set(name, value, options),
-                    );
+                    setCookies.push(...(cookiesToSet as typeof setCookies));
                 },
             },
         },
     );
 
-    // Refresh session — do not add logic before this
+    // Single auth network call per request
     const {
         data: { user },
     } = await supabase.auth.getUser();
 
-    // Not logged in + trying to access protected routes → send to login
+    if (user) {
+        requestHeaders.set("x-user-id", user.id);
+        requestHeaders.set("x-user-email", user.email ?? "");
+    }
+
+    // Auth redirects
     if (!user && (pathname.startsWith("/dashboard") || pathname.startsWith("/billing"))) {
         const url = request.nextUrl.clone();
         url.pathname = "/login";
         return NextResponse.redirect(url);
     }
 
-    // Logged in + visiting login, signup, or root → send to dashboard
-    if (user && (pathname === "/" || pathname === "/login" || pathname === "/signup")) {
+    if (user && (pathname === "/login" || pathname === "/signup")) {
         const url = request.nextUrl.clone();
         url.pathname = "/dashboard";
         return NextResponse.redirect(url);
     }
 
-    // Not logged in at root → send to landing/login
-    // NEXT_PUBLIC_LANDING_URL must be an absolute URL (e.g. https://statsy.page)
     if (!user && pathname === "/") {
         const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL;
         if (landingUrl) return NextResponse.redirect(landingUrl);
@@ -126,11 +123,23 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    return supabaseResponse;
+    if (user && pathname === "/") {
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        return NextResponse.redirect(url);
+    }
+
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
+
+    setCookies.forEach(({ name, value, options }) =>
+        response.cookies.set(name, value, options as Parameters<typeof response.cookies.set>[2]),
+    );
+
+    return response;
 }
 
 export const config = {
     matcher: [
-        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
     ],
 };
