@@ -1,7 +1,8 @@
 "use client";
 
 import IncidentCard from "@/components/incidents/IncidentCard";
-import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useCallback, useEffect, useState } from "react";
 
 type IncidentUpdate = {
   id: string;
@@ -40,8 +41,6 @@ type Props = {
   incidentDays: number;
   lastUpdated: string | null;
 };
-
-const POLL_INTERVAL = 60_000;
 
 const INITIAL_SHOW = 3;
 
@@ -156,24 +155,30 @@ export default function PublicStatusPageClient({
   const [incidentDays, setIncidentDays] = useState(initialIncidentDays);
   const [lastUpdated, setLastUpdated] = useState<string | null>(initialLastUpdated);
 
-  useEffect(() => {
-    const poll = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/public-status/${page.slug}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        setServices(data.services);
-        setIncidents(data.incidents);
-        setIncidentDays(data.incidentDays);
-        setLastUpdated(data.lastUpdated);
-      } catch {
-        // silently ignore network errors
-      }
-    };
-
-    const id = setInterval(poll, POLL_INTERVAL);
-    return () => clearInterval(id);
+  const refresh = useCallback(async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/public-status/${page.slug}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setServices(data.services);
+      setIncidents(data.incidents);
+      setIncidentDays(data.incidentDays);
+      setLastUpdated(data.lastUpdated);
+    } catch {
+      // silently ignore network errors
+    }
   }, [page.slug]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`public-status-${page.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "services", filter: `status_page_id=eq.${page.id}` }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "incidents", filter: `status_page_id=eq.${page.id}` }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "incident_updates" }, refresh)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [page.id, refresh]);
   function getOverallStatus() {
     if (services.length === 0) return "operational";
     if (services.some((s) => s.status === "outage")) return "outage";
