@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 
 type FieldErrors = {
   email?: string;
@@ -76,7 +77,7 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#f5f2eb] px-6">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#f5f2eb] px-6 py-12">
         <Link
           href="/"
           className="flex flex-col items-center gap-2 mb-10 no-underline"
@@ -146,7 +147,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f5f2eb] px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f5f2eb] px-6 py-12">
       <Link
         href="/"
         className="flex flex-col items-center gap-2 mb-10 no-underline"
@@ -184,7 +185,7 @@ export default function SignupPage() {
         }}
       >
         <div
-          className="px-8 pt-8 pb-6"
+          className="px-8 pt-10 pb-8"
           style={{ borderBottom: "1.5px solid #e4dfd4" }}
         >
           <div
@@ -216,7 +217,7 @@ export default function SignupPage() {
         <form
           onSubmit={handleSignup}
           noValidate
-          className="px-8 py-6 flex flex-col gap-5"
+          className="px-8 py-8 flex flex-col gap-6"
         >
           <div className="flex flex-col gap-2">
             <label
@@ -391,10 +392,12 @@ export default function SignupPage() {
           >
             {loading ? "Creating account…" : "Create account →"}
           </button>
+
+          <OAuthButtons />
         </form>
 
         <div
-          className="px-8 py-5 text-center"
+          className="px-8 py-7 text-center"
           style={{ borderTop: "1.5px solid #e4dfd4" }}
         >
           <p className="text-sm" style={{ color: "#8a8070" }}>

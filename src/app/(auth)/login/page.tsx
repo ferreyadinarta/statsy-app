@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { OAuthButtons } from "@/components/auth/OAuthButtons";
 
 type FieldErrors = {
   email?: string;
@@ -297,6 +298,8 @@ function LoginForm() {
           >
             {loading ? "Logging in…" : "Log in →"}
           </button>
+
+          <OAuthButtons />
         </form>
 
         <div
