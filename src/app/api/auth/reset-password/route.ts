@@ -24,7 +24,9 @@ export async function POST(request: NextRequest) {
   });
 
   // Always return 200 to avoid leaking which emails are registered
-  if (!error && data?.properties?.action_link) {
+  if (error) {
+    console.error("[reset-password] generateLink error:", error.message);
+  } else if (data?.properties?.action_link) {
     await sendPasswordResetEmail({
       to: email,
       resetLink: data.properties.action_link,

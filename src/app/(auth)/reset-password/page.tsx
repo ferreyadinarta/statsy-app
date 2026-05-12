@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -23,6 +23,12 @@ export default function ResetPasswordPage() {
   const supabase = createClient();
   const router = useRouter();
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) router.replace("/forgot-password");
+    });
+  }, []);
+
   function validate(): boolean {
     const errors: FieldErrors = {};
     if (!password) {
@@ -39,7 +45,7 @@ export default function ResetPasswordPage() {
     return Object.keys(errors).length === 0;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setAuthError(null);
     if (!validate()) return;
