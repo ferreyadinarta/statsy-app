@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { revalidateTag } from "next/cache";
+import { timingSafeEqual } from "node:crypto";
 
 function getServiceClient() {
     return createClient(
@@ -20,6 +21,7 @@ async function verifyPaddleSignature(
     const h1 = signatureHeader.match(/h1=([a-f0-9]+)/)?.[1];
 
     if (!ts || !h1) return false;
+    if (Math.abs(Date.now() / 1000 - Number(ts)) > 300) return false;
 
     const payload = `${ts}:${rawBody}`;
     const encoder = new TextEncoder();
@@ -35,7 +37,9 @@ async function verifyPaddleSignature(
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
 
-    return computed === h1;
+    const a = Buffer.from(computed, "hex");
+    const b = Buffer.from(h1, "hex");
+    return a.length === b.length && timingSafeEqual(a, b);
 }
 
 export async function POST(req: NextRequest) {
@@ -84,7 +88,8 @@ export async function POST(req: NextRequest) {
         if (s === "canceled" || s === "cancelled") return "cancelled";
         if (s === "past_due") return "past_due";
         if (s === "paused") return "paused";
-        return "active";
+        console.warn("Paddle webhook: unknown subscription status:", s);
+        return s;
     }
 
     if (!userId) {

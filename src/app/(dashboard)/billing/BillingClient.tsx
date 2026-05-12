@@ -100,29 +100,8 @@ export default function BillingClient({
                 }
                 window.Paddle.Initialize({
                     token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
-                });
-                setPaddleReady(true);
-            }
-        };
-        document.head.appendChild(script);
-        return () => {
-            document.head.removeChild(script);
-        };
-    }, []);
-
-    useEffect(() => {
-        const script = document.createElement("script");
-        script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
-        script.onload = () => {
-            if (window.Paddle) {
-                if (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === "sandbox") {
-                    window.Paddle.Environment.set("sandbox");
-                }
-                window.Paddle.Initialize({
-                    token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
                     eventCallback: function (event: Record<string, unknown>) {
                         if (event.name === "checkout.completed") {
-                            // Wait a few seconds for webhook to process then refresh
                             setTimeout(() => {
                                 router.refresh();
                             }, 4000);

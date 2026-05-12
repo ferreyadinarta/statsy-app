@@ -36,24 +36,27 @@ export async function POST(req: NextRequest) {
             ? "api.paddle.com"
             : "sandbox-api.paddle.com";
 
-    const res = await fetch(
-        `https://${paddleEnv}/subscriptions/${sub.paddle_subscription_id}/cancel`,
-        {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${process.env.PADDLE_API_KEY}`,
-                "Content-Type": "application/json",
+    let res: Response;
+    try {
+        res = await fetch(
+            `https://${paddleEnv}/subscriptions/${sub.paddle_subscription_id}/cancel`,
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${process.env.PADDLE_API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ effective_from: "next_billing_period" }),
             },
-            body: JSON.stringify({ effective_from: "next_billing_period" }),
-        },
-    );
+        );
+    } catch {
+        return NextResponse.json({ error: "Failed to reach Paddle." }, { status: 500 });
+    }
 
     if (!res.ok) {
-        const err = await res.json();
+        const err = await res.json().catch(() => ({}));
         // Sub already has a scheduled cancel — treat as success and sync DB
-        if (
-            err?.error?.code === "subscription_locked_pending_changes"
-        ) {
+        if (err?.error?.code === "subscription_locked_pending_changes") {
             await supabase
                 .from("subscriptions")
                 .update({ status: "cancelled" })

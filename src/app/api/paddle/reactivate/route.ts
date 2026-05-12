@@ -46,19 +46,26 @@ export async function POST(req: NextRequest) {
             ? "api.paddle.com"
             : "sandbox-api.paddle.com";
 
-    const res = await fetch(
-        `https://${paddleEnv}/subscriptions/${sub.paddle_subscription_id}`,
-        {
-            method: "PATCH",
-            headers: {
-                Authorization: `Bearer ${process.env.PADDLE_API_KEY}`,
-                "Content-Type": "application/json",
+    let res: Response;
+    try {
+        res = await fetch(
+            `https://${paddleEnv}/subscriptions/${sub.paddle_subscription_id}`,
+            {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${process.env.PADDLE_API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ scheduled_change: null }),
             },
-            body: JSON.stringify({ scheduled_change: null }),
-        },
-    );
+        );
+    } catch {
+        return NextResponse.json({ error: "Failed to reach Paddle." }, { status: 500 });
+    }
 
     if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.error("Paddle reactivate error:", err);
         return NextResponse.json(
             { error: "Failed to reactivate with Paddle" },
             { status: 500 },
