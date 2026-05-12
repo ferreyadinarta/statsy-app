@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
@@ -22,8 +21,6 @@ export default function SignupPage() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const supabase = createClient();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -58,17 +55,16 @@ export default function SignupPage() {
     if (!validate()) return;
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
-      },
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
+    const body = await res.json().catch(() => ({}));
     setLoading(false);
 
-    if (error) {
-      setAuthError(error.message);
+    if (!res.ok) {
+      setAuthError(body.error ?? "Something went wrong. Please try again.");
       return;
     }
 
