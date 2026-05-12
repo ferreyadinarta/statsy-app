@@ -32,11 +32,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  if (data?.properties?.action_link) {
-    const emailResult = await sendSignupConfirmationEmail({
-      to: email,
-      confirmLink: data.properties.action_link,
-    });
+  const { hashed_token, verification_type } = data.properties;
+  if (hashed_token && verification_type) {
+    // Build direct callback URL with token_hash — bypasses Supabase's PKCE redirect
+    // which would fail without a code verifier on admin-generated links
+    const confirmLink = `${process.env.NEXT_PUBLIC_APP_URL}/callback?token_hash=${hashed_token}&type=${verification_type}`;
+    const emailResult = await sendSignupConfirmationEmail({ to: email, confirmLink });
     if (emailResult.error) {
       console.error("[signup] Resend error:", emailResult.error);
     }
