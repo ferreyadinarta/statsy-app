@@ -52,18 +52,24 @@ export default function DashboardClient({ pages: initialPages, plan, overLimitPa
     async function handleDeletePage(): Promise<void> {
         if (!deletingPage) return;
         setDeleteLoading(true);
-        const res = await fetch(`/api/status-page/${deletingPage.id}`, { method: "DELETE" });
-        setDeleteLoading(false);
-        if (!res.ok) {
-            const body = await res.json().catch(() => ({}));
-            showError(body.error ?? "Failed to delete page.");
+        try {
+            const res = await fetch(`/api/status-page/${deletingPage.id}`, { method: "DELETE" });
+            if (!res.ok) {
+                const body = await res.json().catch(() => ({}));
+                showError(body.error ?? "Failed to delete page.");
+                setDeletingPage(null);
+                return;
+            }
+            setLocalPages((prev) => prev.filter((p) => p.id !== deletingPage.id));
             setDeletingPage(null);
-            return;
+            success("Status page deleted.");
+            router.refresh();
+        } catch {
+            showError("Network error. Please try again.");
+            setDeletingPage(null);
+        } finally {
+            setDeleteLoading(false);
         }
-        setLocalPages((prev) => prev.filter((p) => p.id !== deletingPage.id));
-        setDeletingPage(null);
-        success("Status page deleted.");
-        router.refresh();
     }
 
     return (
@@ -153,7 +159,7 @@ export default function DashboardClient({ pages: initialPages, plan, overLimitPa
                     {/* Header row */}
                     <div className="flex items-center justify-between mb-1 px-1">
                         <p className="text-xs uppercase tracking-wider font-semibold" style={{ color: "#8a8070" }}>
-                            {localPages.length} / {plan === "pro" ? 3 : 1}{" "}
+                            {localPages.length} / {PLAN_LIMITS[plan as keyof typeof PLAN_LIMITS]?.pages ?? 1}{" "}
                             {localPages.length === 1 ? "page" : "pages"} used
                         </p>
                         <button
@@ -318,7 +324,7 @@ export default function DashboardClient({ pages: initialPages, plan, overLimitPa
                                         <span className="hidden sm:inline">Public page</span>
                                     </Link>
                                     <Link
-                                        href={paused ? "#" : `/dashboard/${page.slug}`}
+                                        href={paused ? "/dashboard" : `/dashboard/${page.slug}`}
                                         onClick={(e) => { if (paused) e.preventDefault(); e.stopPropagation(); }}
                                         className="flex items-center gap-1.5 rounded-[4px] px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8500a]"
                                         style={{

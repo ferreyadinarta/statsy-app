@@ -84,7 +84,7 @@ export default async function SettingsPage({ params }: PageProps) {
                             className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                             style={{ background: "#1a1714", color: "#f5f2eb" }}
                         >
-                            {user.email?.[0].toUpperCase()}
+                            {user.email?.[0]?.toUpperCase() ?? "?"}
                         </div>
                         <span
                             className="text-sm hidden sm:block"

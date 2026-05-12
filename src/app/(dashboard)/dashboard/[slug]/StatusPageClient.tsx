@@ -451,7 +451,7 @@ export default function StatusPageClient({
     const [showCreateIncident, setShowCreateIncident] = useState(false);
 
     const overLimitServiceIds = useMemo(
-        () => new Set(localServices.slice(plan === "pro" ? 10 : 3).map((s) => s.id)),
+        () => new Set(localServices.slice(PLAN_LIMITS[plan].services).map((s) => s.id)),
         [localServices, plan],
     );
 

@@ -4,7 +4,13 @@ import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
 import { getUserFromRequest } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
-  const { name, status, status_page_id } = await req.json();
+  let body: { name?: string; status?: string; status_page_id?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+  const { name, status, status_page_id } = body;
 
   if (!name || !status || !status_page_id) {
     return NextResponse.json(
@@ -37,10 +43,15 @@ export async function POST(req: NextRequest) {
   const plan = await getUserPlan(user.id);
   const limit = PLAN_LIMITS[plan].services;
 
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from("services")
     .select("*", { count: "exact", head: true })
     .eq("status_page_id", status_page_id);
+
+  if (countError) {
+    console.error("Service count error:", countError);
+    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+  }
 
   if ((count ?? 0) >= limit) {
     return NextResponse.json(

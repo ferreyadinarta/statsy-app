@@ -23,7 +23,7 @@ export default async function DashboardPage() {
     ]);
     const limits = PLAN_LIMITS[plan];
 
-    const pages = pagesRaw?.map(({ services: svcs, incidents: incs, ...p }) => ({ ...p })) ?? [];
+    const pages = pagesRaw?.map(({ services: _svcs, incidents: _incs, ...p }) => ({ ...p })) ?? [];
     const services = pagesRaw?.flatMap((p) => (p.services as { status_page_id: string; status: string }[] ?? [])) ?? [];
     const openIncidents = pagesRaw?.flatMap((p) => (p.incidents as { status_page_id: string; status: string }[] ?? [])) ?? [];
 
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
                             className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                             style={{ background: "#1a1714", color: "#f5f2eb" }}
                         >
-                            {user.email?.[0].toUpperCase()}
+                            {user.email?.[0]?.toUpperCase() ?? "?"}
                         </div>
                         <span
                             className="text-sm hidden sm:block"
@@ -155,8 +155,7 @@ export default async function DashboardPage() {
                 <DashboardClient pages={pagesWithStatus} plan={plan} overLimitPageIds={overLimitPageIds} graceInfo={graceInfo} />
 
                 {/* Plan bar */}
-                {(
-                    <div
+                <div
                         className="mt-6 rounded-[4px] overflow-hidden"
                         style={{
                             background: "#ede9e0",
@@ -241,7 +240,6 @@ export default async function DashboardPage() {
                             ))}
                         </div>
                     </div>
-                )}
             </main>
 
             <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>

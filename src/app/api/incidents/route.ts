@@ -6,6 +6,7 @@ export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const incidentId = searchParams.get("id");
 
+
   if (!incidentId) {
     return NextResponse.json({ error: "Missing incident id." }, { status: 400 });
   }
@@ -43,7 +44,13 @@ export async function DELETE(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { title, description, status, status_page_id } = await req.json();
+  let body: { title?: string; description?: string; status?: string; status_page_id?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+  const { title, description, status, status_page_id } = body;
 
   if (!title || !status || !status_page_id) {
     return NextResponse.json(

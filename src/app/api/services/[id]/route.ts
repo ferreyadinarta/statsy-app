@@ -6,9 +6,15 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
-  const { name, status } = await req.json();
+  let body: { name?: string; status?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+  const { name, status } = body;
 
-  if (!name || !status) {
+  if (!name?.trim() || !status) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
   }
 

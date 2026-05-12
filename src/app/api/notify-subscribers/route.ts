@@ -14,8 +14,13 @@ function getServiceClient() {
 }
 
 export async function POST(req: NextRequest) {
-  const { status_page_id, incidentTitle, incidentStatus, incidentMessage } =
-    await req.json();
+  let body: { status_page_id?: string; incidentTitle?: string; incidentStatus?: string; incidentMessage?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+  const { status_page_id, incidentTitle, incidentStatus, incidentMessage } = body;
 
   if (
     !status_page_id ||
