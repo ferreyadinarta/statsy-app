@@ -49,7 +49,7 @@ export default function SignupPage() {
     return Object.keys(errors).length === 0;
   }
 
-  async function handleSignup(e: React.FormEvent) {
+  async function handleSignup(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setAuthError(null);
     if (!validate()) return;

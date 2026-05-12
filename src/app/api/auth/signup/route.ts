@@ -29,15 +29,17 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     console.error("[signup] generateLink error:", error.message);
-    // Surface specific errors (e.g. email already registered)
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
   if (data?.properties?.action_link) {
-    await sendSignupConfirmationEmail({
+    const emailResult = await sendSignupConfirmationEmail({
       to: email,
       confirmLink: data.properties.action_link,
     });
+    if (emailResult.error) {
+      console.error("[signup] Resend error:", emailResult.error);
+    }
   }
 
   return NextResponse.json({ ok: true });
