@@ -16,7 +16,6 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -40,7 +39,7 @@ function LoginForm() {
     return Object.keys(errors).length === 0;
   }
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setAuthError(null);
     if (!validate()) return;
@@ -182,6 +181,7 @@ function LoginForm() {
               </label>
               <Link
                 href="/forgot-password"
+                tabIndex={-1}
                 className="text-xs font-medium"
                 style={{ color: "#8a8070" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
