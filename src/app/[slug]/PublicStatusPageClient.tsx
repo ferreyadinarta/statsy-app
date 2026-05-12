@@ -157,7 +157,7 @@ export default function PublicStatusPageClient({
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/public-status/${page.slug}`);
+      const res = await fetch(`/api/public-status/${page.slug}`);
       if (!res.ok) return;
       const data = await res.json();
       setServices(data.services);

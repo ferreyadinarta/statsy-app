@@ -51,13 +51,11 @@ export async function GET(
       .eq("status_page_id", page.id)
       .order("created_at", { ascending: true }),
     getUserPlan(page.user_id),
-    createClient().then((sb) =>
-      sb
-        .from("status_pages")
-        .select("id")
-        .eq("user_id", page.user_id)
-        .order("created_at", { ascending: true }),
-    ),
+    supabase
+      .from("status_pages")
+      .select("id")
+      .eq("user_id", page.user_id)
+      .order("created_at", { ascending: true }),
   ]);
 
   const pageLimit = PLAN_LIMITS[ownerPlan].pages;
@@ -70,7 +68,7 @@ export async function GET(
 
   const { data: incidents } = await supabase
     .from("incidents")
-    .select(`*, incident_updates(*)`)
+    .select(`*, incident_updates(id, message, status, created_at)`)
     .eq("status_page_id", page.id)
     .gte("created_at", dateThreshold.toISOString())
     .order("created_at", { ascending: false });

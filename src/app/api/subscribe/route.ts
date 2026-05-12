@@ -13,7 +13,13 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: NextRequest) {
-  const { email, status_page_id } = await req.json();
+  let body: { email?: string; status_page_id?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400, headers: CORS_HEADERS });
+  }
+  const { email, status_page_id } = body;
 
   if (!email || !status_page_id) {
     return NextResponse.json(
@@ -68,10 +74,24 @@ export async function POST(req: NextRequest) {
   }
 
   // Count after insert — if over limit, remove the row we just added.
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from("subscribers")
     .select("*", { count: "exact", head: true })
     .eq("status_page_id", status_page_id);
+
+  if (countError) {
+    // Can't verify limit — roll back the insert to be safe.
+    await supabase
+      .from("subscribers")
+      .delete()
+      .eq("status_page_id", status_page_id)
+      .eq("email", email);
+    console.error("Subscribe count error:", countError);
+    return NextResponse.json(
+      { error: "Something went wrong. Please try again." },
+      { status: 500, headers: CORS_HEADERS },
+    );
+  }
 
   if ((count ?? 0) > limit) {
     await supabase

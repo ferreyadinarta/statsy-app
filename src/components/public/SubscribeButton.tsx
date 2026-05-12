@@ -17,7 +17,7 @@ export default function SubscribeButton({ statusPageId }: Props) {
     text: string;
   } | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setMessage(null);
 
@@ -180,7 +180,7 @@ export default function SubscribeButton({ statusPageId }: Props) {
                 ) : (
                   <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                     <input
-                      type="text"
+                      type="email"
                       placeholder="you@example.com"
                       value={email}
                       onChange={(e) => {

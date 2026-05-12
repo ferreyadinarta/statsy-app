@@ -14,7 +14,7 @@ export default function SubscribeForm({ statusPageId }: SubscribeFormProps) {
     text: string;
   } | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setMessage(null);
 
@@ -91,64 +91,65 @@ export default function SubscribeForm({ statusPageId }: SubscribeFormProps) {
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="flex items-center gap-2 flex-1 justify-end"
+          className="flex flex-col gap-1 flex-1 items-end"
         >
-          <input
-            type="text"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-            style={{
-              width: "220px",
-              padding: "7px 12px",
-              border: `1.5px solid ${message?.type === "error" ? "#d32f2f" : "#e4dfd4"}`,
-              borderRadius: "4px",
-              fontSize: "0.8rem",
-              background: "#faf9f6",
-              color: "#1a1714",
-              outline: "none",
-              fontFamily: "inherit",
-            }}
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: "7px 14px",
-              background: loading ? "#8a8070" : "#1a1714",
-              color: "#f5f2eb",
-              border: "1.5px solid #1a1714",
-              borderRadius: "4px",
-              fontSize: "0.8rem",
-              fontWeight: 600,
-              cursor: loading ? "not-allowed" : "pointer",
-              fontFamily: "inherit",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-            }}
-            onMouseEnter={(e) => {
-              if (!loading) {
-                e.currentTarget.style.background = "#e8500a";
-                e.currentTarget.style.borderColor = "#e8500a";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!loading) {
-                e.currentTarget.style.background = "#1a1714";
-                e.currentTarget.style.borderColor = "#1a1714";
-              }
-            }}
-          >
-            {loading ? "..." : "Notify me"}
-          </button>
+          <div className="flex items-center gap-2 justify-end w-full">
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              style={{
+                width: "220px",
+                padding: "7px 12px",
+                border: `1.5px solid ${message?.type === "error" ? "#d32f2f" : "#e4dfd4"}`,
+                borderRadius: "4px",
+                fontSize: "0.8rem",
+                background: "#faf9f6",
+                color: "#1a1714",
+                outline: "none",
+                fontFamily: "inherit",
+              }}
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                padding: "7px 14px",
+                background: loading ? "#8a8070" : "#1a1714",
+                color: "#f5f2eb",
+                border: "1.5px solid #1a1714",
+                borderRadius: "4px",
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                cursor: loading ? "not-allowed" : "pointer",
+                fontFamily: "inherit",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.background = "#e8500a";
+                  e.currentTarget.style.borderColor = "#e8500a";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.background = "#1a1714";
+                  e.currentTarget.style.borderColor = "#1a1714";
+                }
+              }}
+            >
+              {loading ? "..." : "Notify me"}
+            </button>
+          </div>
+          {message?.type === "error" && (
+            <span className="text-xs" style={{ color: "#d32f2f" }}>
+              {message.text}
+            </span>
+          )}
         </form>
-      )}
-
-      {message?.type === "error" && (
-        <span className="text-xs flex-shrink-0" style={{ color: "#d32f2f" }}>
-          {message.text}
-        </span>
       )}
     </div>
   );

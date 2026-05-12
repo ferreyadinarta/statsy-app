@@ -3,14 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const SUCCESS_RESPONSE = new NextResponse(
-  renderPage(
-    "Unsubscribed",
-    "You've been successfully unsubscribed. You won't receive any more notifications from this page.",
-  ),
-  { status: 200, headers: { "Content-Type": "text/html" } },
-);
-
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
 
@@ -42,7 +34,13 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  return SUCCESS_RESPONSE;
+  return new NextResponse(
+    renderPage(
+      "Unsubscribed",
+      "You've been successfully unsubscribed. You won't receive any more notifications from this page.",
+    ),
+    { status: 200, headers: { "Content-Type": "text/html" } },
+  );
 }
 
 function renderPage(title: string, message: string): string {
