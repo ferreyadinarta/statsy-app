@@ -801,9 +801,9 @@ export default function StatusPageClient({
                                             >
                                                 {service.name}
                                             </span>
-                                            {service.monitor_url && (
-                                                <span className="text-[10px]" style={{ color: "#8a8070" }}>
-                                                    Auto
+                                            {service.monitor_url ? (
+                                                <span className="text-[11px] mt-0.5 block" style={{ color: "#b0a898" }}>
+                                                    auto
                                                     {service.response_time_ms != null && (
                                                         <> · {service.response_time_ms >= 1000
                                                             ? `${(service.response_time_ms / 1000).toFixed(1)}s`
@@ -817,6 +817,16 @@ export default function StatusPageClient({
                                                         })()
                                                         : "checking soon"}
                                                 </span>
+                                            ) : (
+                                                <button
+                                                    onClick={() => setEditingService(service)}
+                                                    className="text-[11px] mt-0.5 cursor-pointer transition-colors"
+                                                    style={{ color: "#c4bfb4" }}
+                                                    onMouseEnter={(e) => (e.currentTarget.style.color = "#e8500a")}
+                                                    onMouseLeave={(e) => (e.currentTarget.style.color = "#c4bfb4")}
+                                                >
+                                                    + add monitoring
+                                                </button>
                                             )}
                                         </div>
                                     </div>
@@ -943,26 +953,6 @@ export default function StatusPageClient({
                     </p>
                 )}
 
-                {localServices.length > 0 && localServices.some((s) => !s.monitor_url) && (
-                    <div
-                        className="flex items-center justify-between gap-4 px-4 py-3 rounded-[4px] mt-3"
-                        style={{ background: "#f5f2eb", border: "1.5px dashed #e4dfd4" }}
-                    >
-                        <p className="text-xs" style={{ color: "#8a8070" }}>
-                            <span style={{ color: "#1a1714", fontWeight: 600 }}>📡 Auto-monitoring available.</span>{" "}
-                            Edit a service and add a Monitor URL — Statsy will ping it and update status automatically.
-                        </p>
-                        <button
-                            onClick={() => setShowAddModal(true)}
-                            className="flex-shrink-0 text-xs font-semibold rounded-[4px] px-3 py-1.5 transition-colors cursor-pointer"
-                            style={{ background: "white", color: "#1a1714", border: "1.5px solid #e4dfd4" }}
-                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#1a1714"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e4dfd4"; }}
-                        >
-                            Set up →
-                        </button>
-                    </div>
-                )}
 
                 {plan === "free" && localServices.some((s) => s.monitor_url) && (
                     <div

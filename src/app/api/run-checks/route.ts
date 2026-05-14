@@ -22,21 +22,23 @@ function isPrivateIp(ip: string): boolean {
   ].some((re) => re.test(ip));
 }
 
-async function isSafeUrl(urlStr: string): Promise<boolean> {
+type UrlCheck = "safe" | "blocked" | "unresolvable";
+
+async function checkUrl(urlStr: string): Promise<UrlCheck> {
   let url: URL;
   try {
     url = new URL(urlStr);
   } catch {
-    return false;
+    return "unresolvable";
   }
-  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+  if (url.protocol !== "http:" && url.protocol !== "https:") return "blocked";
   const hostname = url.hostname;
-  if (isIP(hostname)) return !isPrivateIp(hostname);
+  if (isIP(hostname)) return isPrivateIp(hostname) ? "blocked" : "safe";
   try {
     const { address } = await dns.lookup(hostname, { family: 4 });
-    return !isPrivateIp(address);
+    return isPrivateIp(address) ? "blocked" : "safe";
   } catch {
-    return false;
+    return "unresolvable";
   }
 }
 
@@ -145,14 +147,18 @@ export async function GET(req: NextRequest) {
       let pingFailed = false;
 
       try {
-        const safe = await isSafeUrl(service.monitor_url);
-        if (!safe) {
+        const urlCheck = await checkUrl(service.monitor_url);
+        if (urlCheck === "blocked") {
           await supabase
             .from("services")
             .update({ last_checked_at: new Date().toISOString(), last_status_code: null })
             .eq("id", service.id);
           return;
         }
+        if (urlCheck === "unresolvable") {
+          pingFailed = true;
+          responseTimeMs = Date.now() - start;
+        } else {
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), PING_TIMEOUT_MS);
@@ -167,6 +173,7 @@ export async function GET(req: NextRequest) {
 
         const isUp = res.ok || (res.status >= 300 && res.status < 400) || res.status === 401 || res.status === 403;
         if (!isUp) pingFailed = true;
+        } // end else (safe url)
       } catch {
         responseTimeMs = Date.now() - start;
         pingFailed = true;
