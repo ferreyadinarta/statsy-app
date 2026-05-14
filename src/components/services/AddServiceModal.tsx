@@ -14,6 +14,8 @@ type Service = {
   created_at: string;
   monitor_url: string | null;
   check_interval_minutes: number | null;
+  last_checked_at: string | null;
+  response_time_ms: number | null;
 };
 
 type FieldErrors = {
