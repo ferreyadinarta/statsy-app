@@ -12,21 +12,27 @@ type Service = {
   name: string;
   status: ServiceStatus;
   created_at: string;
+  monitor_url: string | null;
+  check_interval_minutes: number | null;
 };
 
 type FieldErrors = {
   name?: string;
+  monitor_url?: string;
 };
 
 type Props = {
   pageId: string;
+  plan: "free" | "pro";
   onClose: () => void;
   onSuccess: (service: Service) => void;
 };
 
-export default function AddServiceModal({ pageId, onClose, onSuccess }: Props) {
+export default function AddServiceModal({ pageId, plan, onClose, onSuccess }: Props) {
   const [name, setName] = useState("");
   const [status, setStatus] = useState<ServiceStatus>("operational");
+  const [monitorUrl, setMonitorUrl] = useState("");
+  const [checkInterval, setCheckInterval] = useState(1);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
 
@@ -39,6 +45,9 @@ export default function AddServiceModal({ pageId, onClose, onSuccess }: Props) {
       errors.name = "Service name is required.";
     } else if (name.trim().length < 2) {
       errors.name = "Service name must be at least 2 characters.";
+    }
+    if (monitorUrl.trim() && !/^https?:\/\//i.test(monitorUrl.trim())) {
+      errors.monitor_url = "URL must start with http:// or https://";
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -53,7 +62,13 @@ export default function AddServiceModal({ pageId, onClose, onSuccess }: Props) {
     const res = await fetch("/api/services", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), status, status_page_id: pageId }),
+      body: JSON.stringify({
+        name: name.trim(),
+        status,
+        status_page_id: pageId,
+        monitor_url: monitorUrl.trim() || null,
+        check_interval_minutes: plan === "pro" && monitorUrl.trim() ? checkInterval : null,
+      }),
     });
 
     if (!res.ok) {
@@ -172,6 +187,67 @@ export default function AddServiceModal({ pageId, onClose, onSuccess }: Props) {
               </span>
             )}
           </div>
+
+          {/* Monitor URL */}
+          <div className="flex flex-col gap-2">
+            <label
+              className="text-xs font-semibold uppercase tracking-[0.08em] flex items-center gap-2"
+              style={{ color: "#3d3830" }}
+            >
+              Monitor URL
+              <span className="text-[10px] font-medium normal-case tracking-normal px-1.5 py-0.5 rounded-[3px]" style={{ background: "#f5f2eb", color: "#8a8070", border: "1px solid #e4dfd4" }}>
+                optional
+              </span>
+            </label>
+            <input
+              type="url"
+              value={monitorUrl}
+              onChange={(e) => {
+                setMonitorUrl(e.target.value);
+                setFieldErrors((prev) => ({ ...prev, monitor_url: undefined }));
+              }}
+              placeholder="https://yourapp.com/health"
+              className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4]"
+              style={{
+                border: `1.5px solid ${fieldErrors.monitor_url ? "#d32f2f" : "#e4dfd4"}`,
+                color: "#1a1714",
+              }}
+            />
+            {fieldErrors.monitor_url ? (
+              <span className="text-xs" style={{ color: "#d32f2f" }}>{fieldErrors.monitor_url}</span>
+            ) : (
+              <span className="text-xs" style={{ color: "#8a8070" }}>Statsy will ping this URL to auto-update status</span>
+            )}
+          </div>
+
+          {/* Check interval — Pro only, shown only when monitor URL is set */}
+          {plan === "pro" && monitorUrl.trim() && (
+            <div className="flex flex-col gap-2">
+              <label
+                className="text-xs font-semibold uppercase tracking-[0.08em]"
+                style={{ color: "#3d3830" }}
+              >
+                Check interval
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[1, 2, 5, 10, 30, 60].map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setCheckInterval(m)}
+                    className="rounded-[4px] px-3 py-2.5 text-sm font-medium transition-all cursor-pointer"
+                    style={{
+                      border: `1.5px solid ${checkInterval === m ? "#1a1714" : "#e4dfd4"}`,
+                      background: checkInterval === m ? "#1a1714" : "white",
+                      color: checkInterval === m ? "white" : "#3d3830",
+                    }}
+                  >
+                    {m === 60 ? "60 min" : `${m} min`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Status */}
           <div className="flex flex-col gap-2">

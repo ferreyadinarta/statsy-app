@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import {
     Plus,
@@ -47,6 +48,10 @@ type Service = {
     name: string;
     status: "operational" | "degraded" | "outage";
     created_at: string;
+    monitor_url: string | null;
+    last_checked_at: string | null;
+    response_time_ms: number | null;
+    check_interval_minutes: number | null;
 };
 
 type StatusPage = {
@@ -457,6 +462,23 @@ export default function StatusPageClient({
 
     const atLimit = localServices.length >= (plan === "pro" ? PLAN_LIMITS.pro.services : PLAN_LIMITS.free.services);
 
+    useEffect(() => {
+        const supabase = createClient();
+        const channel = supabase
+            .channel(`services:${page.id}`)
+            .on(
+                "postgres_changes",
+                { event: "UPDATE", schema: "public", table: "services", filter: `status_page_id=eq.${page.id}` },
+                (payload) => {
+                    setLocalServices((prev) =>
+                        prev.map((s) => (s.id === payload.new.id ? { ...s, ...(payload.new as Service) } : s))
+                    );
+                }
+            )
+            .subscribe();
+        return () => { supabase.removeChannel(channel); };
+    }, [page.id]);
+
     const activeIncidents = localIncidents.filter((i) => i.status !== "resolved");
     const resolvedIncidents = localIncidents.filter((i) => i.status === "resolved");
 
@@ -772,12 +794,31 @@ export default function StatusPageClient({
                                         >
                                             {getStatusIcon(service.status)}
                                         </span>
-                                        <span
-                                            className="text-sm font-semibold truncate"
-                                            style={{ color: "#1a1714" }}
-                                        >
-                                            {service.name}
-                                        </span>
+                                        <div className="min-w-0">
+                                            <span
+                                                className="text-sm font-semibold truncate block"
+                                                style={{ color: "#1a1714" }}
+                                            >
+                                                {service.name}
+                                            </span>
+                                            {service.monitor_url && (
+                                                <span className="text-[10px]" style={{ color: "#8a8070" }}>
+                                                    Auto
+                                                    {service.response_time_ms != null && (
+                                                        <> · {service.response_time_ms >= 1000
+                                                            ? `${(service.response_time_ms / 1000).toFixed(1)}s`
+                                                            : `${service.response_time_ms}ms`}</>
+                                                    )}
+                                                    {" · "}
+                                                    {service.last_checked_at
+                                                        ? (() => {
+                                                            const diff = Math.floor((Date.now() - new Date(service.last_checked_at).getTime()) / 60000);
+                                                            return diff < 1 ? "just now" : `${diff}m ago`;
+                                                        })()
+                                                        : "checking soon"}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <div className="flex items-center gap-2 flex-shrink-0">
@@ -900,6 +941,53 @@ export default function StatusPageClient({
                         </Link>{" "}
                         for up to 10 services.
                     </p>
+                )}
+
+                {localServices.length > 0 && localServices.some((s) => !s.monitor_url) && (
+                    <div
+                        className="flex items-center justify-between gap-4 px-4 py-3 rounded-[4px] mt-3"
+                        style={{ background: "#f5f2eb", border: "1.5px dashed #e4dfd4" }}
+                    >
+                        <p className="text-xs" style={{ color: "#8a8070" }}>
+                            <span style={{ color: "#1a1714", fontWeight: 600 }}>📡 Auto-monitoring available.</span>{" "}
+                            Edit a service and add a Monitor URL — Statsy will ping it and update status automatically.
+                        </p>
+                        <button
+                            onClick={() => setShowAddModal(true)}
+                            className="flex-shrink-0 text-xs font-semibold rounded-[4px] px-3 py-1.5 transition-colors cursor-pointer"
+                            style={{ background: "white", color: "#1a1714", border: "1.5px solid #e4dfd4" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#1a1714"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e4dfd4"; }}
+                        >
+                            Set up →
+                        </button>
+                    </div>
+                )}
+
+                {plan === "free" && localServices.some((s) => s.monitor_url) && (
+                    <div
+                        className="flex items-center justify-between gap-4 px-4 py-3 rounded-[4px] mt-3"
+                        style={{ background: "#f5f2eb", border: "1.5px solid #e4dfd4" }}
+                    >
+                        <p className="text-xs" style={{ color: "#8a8070" }}>
+                            You&apos;re on <span style={{ color: "#1a1714", fontWeight: 600 }}>5-min checks</span>. Upgrade to Pro for 1-min detection and custom intervals.
+                        </p>
+                        <Link
+                            href="/billing"
+                            className="flex-shrink-0 text-xs font-semibold rounded-[4px] px-3 py-1.5 transition-colors"
+                            style={{ background: "#1a1714", color: "#f5f2eb", border: "1.5px solid #1a1714" }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#e8500a";
+                                e.currentTarget.style.borderColor = "#e8500a";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "#1a1714";
+                                e.currentTarget.style.borderColor = "#1a1714";
+                            }}
+                        >
+                            Upgrade →
+                        </Link>
+                    </div>
                 )}
             </section>
 
@@ -1075,6 +1163,7 @@ export default function StatusPageClient({
             {showAddModal && (
                 <AddServiceModal
                     pageId={page.id}
+                    plan={plan}
                     onClose={() => setShowAddModal(false)}
                     onSuccess={handleServiceAdded}
                 />
@@ -1082,6 +1171,7 @@ export default function StatusPageClient({
             {editingService && (
                 <EditServiceModal
                     service={editingService}
+                    plan={plan}
                     onClose={() => setEditingService(null)}
                     onSuccess={handleServiceEdited}
                 />

@@ -304,3 +304,160 @@ function buildEmailHtml(p: BuildEmailHtmlParams): string {
 </body>
 </html>`;
 }
+
+// ── Monitoring alerts ────────────────────────────────────────────────────────
+
+const STATUS_STYLES: Record<string, { bg: string; color: string; border: string; label: string }> = {
+  outage:      { bg: "#fdeae8", color: "#d32f2f", border: "#d32f2f", label: "Outage" },
+  degraded:    { bg: "rgba(232,80,10,0.08)", color: "#e8500a", border: "#e8500a", label: "Degraded" },
+  operational: { bg: "#e8f5ee", color: "#1a7a4a", border: "#1a7a4a", label: "Operational" },
+};
+
+function buildMonitoringAlertHtml({
+  pageName,
+  pageUrl,
+  serviceName,
+  newStatus,
+  unsubscribeUrl,
+  isPro,
+  isOwner,
+}: {
+  pageName: string;
+  pageUrl: string;
+  serviceName: string;
+  newStatus: "operational" | "degraded" | "outage";
+  unsubscribeUrl?: string;
+  isPro: boolean;
+  isOwner: boolean;
+}): string {
+  const sc = STATUS_STYLES[newStatus];
+  const isDown = newStatus === "outage" || newStatus === "degraded";
+  const headline = isDown
+    ? `${serviceName} is ${sc.label.toLowerCase()}`
+    : `${serviceName} has recovered`;
+  const body = isDown
+    ? `Statsy detected that <strong>${serviceName}</strong> on your <strong>${pageName}</strong> status page is reporting <strong>${sc.label}</strong>. Check your service and update your status page accordingly.`
+    : `<strong>${serviceName}</strong> on <strong>${pageName}</strong> is back to <strong>Operational</strong>.`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0;padding:0;background:#f5f2eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f2eb;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="520" cellpadding="0" cellspacing="0"
+          style="background:white;border:1.5px solid #1a1714;border-radius:4px;overflow:hidden;max-width:520px;">
+          <tr>
+            <td style="background:#1a1714;padding:20px 32px;">
+              <a href="${pageUrl}" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;"></span>
+                <span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;">Statsy</span>
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 32px 24px;">
+              <div style="margin-bottom:14px;">
+                <span style="display:inline-block;padding:4px 12px;border-radius:4px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;background:${sc.bg};color:${sc.color};border:1.5px solid ${sc.border};">
+                  ${sc.label}
+                </span>
+              </div>
+              <h1 style="margin:0 0 12px;font-size:1.3rem;color:#1a1714;font-weight:900;letter-spacing:-0.03em;line-height:1.2;">
+                ${headline}
+              </h1>
+              <p style="margin:0 0 28px;font-size:0.9rem;color:#3d3530;line-height:1.7;">
+                ${body}
+              </p>
+              <a href="${pageUrl}"
+                style="display:inline-block;background:#1a1714;color:#f5f2eb;padding:11px 22px;border-radius:4px;font-size:0.85rem;text-decoration:none;font-weight:600;letter-spacing:-0.01em;">
+                View Status Page →
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-top:1px solid #e8e2d9;padding:14px 32px;">
+              <p style="margin:0;font-size:0.75rem;color:#8a8070;line-height:1.6;">
+                ${isOwner
+                  ? `Automated monitoring alert from <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a>.`
+                  : `You're receiving this because you subscribed to updates from <a href="${pageUrl}" style="color:#e8500a;text-decoration:none;font-weight:600;">${pageName}</a>.${unsubscribeUrl ? ` &nbsp;·&nbsp; <a href="${unsubscribeUrl}" style="color:#8a8070;text-decoration:underline;">Unsubscribe</a>` : ""}`
+                }
+              </p>
+              ${!isPro ? `<p style="margin:8px 0 0;font-size:0.72rem;color:#c4bfb4;">Powered by <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a></p>` : ""}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendOwnerStatusAlert({
+  to,
+  serviceName,
+  newStatus,
+  pageSlug,
+  pageName,
+}: {
+  to: string;
+  serviceName: string;
+  newStatus: "operational" | "degraded" | "outage";
+  pageSlug: string;
+  pageName: string;
+}) {
+  const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${pageSlug}`;
+  const sc = STATUS_STYLES[newStatus];
+  const subject = newStatus === "operational"
+    ? `✓ Recovered: ${serviceName} is back up`
+    : `⚠ ${sc.label}: ${serviceName} on ${pageName}`;
+
+  return resend.emails.send({
+    from: "Statsy Monitoring <noreply@statsy.page>",
+    to,
+    subject,
+    html: buildMonitoringAlertHtml({ pageName, pageUrl, serviceName, newStatus, isPro: true, isOwner: true }),
+  });
+}
+
+export async function sendSubscriberStatusChangeAlert({
+  subscribers,
+  serviceName,
+  newStatus,
+  pageSlug,
+  pageName,
+  isPro,
+}: {
+  subscribers: { email: string; token: string }[];
+  serviceName: string;
+  newStatus: "operational" | "degraded" | "outage";
+  pageSlug: string;
+  pageName: string;
+  isPro: boolean;
+}) {
+  const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${pageSlug}`;
+  const sc = STATUS_STYLES[newStatus];
+  const subject = newStatus === "operational"
+    ? `✓ Recovered: ${serviceName} is back up — ${pageName}`
+    : `⚠ ${sc.label}: ${serviceName} — ${pageName}`;
+
+  const results = await Promise.allSettled(
+    subscribers.map(({ email, token }) => {
+      const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
+      return resend.emails.send({
+        from: `${pageName} Status <notifications@statsy.page>`,
+        to: email,
+        subject,
+        html: buildMonitoringAlertHtml({ pageName, pageUrl, serviceName, newStatus, unsubscribeUrl, isPro, isOwner: false }),
+      });
+    }),
+  );
+
+  results.forEach((r, i) => {
+    if (r.status === "rejected") console.error(`Failed to send alert to ${subscribers[i].email}:`, r.reason);
+  });
+}

@@ -39,6 +39,7 @@ const FREE_FEATURES = [
     { text: `${PLAN_LIMITS.free.services} services per page` },
     { text: `${PLAN_LIMITS.free.subscribers} subscribers per page` },
     { text: `${PLAN_LIMITS.free.historyDays}-day incident history` },
+    { text: "Automated monitoring (5-min checks)" },
 ];
 
 const PRO_FEATURES = [
@@ -46,6 +47,7 @@ const PRO_FEATURES = [
     { text: `${PLAN_LIMITS.pro.services} services per page`, note: `vs ${PLAN_LIMITS.free.services} on Free` },
     { text: `${PLAN_LIMITS.pro.subscribers} subscribers per page`, note: `vs ${PLAN_LIMITS.free.subscribers} on Free` },
     { text: `${PLAN_LIMITS.pro.historyDays}-day incident history`, note: `vs ${PLAN_LIMITS.free.historyDays} days on Free` },
+    { text: "1-min monitoring checks + custom intervals", note: "vs 5-min on Free" },
     { text: "Custom domain support", note: null },
     { text: "Embeddable status badge", note: null },
     { text: "Remove Statsy branding", note: null },

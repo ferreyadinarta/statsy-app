@@ -4,13 +4,28 @@ import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
 import { getUserFromRequest } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
-  let body: { name?: string; status?: string; status_page_id?: string };
+  let body: { name?: string; status?: string; status_page_id?: string; monitor_url?: string | null; check_interval_minutes?: number | null };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
-  const { name, status, status_page_id } = body;
+  const { name, status, status_page_id, monitor_url, check_interval_minutes } = body;
+
+  if (monitor_url) {
+    if (!/^https?:\/\//i.test(monitor_url)) {
+      return NextResponse.json({ error: "Monitor URL must start with http:// or https://" }, { status: 400 });
+    }
+    try {
+      const u = new URL(monitor_url);
+      const blocked = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/i;
+      if (blocked.test(u.hostname)) {
+        return NextResponse.json({ error: "Monitor URL cannot point to a private or local address." }, { status: 400 });
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid monitor URL." }, { status: 400 });
+    }
+  }
 
   if (!name || !status || !status_page_id) {
     return NextResponse.json(
@@ -62,7 +77,7 @@ export async function POST(req: NextRequest) {
 
   const { data: service, error: insertError } = await supabase
     .from("services")
-    .insert({ name, status, status_page_id, user_id: user.id })
+    .insert({ name, status, status_page_id, user_id: user.id, monitor_url: monitor_url ?? null, check_interval_minutes: check_interval_minutes ?? null })
     .select()
     .single();
 

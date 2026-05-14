@@ -6,13 +6,13 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
-  let body: { name?: string; status?: string };
+  let body: { name?: string; status?: string; monitor_url?: string | null; check_interval_minutes?: number | null };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
-  const { name, status } = body;
+  const { name, status, monitor_url, check_interval_minutes } = body;
 
   if (!name?.trim() || !status) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
@@ -21,6 +21,21 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const validStatuses = ["operational", "degraded", "outage"];
   if (!validStatuses.includes(status)) {
     return NextResponse.json({ error: "Invalid status value." }, { status: 400 });
+  }
+
+  if (monitor_url) {
+    if (!/^https?:\/\//i.test(monitor_url)) {
+      return NextResponse.json({ error: "Monitor URL must start with http:// or https://" }, { status: 400 });
+    }
+    try {
+      const u = new URL(monitor_url);
+      const blocked = /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/i;
+      if (blocked.test(u.hostname)) {
+        return NextResponse.json({ error: "Monitor URL cannot point to a private or local address." }, { status: 400 });
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid monitor URL." }, { status: 400 });
+    }
   }
 
   const user = getUserFromRequest(req);
@@ -32,7 +47,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   const { error } = await supabase
     .from("services")
-    .update({ name: name.trim(), status })
+    .update({ name: name.trim(), status, monitor_url: monitor_url ?? null, check_interval_minutes: check_interval_minutes ?? null })
     .eq("id", id)
     .eq("user_id", user.id);
 
