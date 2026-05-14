@@ -217,7 +217,7 @@ function EmbedBadgeSection({ slug, services }: { slug: string; services: { id: s
                         className="text-sm font-medium"
                         style={{ color: "#8a8070" }}
                     >
-                        Add a live status badge to your site or README.
+                        Add a live status badge to your site.
                     </p>
                 </div>
                 <Code2
@@ -1127,7 +1127,7 @@ export default function StatusPageClient({
                                     className="text-xs mt-0.5"
                                     style={{ color: "#8a8070" }}
                                 >
-                                    Add a live badge to your website or README.{" "}
+                                    Add a live badge to your website.{" "}
                                     <Link
                                         href="/billing"
                                         style={{

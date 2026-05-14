@@ -98,7 +98,16 @@ export async function GET(
       white-space: nowrap;
       transition: opacity 0.15s;
     }
-    a:hover { opacity: 0.8; }
+    a:hover { opacity: 0.85; }
+    .arrow {
+      font-size: 11px;
+      color: #c4bfb4;
+      opacity: 0;
+      transform: translate(1px, -1px);
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+    a:hover .arrow { opacity: 1; }
     .dot {
       width: 8px;
       height: 8px;
@@ -126,6 +135,7 @@ export async function GET(
     <span class="name">${page.name}</span>
     <span class="sep">·</span>
     <span>${c.label}</span>
+    <span class="arrow">↗</span>
   </a>
 </body>
 </html>`;
