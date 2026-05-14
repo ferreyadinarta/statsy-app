@@ -452,6 +452,7 @@ export default function StatusPageClient({
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingService, setEditingService] = useState<Service | null>(null);
+    const [focusMonitorUrl, setFocusMonitorUrl] = useState(false);
     const [deletingService, setDeletingService] = useState<Service | null>(null);
     const [showCreateIncident, setShowCreateIncident] = useState(false);
 
@@ -481,6 +482,7 @@ export default function StatusPageClient({
 
     const activeIncidents = localIncidents.filter((i) => i.status !== "resolved");
     const resolvedIncidents = localIncidents.filter((i) => i.status === "resolved");
+    const hasServiceIssues = localServices.some((s) => s.status === "outage" || s.status === "degraded");
 
     function handleServiceAdded(service: Service) {
         setLocalServices((prev) => [...prev, service]);
@@ -819,7 +821,7 @@ export default function StatusPageClient({
                                                 </span>
                                             ) : (
                                                 <button
-                                                    onClick={() => setEditingService(service)}
+                                                    onClick={() => { setEditingService(service); setFocusMonitorUrl(true); }}
                                                     className="text-[11px] mt-0.5 cursor-pointer transition-colors"
                                                     style={{ color: "#c4bfb4" }}
                                                     onMouseEnter={(e) => (e.currentTarget.style.color = "#e8500a")}
@@ -1000,7 +1002,9 @@ export default function StatusPageClient({
                             style={{ color: "#8a8070" }}
                         >
                             {activeIncidents.length === 0
-                                ? "No active incidents — all systems operational"
+                                ? hasServiceIssues
+                                    ? "No active incidents — but services are reporting issues"
+                                    : "No active incidents — all systems operational"
                                 : `${activeIncidents.length} active ${activeIncidents.length === 1 ? "incident" : "incidents"}`}
                         </p>
                     </div>
@@ -1038,19 +1042,21 @@ export default function StatusPageClient({
                     <div
                         className="flex items-center gap-3 px-6 py-5 rounded-[4px]"
                         style={{
-                            border: "1.5px solid #e4dfd4",
-                            background: "white",
+                            border: `1.5px solid ${hasServiceIssues ? "rgba(211,47,47,0.2)" : "#e4dfd4"}`,
+                            background: hasServiceIssues ? "rgba(211,47,47,0.03)" : "white",
                         }}
                     >
                         <div
                             className="w-2 h-2 rounded-full flex-shrink-0"
-                            style={{ background: "#1a7a4a" }}
+                            style={{ background: hasServiceIssues ? "#d32f2f" : "#1a7a4a" }}
                         />
                         <p
                             className="text-sm font-medium"
                             style={{ color: "#3d3830" }}
                         >
-                            All systems operational
+                            {hasServiceIssues
+                                ? "Service issues detected — no incident posted yet"
+                                : "All systems operational"}
                         </p>
                     </div>
                 ) : (
@@ -1162,8 +1168,9 @@ export default function StatusPageClient({
                 <EditServiceModal
                     service={editingService}
                     plan={plan}
-                    onClose={() => setEditingService(null)}
+                    onClose={() => { setEditingService(null); setFocusMonitorUrl(false); }}
                     onSuccess={handleServiceEdited}
+                    focusMonitorUrl={focusMonitorUrl}
                 />
             )}
             {deletingService && (

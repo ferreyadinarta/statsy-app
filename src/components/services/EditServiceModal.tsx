@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX, useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -28,15 +28,23 @@ type Props = {
   plan: "free" | "pro";
   onClose: () => void;
   onSuccess: (service: Service) => void;
+  focusMonitorUrl?: boolean;
 };
 
-export default function EditServiceModal({ service, plan, onClose, onSuccess }: Props) {
+export default function EditServiceModal({ service, plan, onClose, onSuccess, focusMonitorUrl }: Props) {
   const [name, setName] = useState(service.name);
   const [status, setStatus] = useState<ServiceStatus>(service.status);
   const [monitorUrl, setMonitorUrl] = useState(service.monitor_url ?? "");
   const [checkInterval, setCheckInterval] = useState(service.check_interval_minutes ?? 1);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
+  const monitorUrlRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (focusMonitorUrl) {
+      setTimeout(() => monitorUrlRef.current?.focus(), 80);
+    }
+  }, [focusMonitorUrl]);
 
   const router = useRouter();
   const { success, error: showError } = useToast();
@@ -205,6 +213,7 @@ export default function EditServiceModal({ service, plan, onClose, onSuccess }: 
               </span>
             </label>
             <input
+              ref={monitorUrlRef}
               type="url"
               value={monitorUrl}
               onChange={(e) => {

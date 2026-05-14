@@ -32,9 +32,8 @@ function buildSignupConfirmationEmailHtml(confirmLink: string): string {
           style="background:white;border:1.5px solid #1a1714;border-radius:4px;overflow:hidden;max-width:520px;">
           <tr>
             <td style="background:#1a1714;padding:20px 32px;">
-              <a href="https://statsy.page" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
-                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;"></span>
-                <span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;">Statsy</span>
+              <a href="https://statsy.page" style="text-decoration:none;">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;vertical-align:middle;margin-right:7px;"></span><span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;vertical-align:middle;">Statsy</span>
               </a>
             </td>
           </tr>
@@ -104,9 +103,8 @@ function buildPasswordResetEmailHtml(resetLink: string): string {
           <!-- Header -->
           <tr>
             <td style="background:#1a1714;padding:20px 32px;">
-              <a href="https://statsy.page" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
-                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;"></span>
-                <span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;">Statsy</span>
+              <a href="https://statsy.page" style="text-decoration:none;">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;vertical-align:middle;margin-right:7px;"></span><span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;vertical-align:middle;">Statsy</span>
               </a>
             </td>
           </tr>
@@ -353,9 +351,8 @@ function buildMonitoringAlertHtml({
           style="background:white;border:1.5px solid #1a1714;border-radius:4px;overflow:hidden;max-width:520px;">
           <tr>
             <td style="background:#1a1714;padding:20px 32px;">
-              <a href="${pageUrl}" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
-                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;"></span>
-                <span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;">Statsy</span>
+              <a href="${pageUrl}" style="text-decoration:none;">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;vertical-align:middle;margin-right:7px;"></span><span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;vertical-align:middle;">Statsy</span>
               </a>
             </td>
           </tr>
