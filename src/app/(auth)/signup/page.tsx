@@ -9,6 +9,7 @@ type FieldErrors = {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  terms?: string;
 };
 
 export default function SignupPage() {
@@ -17,6 +18,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [authError, setAuthError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -44,6 +46,9 @@ export default function SignupPage() {
       errors.confirmPassword = "Please confirm your password.";
     } else if (password !== confirmPassword) {
       errors.confirmPassword = "Passwords do not match.";
+    }
+    if (!agreedToTerms) {
+      errors.terms = "You must agree to the Terms & Conditions to continue.";
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -348,6 +353,54 @@ export default function SignupPage() {
             {fieldErrors.confirmPassword && (
               <p className="text-xs" style={{ color: "#e8500a" }}>
                 {fieldErrors.confirmPassword}
+              </p>
+            )}
+          </div>
+
+          {/* Terms & Conditions */}
+          <div className="flex flex-col gap-1.5">
+            <label className="flex items-start gap-3 cursor-pointer select-none">
+              <div className="relative flex-shrink-0 mt-0.5">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => {
+                    setAgreedToTerms(e.target.checked);
+                    if (e.target.checked) setFieldErrors((prev) => ({ ...prev, terms: undefined }));
+                  }}
+                  className="sr-only"
+                />
+                <div
+                  className="w-4 h-4 rounded-[3px] flex items-center justify-center transition-all"
+                  style={{
+                    border: `1.5px solid ${fieldErrors.terms ? "#e8500a" : agreedToTerms ? "#1a1714" : "#e4dfd4"}`,
+                    background: agreedToTerms ? "#1a1714" : "white",
+                  }}
+                >
+                  {agreedToTerms && (
+                    <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                      <path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+              </div>
+              <span className="text-sm leading-snug" style={{ color: "#3d3830" }}>
+                I agree to the{" "}
+                <a
+                  href="https://landing.statsy.page/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold underline underline-offset-2"
+                  style={{ color: "#e8500a" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Terms &amp; Conditions and Privacy Policy
+                </a>
+              </span>
+            </label>
+            {fieldErrors.terms && (
+              <p className="text-xs" style={{ color: "#e8500a" }}>
+                {fieldErrors.terms}
               </p>
             )}
           </div>
