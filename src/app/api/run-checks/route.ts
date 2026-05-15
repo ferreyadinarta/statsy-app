@@ -50,6 +50,7 @@ type ServiceRow = {
   status_page_id: string;
   monitor_url: string;
   last_checked_at: string | null;
+  next_check_at: string | null;
   check_interval_minutes: number | null;
   degraded_threshold_ms: number | null;
   status: "operational" | "degraded" | "outage";
@@ -89,19 +90,22 @@ export async function GET(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  const { data: services, error } = await supabase
+  // Only fetch services that are due — uses index on next_check_at
+  const { data: dueServices, error } = await supabase
     .from("services")
-    .select("id, name, user_id, status_page_id, monitor_url, last_checked_at, check_interval_minutes, degraded_threshold_ms, status, consecutive_failures, consecutive_slow_responses")
-    .not("monitor_url", "is", null);
+    .select("id, name, user_id, status_page_id, monitor_url, last_checked_at, next_check_at, check_interval_minutes, degraded_threshold_ms, status, consecutive_failures, consecutive_slow_responses")
+    .not("monitor_url", "is", null)
+    .or(`next_check_at.is.null,next_check_at.lte.${new Date().toISOString()}`);
 
-  if (error || !services) {
+  if (error || !dueServices) {
     console.error("run-checks fetch error:", error);
     return NextResponse.json({ error: "Failed to fetch services" }, { status: 500 });
   }
 
-  if (services.length === 0) return NextResponse.json({ checked: 0 });
+  if (dueServices.length === 0) return NextResponse.json({ checked: 0 });
 
-  const userIds = [...new Set((services as ServiceRow[]).map((s) => s.user_id))];
+  // Only fetch subscriptions for users with due services
+  const userIds = [...new Set((dueServices as ServiceRow[]).map((s) => s.user_id))];
   const { data: subscriptions } = await supabase
     .from("subscriptions")
     .select("user_id, plan, status, current_period_end")
@@ -113,18 +117,6 @@ export async function GET(req: NextRequest) {
     planMap.set(userId, resolvePlan(sub));
   }
 
-  const now = Date.now();
-  const dueServices = (services as ServiceRow[]).filter((s) => {
-    const plan = planMap.get(s.user_id) ?? "free";
-    const intervalMs = plan === "pro"
-      ? Math.max(1, s.check_interval_minutes ?? 1) * 60_000
-      : 5 * 60_000;
-    if (!s.last_checked_at) return true;
-    return now - new Date(s.last_checked_at).getTime() >= intervalMs;
-  });
-
-  if (dueServices.length === 0) return NextResponse.json({ checked: 0 });
-
   // Batch-fetch status pages for notification emails
   const pageIds = [...new Set(dueServices.map((s) => s.status_page_id))];
   const { data: pages } = await supabase
@@ -132,15 +124,6 @@ export async function GET(req: NextRequest) {
     .select("id, name, slug, user_id")
     .in("id", pageIds);
   const pageMap = new Map<string, PageRow>((pages as PageRow[] | null)?.map((p) => [p.id, p]) ?? []);
-
-  // Batch-fetch owner emails via admin API
-  const ownerEmailMap = new Map<string, string>();
-  await Promise.all(
-    userIds.map(async (uid) => {
-      const { data } = await supabase.auth.admin.getUserById(uid);
-      if (data.user?.email) ownerEmailMap.set(uid, data.user.email);
-    }),
-  );
 
   await Promise.all(
     dueServices.map(async (service) => {
@@ -152,9 +135,11 @@ export async function GET(req: NextRequest) {
       try {
         const urlCheck = await checkUrl(service.monitor_url);
         if (urlCheck === "blocked") {
+          const p = planMap.get(service.user_id) ?? "free";
+          const iMs = p === "pro" ? Math.max(1, service.check_interval_minutes ?? 1) * 60_000 : 5 * 60_000;
           await supabase
             .from("services")
-            .update({ last_checked_at: new Date().toISOString(), last_status_code: null })
+            .update({ last_checked_at: new Date().toISOString(), next_check_at: new Date(Date.now() + iMs).toISOString(), last_status_code: null })
             .eq("id", service.id);
           return;
         }
@@ -208,17 +193,37 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      await supabase
-        .from("services")
-        .update({
-          status: newStatus,
-          last_checked_at: new Date().toISOString(),
-          last_status_code: statusCode,
-          response_time_ms: responseTimeMs,
-          consecutive_failures: newConsecutiveFailures,
-          consecutive_slow_responses: newConsecutiveSlowResponses,
-        })
-        .eq("id", service.id);
+      const statusChanged = newStatus !== service.status;
+      const countsChanged =
+        newConsecutiveFailures !== (service.consecutive_failures ?? 0) ||
+        newConsecutiveSlowResponses !== (service.consecutive_slow_responses ?? 0);
+
+      const plan = planMap.get(service.user_id) ?? "free";
+      const intervalMs = plan === "pro"
+        ? Math.max(1, service.check_interval_minutes ?? 1) * 60_000
+        : 5 * 60_000;
+      const nextCheckAt = new Date(Date.now() + intervalMs).toISOString();
+      const now_iso = new Date().toISOString();
+
+      if (statusChanged || countsChanged) {
+        await supabase
+          .from("services")
+          .update({
+            status: newStatus,
+            last_checked_at: now_iso,
+            next_check_at: nextCheckAt,
+            last_status_code: statusCode,
+            response_time_ms: responseTimeMs,
+            consecutive_failures: newConsecutiveFailures,
+            consecutive_slow_responses: newConsecutiveSlowResponses,
+          })
+          .eq("id", service.id);
+      } else {
+        await supabase
+          .from("services")
+          .update({ last_checked_at: now_iso, next_check_at: nextCheckAt, response_time_ms: responseTimeMs })
+          .eq("id", service.id);
+      }
 
       // Send notifications only on status change
       if (newStatus !== service.status) {
@@ -227,8 +232,9 @@ export async function GET(req: NextRequest) {
 
         const isPro = planMap.get(service.user_id) === "pro";
 
-        // Owner alert
-        const ownerEmail = ownerEmailMap.get(service.user_id);
+        // Owner alert — fetch email only when needed
+        const { data: ownerData } = await supabase.auth.admin.getUserById(service.user_id);
+        const ownerEmail = ownerData.user?.email;
         if (ownerEmail) {
           sendOwnerStatusAlert({
             to: ownerEmail,
