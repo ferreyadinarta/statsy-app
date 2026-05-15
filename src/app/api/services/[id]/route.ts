@@ -6,13 +6,13 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params;
-  let body: { name?: string; status?: string; monitor_url?: string | null; check_interval_minutes?: number | null };
+  let body: { name?: string; status?: string; monitor_url?: string | null; check_interval_minutes?: number | null; degraded_threshold_ms?: number | null };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
-  const { name, status, monitor_url, check_interval_minutes } = body;
+  const { name, status, monitor_url, check_interval_minutes, degraded_threshold_ms } = body;
 
   if (!name?.trim() || !status) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
@@ -47,7 +47,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   const { error } = await supabase
     .from("services")
-    .update({ name: name.trim(), status, monitor_url: monitor_url ?? null, check_interval_minutes: check_interval_minutes ?? null })
+    .update({ name: name.trim(), status, monitor_url: monitor_url ?? null, check_interval_minutes: check_interval_minutes ?? null, degraded_threshold_ms: degraded_threshold_ms ?? null })
     .eq("id", id)
     .eq("user_id", user.id);
 

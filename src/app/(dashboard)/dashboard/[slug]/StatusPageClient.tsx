@@ -52,6 +52,7 @@ type Service = {
     last_checked_at: string | null;
     response_time_ms: number | null;
     check_interval_minutes: number | null;
+    degraded_threshold_ms: number | null;
 };
 
 type StatusPage = {

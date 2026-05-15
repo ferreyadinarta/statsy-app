@@ -4,9 +4,10 @@ import { promises as dns } from "dns";
 import { isIP } from "net";
 import { sendOwnerStatusAlert, sendSubscriberStatusChangeAlert } from "@/lib/email";
 
-const DEGRADED_THRESHOLD_MS = 2000;
+const DEFAULT_DEGRADED_THRESHOLD_MS = 3000;
 const PING_TIMEOUT_MS = 5000;
 const CONSECUTIVE_FAILURE_THRESHOLD = 2;
+const CONSECUTIVE_SLOW_THRESHOLD = 2;
 
 function isPrivateIp(ip: string): boolean {
   if (ip === "::1" || ip === "::" || ip === "0:0:0:0:0:0:0:1") return true;
@@ -50,8 +51,10 @@ type ServiceRow = {
   monitor_url: string;
   last_checked_at: string | null;
   check_interval_minutes: number | null;
+  degraded_threshold_ms: number | null;
   status: "operational" | "degraded" | "outage";
   consecutive_failures: number;
+  consecutive_slow_responses: number;
 };
 
 type SubscriptionRow = {
@@ -88,7 +91,7 @@ export async function GET(req: NextRequest) {
 
   const { data: services, error } = await supabase
     .from("services")
-    .select("id, name, user_id, status_page_id, monitor_url, last_checked_at, check_interval_minutes, status, consecutive_failures")
+    .select("id, name, user_id, status_page_id, monitor_url, last_checked_at, check_interval_minutes, degraded_threshold_ms, status, consecutive_failures, consecutive_slow_responses")
     .not("monitor_url", "is", null);
 
   if (error || !services) {
@@ -179,18 +182,30 @@ export async function GET(req: NextRequest) {
         pingFailed = true;
       }
 
-      // Consecutive failure threshold — only flip to outage after N consecutive failures
+      // Determine new status using consecutive thresholds for both outage and degraded
+      const degradedThresholdMs = service.degraded_threshold_ms ?? DEFAULT_DEGRADED_THRESHOLD_MS;
+
       let newConsecutiveFailures: number;
+      let newConsecutiveSlowResponses: number;
       let newStatus: "operational" | "degraded" | "outage";
 
       if (pingFailed) {
         newConsecutiveFailures = (service.consecutive_failures ?? 0) + 1;
+        newConsecutiveSlowResponses = 0;
         newStatus = newConsecutiveFailures >= CONSECUTIVE_FAILURE_THRESHOLD
           ? "outage"
           : service.status;
       } else {
         newConsecutiveFailures = 0;
-        newStatus = (responseTimeMs ?? 0) >= DEGRADED_THRESHOLD_MS ? "degraded" : "operational";
+        const isSlow = (responseTimeMs ?? 0) >= degradedThresholdMs;
+        newConsecutiveSlowResponses = isSlow ? (service.consecutive_slow_responses ?? 0) + 1 : 0;
+        if (isSlow && newConsecutiveSlowResponses >= CONSECUTIVE_SLOW_THRESHOLD) {
+          newStatus = "degraded";
+        } else if (!isSlow) {
+          newStatus = "operational";
+        } else {
+          newStatus = service.status;
+        }
       }
 
       await supabase
@@ -201,6 +216,7 @@ export async function GET(req: NextRequest) {
           last_status_code: statusCode,
           response_time_ms: responseTimeMs,
           consecutive_failures: newConsecutiveFailures,
+          consecutive_slow_responses: newConsecutiveSlowResponses,
         })
         .eq("id", service.id);
 

@@ -4,13 +4,13 @@ import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
 import { getUserFromRequest } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
-  let body: { name?: string; status?: string; status_page_id?: string; monitor_url?: string | null; check_interval_minutes?: number | null };
+  let body: { name?: string; status?: string; status_page_id?: string; monitor_url?: string | null; check_interval_minutes?: number | null; degraded_threshold_ms?: number | null };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
-  const { name, status, status_page_id, monitor_url, check_interval_minutes } = body;
+  const { name, status, status_page_id, monitor_url, check_interval_minutes, degraded_threshold_ms } = body;
 
   if (monitor_url) {
     if (!/^https?:\/\//i.test(monitor_url)) {
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
 
   const { data: service, error: insertError } = await supabase
     .from("services")
-    .insert({ name, status, status_page_id, user_id: user.id, monitor_url: monitor_url ?? null, check_interval_minutes: check_interval_minutes ?? null })
+    .insert({ name, status, status_page_id, user_id: user.id, monitor_url: monitor_url ?? null, check_interval_minutes: check_interval_minutes ?? null, degraded_threshold_ms: degraded_threshold_ms ?? null })
     .select()
     .single();
 

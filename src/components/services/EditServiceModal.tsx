@@ -2,8 +2,97 @@
 
 import { JSX, useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { X, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { X, CheckCircle, AlertCircle, XCircle, ChevronDown } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
+
+function CustomSelect({ value, onChange, options }: {
+  value: number;
+  onChange: (v: number) => void;
+  options: { value: number; label: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+  const selected = options.find((o) => o.value === value);
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((p) => !p)}
+        className="w-full flex items-center justify-between rounded-[4px] px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors"
+        style={{ border: "1.5px solid #e4dfd4", color: "#1a1714", background: "white" }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#1a1714")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = open ? "#1a1714" : "#e4dfd4")}
+      >
+        <span>{selected?.label}</span>
+        <ChevronDown
+          size={14}
+          style={{ color: "#8a8070", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms ease" }}
+        />
+      </button>
+      {open && (
+        <div
+          className="absolute top-full left-0 right-0 mt-1 rounded-[4px] overflow-hidden z-20"
+          style={{ border: "1.5px solid #1a1714", background: "white", boxShadow: "3px 3px 0 #1a1714" }}
+        >
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+              className="w-full text-left px-3 py-2 text-sm cursor-pointer transition-colors"
+              style={{
+                background: opt.value === value ? "#f5f2eb" : "white",
+                color: "#1a1714",
+                fontWeight: opt.value === value ? 600 : 400,
+              }}
+              onMouseEnter={(e) => { if (opt.value !== value) e.currentTarget.style.background = "#f5f2eb"; }}
+              onMouseLeave={(e) => { if (opt.value !== value) e.currentTarget.style.background = "white"; }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InfoTooltip({ text }: { text: string }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <span
+      className="relative flex-shrink-0"
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      <span
+        className="flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold cursor-default select-none"
+        style={{ background: "#e4dfd4", color: "#8a8070" }}
+      >
+        ?
+      </span>
+      {visible && (
+        <span
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 rounded-[4px] px-2.5 py-2 text-xs z-30 leading-relaxed"
+          style={{ background: "#1a1714", color: "#f5f2eb", boxShadow: "2px 2px 0 rgba(0,0,0,0.15)", whiteSpace: "normal" }}
+        >
+          {text}
+          <span
+            className="absolute top-full left-1/2 -translate-x-1/2"
+            style={{ width: 0, height: 0, borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "5px solid #1a1714" }}
+          />
+        </span>
+      )}
+    </span>
+  );
+}
 
 type ServiceStatus = "operational" | "degraded" | "outage";
 
@@ -14,6 +103,7 @@ type Service = {
   created_at: string;
   monitor_url: string | null;
   check_interval_minutes: number | null;
+  degraded_threshold_ms: number | null;
   last_checked_at: string | null;
   response_time_ms: number | null;
 };
@@ -36,6 +126,7 @@ export default function EditServiceModal({ service, plan, onClose, onSuccess, fo
   const [status, setStatus] = useState<ServiceStatus>(service.status);
   const [monitorUrl, setMonitorUrl] = useState(service.monitor_url ?? "");
   const [checkInterval, setCheckInterval] = useState(service.check_interval_minutes ?? 1);
+  const [degradedThreshold, setDegradedThreshold] = useState(service.degraded_threshold_ms ?? 3000);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
   const monitorUrlRef = useRef<HTMLInputElement>(null);
@@ -77,6 +168,7 @@ export default function EditServiceModal({ service, plan, onClose, onSuccess, fo
         status,
         monitor_url: monitorUrl.trim() || null,
         check_interval_minutes: plan === "pro" && monitorUrl.trim() ? checkInterval : null,
+        degraded_threshold_ms: monitorUrl.trim() ? degradedThreshold : null,
       }),
     });
 
@@ -92,6 +184,7 @@ export default function EditServiceModal({ service, plan, onClose, onSuccess, fo
       status,
       monitor_url: monitorUrl.trim() || null,
       check_interval_minutes: plan === "pro" && monitorUrl.trim() ? checkInterval : null,
+      degraded_threshold_ms: monitorUrl.trim() ? degradedThreshold : null,
     });
     success("Service Edited Successfully!");
     setLoading(false);
@@ -234,31 +327,36 @@ export default function EditServiceModal({ service, plan, onClose, onSuccess, fo
             )}
           </div>
 
-          {/* Check interval — Pro only, shown only when monitor URL is set */}
-          {plan === "pro" && monitorUrl.trim() && (
-            <div className="flex flex-col gap-2">
-              <label
-                className="text-xs font-semibold uppercase tracking-[0.08em]"
-                style={{ color: "#3d3830" }}
-              >
-                Check interval
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 5, 10, 30, 60].map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => setCheckInterval(m)}
-                    className="rounded-[4px] px-3 py-2.5 text-sm font-medium transition-all cursor-pointer"
-                    style={{
-                      border: `1.5px solid ${checkInterval === m ? "#1a1714" : "#e4dfd4"}`,
-                      background: checkInterval === m ? "#1a1714" : "white",
-                      color: checkInterval === m ? "white" : "#3d3830",
-                    }}
-                  >
-                    {m === 60 ? "60 min" : `${m} min`}
-                  </button>
-                ))}
+          {/* Check interval + Degraded threshold — compact two-column row */}
+          {monitorUrl.trim() && (
+            <div className="flex gap-3">
+              {plan === "pro" && (
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+                      Check interval
+                    </label>
+                    <InfoTooltip text="How often Statsy pings your URL to check its status." />
+                  </div>
+                  <CustomSelect
+                    value={checkInterval}
+                    onChange={setCheckInterval}
+                    options={[1, 2, 5, 10, 30, 60].map((m) => ({ value: m, label: m === 60 ? "60 min" : `${m} min` }))}
+                  />
+                </div>
+              )}
+              <div className="flex flex-col gap-1.5 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+                    Degraded after
+                  </label>
+                  <InfoTooltip text="If response is slower than this for 2 checks in a row, status becomes Degraded." />
+                </div>
+                <CustomSelect
+                  value={degradedThreshold}
+                  onChange={setDegradedThreshold}
+                  options={[1000, 2000, 3000, 5000, 8000, 10000].map((ms) => ({ value: ms, label: `${ms / 1000} seconds` }))}
+                />
               </div>
             </div>
           )}
