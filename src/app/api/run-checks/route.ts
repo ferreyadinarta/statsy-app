@@ -188,9 +188,8 @@ export async function GET(req: NextRequest) {
 
     try {
       const urlCheck = await checkUrl(service.monitor_url);
-      if (urlCheck === "blocked" || urlCheck === "unresolvable") {
-        // blocked = SSRF-protected; unresolvable = DNS flap or invalid domain.
-        // Advance schedule in UNLOGGED table, preserve existing counters, no failure counted.
+      if (urlCheck === "blocked") {
+        // SSRF-protected URL — config error, can't monitor. Advance schedule, preserve state.
         await supabase.from("service_monitor_state").upsert({
           service_id: service.id,
           next_check_at: nextCheckAt,
@@ -203,26 +202,31 @@ export async function GET(req: NextRequest) {
         }
         return;
       }
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), PING_TIMEOUT_MS);
-      try {
-        const res = await fetch(service.monitor_url, {
-          method: "GET",
-          signal: controller.signal,
-          redirect: "manual",
-        });
-        clearTimeout(timeoutId);
-        responseTimeMs = Date.now() - start;
-        statusCode = res.status;
-        const isUp = res.ok || (res.status >= 300 && res.status < 400) || res.status === 401 || res.status === 403;
-        if (!isUp) pingFailed = true;
-      } catch (fetchErr) {
-        clearTimeout(timeoutId);
+      if (urlCheck === "unresolvable") {
+        // DNS failure — counts as outage, fall through to status logic.
         responseTimeMs = Date.now() - start;
         pingFailed = true;
-        if (!(fetchErr instanceof Error && fetchErr.name === "AbortError")) {
-          console.error(`run-checks fetch error for service ${service.id}:`, fetchErr);
+      } else {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), PING_TIMEOUT_MS);
+        try {
+          const res = await fetch(service.monitor_url, {
+            method: "GET",
+            signal: controller.signal,
+            redirect: "manual",
+          });
+          clearTimeout(timeoutId);
+          responseTimeMs = Date.now() - start;
+          statusCode = res.status;
+          const isUp = res.ok || (res.status >= 300 && res.status < 400) || res.status === 401 || res.status === 403;
+          if (!isUp) pingFailed = true;
+        } catch (fetchErr) {
+          clearTimeout(timeoutId);
+          responseTimeMs = Date.now() - start;
+          pingFailed = true;
+          if (!(fetchErr instanceof Error && fetchErr.name === "AbortError")) {
+            console.error(`run-checks fetch error for service ${service.id}:`, fetchErr);
+          }
         }
       }
     } catch (err) {
@@ -290,6 +294,8 @@ export async function GET(req: NextRequest) {
     }
   });
 
+  const emailPromises: Promise<unknown>[] = [];
+
   // Only fetch status_pages when there are actual status changes to notify about
   if (notificationTasks.length > 0) {
     const changedPageIds = [...new Set(notificationTasks.map((t) => t.statusPageId))];
@@ -304,13 +310,13 @@ export async function GET(req: NextRequest) {
       if (!page) continue;
 
       if (task.ownerEmail) {
-        sendOwnerStatusAlert({
+        emailPromises.push(sendOwnerStatusAlert({
           to: task.ownerEmail,
           serviceName: task.serviceName,
           newStatus: task.newStatus,
           pageSlug: page.slug,
           pageName: page.name,
-        }).catch((e) => console.error("Owner alert failed:", e));
+        }));
       }
 
       let offset = 0;
@@ -323,18 +329,26 @@ export async function GET(req: NextRequest) {
 
         if (!subscribers || subscribers.length === 0) break;
 
-        sendSubscriberStatusChangeAlert({
+        emailPromises.push(sendSubscriberStatusChangeAlert({
           subscribers,
           serviceName: task.serviceName,
           newStatus: task.newStatus,
           pageSlug: page.slug,
           pageName: page.name,
           isPro: task.isPro,
-        }).catch((e) => console.error("Subscriber alerts failed:", e));
+        }));
 
         if (subscribers.length < SUBSCRIBER_LIMIT) break;
         offset += SUBSCRIBER_LIMIT;
       }
+    }
+  }
+
+  if (emailPromises.length > 0) {
+    const results = await Promise.allSettled(emailPromises);
+    const failed = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+    if (failed.length > 0) {
+      console.error(`${failed.length}/${results.length} email sends failed:`, failed.map((f) => f.reason));
     }
   }
 
