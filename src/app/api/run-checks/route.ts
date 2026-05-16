@@ -10,8 +10,8 @@ const CONSECUTIVE_FAILURE_THRESHOLD = 2;
 const CONSECUTIVE_SLOW_THRESHOLD = 2;
 const CHECK_CONCURRENCY = 10;
 const SUBSCRIBER_LIMIT = 500;
-// Only write display metrics (response_time_ms, last_checked_at) this often for stable services.
-// Between refreshes, only next_check_at is written — drastically reduces DB writes/autovacuum IO.
+// How often to write display metrics (last_checked_at, response_time_ms) to the LOGGED services table.
+// All other volatile state goes to the UNLOGGED service_monitor_state table on every check.
 const DISPLAY_REFRESH_MS = 15 * 60 * 1000;
 
 function isPrivateIp(ip: string): boolean {
@@ -72,6 +72,7 @@ async function runWithConcurrency<T>(
   await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, worker));
 }
 
+// Columns come from service_monitoring_view (JOIN of services + service_monitor_state)
 type ServiceRow = {
   id: string;
   name: string;
@@ -133,11 +134,10 @@ export async function GET(req: NextRequest) {
 
   const runAt = new Date().toISOString();
 
-  // Only fetch services that are due — uses index on next_check_at
+  // Query the view — joins services + service_monitor_state, filtered to due services only
   const { data: dueServices, error } = await supabase
-    .from("services")
+    .from("service_monitoring_view")
     .select("id, name, user_id, status_page_id, monitor_url, last_checked_at, next_check_at, check_interval_minutes, degraded_threshold_ms, status, consecutive_failures, consecutive_slow_responses")
-    .not("monitor_url", "is", null)
     .or(`next_check_at.is.null,next_check_at.lte.${runAt}`);
 
   if (error || !dueServices) {
@@ -190,11 +190,17 @@ export async function GET(req: NextRequest) {
       const urlCheck = await checkUrl(service.monitor_url);
       if (urlCheck === "blocked" || urlCheck === "unresolvable") {
         // blocked = SSRF-protected; unresolvable = DNS flap or invalid domain.
-        // Both advance the schedule without counting as a failure to avoid false positives.
-        const payload = lastWrite >= DISPLAY_REFRESH_MS
-          ? { last_checked_at: runAt, next_check_at: nextCheckAt, last_status_code: null }
-          : { next_check_at: nextCheckAt };
-        await supabase.from("services").update(payload).eq("id", service.id);
+        // Advance schedule in UNLOGGED table, preserve existing counters, no failure counted.
+        await supabase.from("service_monitor_state").upsert({
+          service_id: service.id,
+          next_check_at: nextCheckAt,
+          last_status_code: null,
+          consecutive_failures: service.consecutive_failures,
+          consecutive_slow_responses: service.consecutive_slow_responses,
+        }, { onConflict: "service_id" });
+        if (lastWrite >= DISPLAY_REFRESH_MS) {
+          await supabase.from("services").update({ last_checked_at: runAt }).eq("id", service.id);
+        }
         return;
       }
 
@@ -249,28 +255,28 @@ export async function GET(req: NextRequest) {
     }
 
     const statusChanged = newStatus !== service.status;
-    const countsChanged =
-      newConsecutiveFailures !== (service.consecutive_failures ?? 0) ||
-      newConsecutiveSlowResponses !== (service.consecutive_slow_responses ?? 0);
 
-    if (statusChanged || countsChanged) {
-      await supabase
-        .from("services")
-        .update({
-          status: newStatus,
-          last_checked_at: runAt,
-          next_check_at: nextCheckAt,
-          last_status_code: statusCode,
-          response_time_ms: responseTimeMs,
-          consecutive_failures: newConsecutiveFailures,
-          consecutive_slow_responses: newConsecutiveSlowResponses,
-        })
-        .eq("id", service.id);
-    } else {
-      const payload = lastWrite >= DISPLAY_REFRESH_MS
-        ? { last_checked_at: runAt, next_check_at: nextCheckAt, response_time_ms: responseTimeMs }
-        : { next_check_at: nextCheckAt };
-      await supabase.from("services").update(payload).eq("id", service.id);
+    // Always write volatile state to UNLOGGED table — no WAL, near-zero disk IO
+    await supabase.from("service_monitor_state").upsert({
+      service_id: service.id,
+      next_check_at: nextCheckAt,
+      last_status_code: statusCode,
+      consecutive_failures: newConsecutiveFailures,
+      consecutive_slow_responses: newConsecutiveSlowResponses,
+    }, { onConflict: "service_id" });
+
+    // Write to LOGGED services table only when necessary
+    if (statusChanged) {
+      await supabase.from("services").update({
+        status: newStatus,
+        last_checked_at: runAt,
+        response_time_ms: responseTimeMs,
+      }).eq("id", service.id);
+    } else if (lastWrite >= DISPLAY_REFRESH_MS) {
+      await supabase.from("services").update({
+        last_checked_at: runAt,
+        response_time_ms: responseTimeMs,
+      }).eq("id", service.id);
     }
 
     if (statusChanged) {
