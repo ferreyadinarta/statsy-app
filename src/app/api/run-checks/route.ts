@@ -117,7 +117,7 @@ function resolvePlan(sub: SubscriptionRow | undefined): "free" | "pro" {
 }
 
 function getIntervalMs(plan: "free" | "pro", checkIntervalMinutes: number | null): number {
-  return plan === "pro" ? Math.max(1, checkIntervalMinutes ?? 1) * 60_000 : 10 * 60_000;
+  return plan === "pro" ? Math.max(1, checkIntervalMinutes ?? 1) * 60_000 : 5 * 60_000;
 }
 
 export async function GET(req: NextRequest) {

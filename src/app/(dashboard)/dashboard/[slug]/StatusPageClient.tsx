@@ -17,6 +17,7 @@ import {
     Copy,
     Check,
     Settings,
+    Zap,
 } from "lucide-react";
 import DeleteServiceConfirm from "@/components/services/DeleteServiceConfirm";
 import AddServiceModal from "@/components/services/AddServiceModal";
@@ -266,7 +267,6 @@ function EmbedBadgeSection({ slug, services }: { slug: string; services: { id: s
                         src={badgeUrl}
                         width={320}
                         height={36}
-                        scrolling="no"
                         style={{
                             border: "none",
                             overflow: "hidden",
@@ -960,11 +960,23 @@ export default function StatusPageClient({
                 {plan === "free" && localServices.some((s) => s.monitor_url) && (
                     <div
                         className="flex items-center justify-between gap-4 px-4 py-3 rounded-[4px] mt-3"
-                        style={{ background: "#f5f2eb", border: "1.5px solid #e4dfd4" }}
+                        style={{
+                            background: "#fdf9f5",
+                            border: "1.5px solid #e4dfd4",
+                            borderLeft: "3px solid #e8500a",
+                        }}
                     >
-                        <p className="text-xs" style={{ color: "#8a8070" }}>
-                            You&apos;re on <span style={{ color: "#1a1714", fontWeight: 600 }}>5-min checks</span>. Upgrade to Pro for 1-min detection and custom intervals.
-                        </p>
+                        <div className="flex items-center gap-3">
+                            <Zap size={14} style={{ color: "#e8500a", flexShrink: 0 }} />
+                            <div>
+                                <p className="text-xs font-semibold" style={{ color: "#1a1714" }}>
+                                    5-min checks on free plan
+                                </p>
+                                <p className="text-xs" style={{ color: "#8a8070" }}>
+                                    Upgrade to Pro for 1-min detection and custom intervals.
+                                </p>
+                            </div>
+                        </div>
                         <Link
                             href="/billing"
                             className="flex-shrink-0 text-xs font-semibold rounded-[4px] px-3 py-1.5 transition-colors"
