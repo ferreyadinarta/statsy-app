@@ -10,6 +10,9 @@ const CONSECUTIVE_FAILURE_THRESHOLD = 2;
 const CONSECUTIVE_SLOW_THRESHOLD = 2;
 const CHECK_CONCURRENCY = 10;
 const SUBSCRIBER_LIMIT = 500;
+// Only write display metrics (response_time_ms, last_checked_at) this often for stable services.
+// Between refreshes, only next_check_at is written — drastically reduces DB writes/autovacuum IO.
+const DISPLAY_REFRESH_MS = 15 * 60 * 1000;
 
 function isPrivateIp(ip: string): boolean {
   // Unwrap IPv6-mapped IPv4 (e.g. ::ffff:192.168.1.1 → 192.168.1.1)
@@ -98,6 +101,14 @@ type PageRow = {
   user_id: string;
 };
 
+type NotificationTask = {
+  serviceName: string;
+  statusPageId: string;
+  newStatus: "operational" | "degraded" | "outage";
+  isPro: boolean;
+  ownerEmail: string | undefined;
+};
+
 function resolvePlan(sub: SubscriptionRow | undefined): "free" | "pro" {
   if (!sub) return "free";
   if (sub.plan === "pro" && (sub.status === "active" || sub.status === "trialing")) return "pro";
@@ -106,7 +117,7 @@ function resolvePlan(sub: SubscriptionRow | undefined): "free" | "pro" {
 }
 
 function getIntervalMs(plan: "free" | "pro", checkIntervalMinutes: number | null): number {
-  return plan === "pro" ? Math.max(1, checkIntervalMinutes ?? 1) * 60_000 : 5 * 60_000;
+  return plan === "pro" ? Math.max(1, checkIntervalMinutes ?? 1) * 60_000 : 10 * 60_000;
 }
 
 export async function GET(req: NextRequest) {
@@ -138,7 +149,7 @@ export async function GET(req: NextRequest) {
 
   const userIds = [...new Set((dueServices as ServiceRow[]).map((s) => s.user_id))];
 
-  // Fetch plans and owner emails in parallel — scoped to due-service users only
+  // Fetch plans and owner emails upfront — both needed before checks run to resolve intervals
   const [subscriptionsResult, ...ownerResults] = await Promise.all([
     supabase
       .from("subscriptions")
@@ -159,18 +170,16 @@ export async function GET(req: NextRequest) {
     if (email) ownerEmailMap.set(uid, email);
   });
 
-  // Batch-fetch status pages
-  const pageIds = [...new Set(dueServices.map((s) => s.status_page_id))];
-  const { data: pages } = await supabase
-    .from("status_pages")
-    .select("id, name, slug, user_id")
-    .in("id", pageIds);
-  const pageMap = new Map<string, PageRow>((pages as PageRow[] | null)?.map((p) => [p.id, p]) ?? []);
+  // Collect status changes during checks — status_pages fetched lazily below only if needed
+  const notificationTasks: NotificationTask[] = [];
 
   await runWithConcurrency(dueServices as ServiceRow[], CHECK_CONCURRENCY, async (service) => {
     const plan = planMap.get(service.user_id) ?? "free";
     const intervalMs = getIntervalMs(plan, service.check_interval_minutes);
     const nextCheckAt = new Date(Date.now() + intervalMs).toISOString();
+    const lastWrite = service.last_checked_at
+      ? Date.now() - new Date(service.last_checked_at).getTime()
+      : Infinity;
 
     const start = Date.now();
     let statusCode: number | null = null;
@@ -182,10 +191,10 @@ export async function GET(req: NextRequest) {
       if (urlCheck === "blocked" || urlCheck === "unresolvable") {
         // blocked = SSRF-protected; unresolvable = DNS flap or invalid domain.
         // Both advance the schedule without counting as a failure to avoid false positives.
-        await supabase
-          .from("services")
-          .update({ last_checked_at: runAt, next_check_at: nextCheckAt, last_status_code: null })
-          .eq("id", service.id);
+        const payload = lastWrite >= DISPLAY_REFRESH_MS
+          ? { last_checked_at: runAt, next_check_at: nextCheckAt, last_status_code: null }
+          : { next_check_at: nextCheckAt };
+        await supabase.from("services").update(payload).eq("id", service.id);
         return;
       }
 
@@ -258,53 +267,70 @@ export async function GET(req: NextRequest) {
         })
         .eq("id", service.id);
     } else {
-      await supabase
-        .from("services")
-        .update({ last_checked_at: runAt, next_check_at: nextCheckAt, response_time_ms: responseTimeMs })
-        .eq("id", service.id);
+      const payload = lastWrite >= DISPLAY_REFRESH_MS
+        ? { last_checked_at: runAt, next_check_at: nextCheckAt, response_time_ms: responseTimeMs }
+        : { next_check_at: nextCheckAt };
+      await supabase.from("services").update(payload).eq("id", service.id);
     }
 
-    if (!statusChanged) return;
-
-    const page = pageMap.get(service.status_page_id);
-    if (!page) return;
-
-    const isPro = plan === "pro";
-    const ownerEmail = ownerEmailMap.get(service.user_id);
-
-    if (ownerEmail) {
-      sendOwnerStatusAlert({
-        to: ownerEmail,
+    if (statusChanged) {
+      notificationTasks.push({
         serviceName: service.name,
+        statusPageId: service.status_page_id,
         newStatus,
-        pageSlug: page.slug,
-        pageName: page.name,
-      }).catch((e) => console.error("Owner alert failed:", e));
-    }
-
-    let offset = 0;
-    while (true) {
-      const { data: subscribers } = await supabase
-        .from("subscribers")
-        .select("email, token")
-        .eq("status_page_id", service.status_page_id)
-        .range(offset, offset + SUBSCRIBER_LIMIT - 1);
-
-      if (!subscribers || subscribers.length === 0) break;
-
-      sendSubscriberStatusChangeAlert({
-        subscribers,
-        serviceName: service.name,
-        newStatus,
-        pageSlug: page.slug,
-        pageName: page.name,
-        isPro,
-      }).catch((e) => console.error("Subscriber alerts failed:", e));
-
-      if (subscribers.length < SUBSCRIBER_LIMIT) break;
-      offset += SUBSCRIBER_LIMIT;
+        isPro: plan === "pro",
+        ownerEmail: ownerEmailMap.get(service.user_id),
+      });
     }
   });
+
+  // Only fetch status_pages when there are actual status changes to notify about
+  if (notificationTasks.length > 0) {
+    const changedPageIds = [...new Set(notificationTasks.map((t) => t.statusPageId))];
+    const { data: pages } = await supabase
+      .from("status_pages")
+      .select("id, name, slug, user_id")
+      .in("id", changedPageIds);
+    const pageMap = new Map<string, PageRow>((pages as PageRow[] | null)?.map((p) => [p.id, p]) ?? []);
+
+    for (const task of notificationTasks) {
+      const page = pageMap.get(task.statusPageId);
+      if (!page) continue;
+
+      if (task.ownerEmail) {
+        sendOwnerStatusAlert({
+          to: task.ownerEmail,
+          serviceName: task.serviceName,
+          newStatus: task.newStatus,
+          pageSlug: page.slug,
+          pageName: page.name,
+        }).catch((e) => console.error("Owner alert failed:", e));
+      }
+
+      let offset = 0;
+      while (true) {
+        const { data: subscribers } = await supabase
+          .from("subscribers")
+          .select("email, token")
+          .eq("status_page_id", task.statusPageId)
+          .range(offset, offset + SUBSCRIBER_LIMIT - 1);
+
+        if (!subscribers || subscribers.length === 0) break;
+
+        sendSubscriberStatusChangeAlert({
+          subscribers,
+          serviceName: task.serviceName,
+          newStatus: task.newStatus,
+          pageSlug: page.slug,
+          pageName: page.name,
+          isPro: task.isPro,
+        }).catch((e) => console.error("Subscriber alerts failed:", e));
+
+        if (subscribers.length < SUBSCRIBER_LIMIT) break;
+        offset += SUBSCRIBER_LIMIT;
+      }
+    }
+  }
 
   return NextResponse.json({ checked: dueServices.length });
 }
