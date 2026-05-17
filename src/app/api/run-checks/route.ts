@@ -110,6 +110,14 @@ type NotificationTask = {
   ownerEmail: string | undefined;
 };
 
+type StateUpdate = {
+  service_id: string;
+  next_check_at: string;
+  last_status_code: number | null;
+  consecutive_failures: number;
+  consecutive_slow_responses: number;
+};
+
 function resolvePlan(sub: SubscriptionRow | undefined): "free" | "pro" {
   if (!sub) return "free";
   if (sub.plan === "pro" && (sub.status === "active" || sub.status === "trialing")) return "pro";
@@ -172,6 +180,7 @@ export async function GET(req: NextRequest) {
 
   // Collect status changes during checks — status_pages fetched lazily below only if needed
   const notificationTasks: NotificationTask[] = [];
+  const stateUpdates: StateUpdate[] = [];
 
   await runWithConcurrency(dueServices as ServiceRow[], CHECK_CONCURRENCY, async (service) => {
     const plan = planMap.get(service.user_id) ?? "free";
@@ -190,13 +199,13 @@ export async function GET(req: NextRequest) {
       const urlCheck = await checkUrl(service.monitor_url);
       if (urlCheck === "blocked") {
         // SSRF-protected URL — config error, can't monitor. Advance schedule, preserve state.
-        await supabase.from("service_monitor_state").upsert({
+        stateUpdates.push({
           service_id: service.id,
           next_check_at: nextCheckAt,
           last_status_code: null,
           consecutive_failures: service.consecutive_failures,
           consecutive_slow_responses: service.consecutive_slow_responses,
-        }, { onConflict: "service_id" });
+        });
         if (lastWrite >= DISPLAY_REFRESH_MS) {
           await supabase.from("services").update({ last_checked_at: runAt }).eq("id", service.id);
         }
@@ -260,14 +269,13 @@ export async function GET(req: NextRequest) {
 
     const statusChanged = newStatus !== service.status;
 
-    // Always write volatile state to UNLOGGED table — no WAL, near-zero disk IO
-    await supabase.from("service_monitor_state").upsert({
+    stateUpdates.push({
       service_id: service.id,
       next_check_at: nextCheckAt,
       last_status_code: statusCode,
       consecutive_failures: newConsecutiveFailures,
       consecutive_slow_responses: newConsecutiveSlowResponses,
-    }, { onConflict: "service_id" });
+    });
 
     // Write to LOGGED services table only when necessary
     if (statusChanged) {
@@ -293,6 +301,11 @@ export async function GET(req: NextRequest) {
       });
     }
   });
+
+  // Batch upsert all volatile state in one DB round-trip
+  if (stateUpdates.length > 0) {
+    await supabase.from("service_monitor_state").upsert(stateUpdates, { onConflict: "service_id" });
+  }
 
   const emailPromises: Promise<unknown>[] = [];
 
