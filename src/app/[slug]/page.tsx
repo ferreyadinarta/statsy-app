@@ -207,7 +207,7 @@ export default async function PublicStatusPage({ params }: PageProps) {
                                 color: "#1a1714",
                             }}
                         >
-                            Page paused
+                            This page is currently unavailable
                         </h2>
                         <p
                             className="text-sm max-w-sm"

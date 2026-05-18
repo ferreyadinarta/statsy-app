@@ -438,6 +438,138 @@ function EmbedBadgeSection({ slug, services }: { slug: string; services: { id: s
     );
 }
 
+// ── Status Helpers ───────────────────────────────────────────────────────────
+
+function getStatusColor(status: Service["status"]) {
+    switch (status) {
+        case "operational": return { bg: "#e8f5ee", text: "#1a7a4a", border: "#1a7a4a" };
+        case "degraded": return { bg: "rgba(232,80,10,0.08)", text: "#e8500a", border: "#e8500a" };
+        case "outage": return { bg: "#fdeae8", text: "#d32f2f", border: "#d32f2f" };
+    }
+}
+
+function getStatusIcon(status: Service["status"]) {
+    switch (status) {
+        case "operational": return <CheckCircle size={18} />;
+        case "degraded": return <AlertCircle size={18} />;
+        case "outage": return <XCircle size={18} />;
+    }
+}
+
+function getStatusLabel(status: Service["status"]) {
+    switch (status) {
+        case "operational": return "Operational";
+        case "degraded": return "Degraded";
+        case "outage": return "Outage";
+    }
+}
+
+// ── ServiceCard ──────────────────────────────────────────────────────────────
+
+function ServiceCard({
+    service,
+    paused,
+    onEdit,
+    onDelete,
+    onAddMonitoring,
+}: {
+    service: Service;
+    paused: boolean;
+    onEdit: () => void;
+    onDelete: () => void;
+    onAddMonitoring: () => void;
+}) {
+    const colors = getStatusColor(service.status);
+    return (
+        <div
+            className="flex items-center justify-between gap-3 px-5 py-4 rounded-[4px]"
+            style={{
+                border: "1.5px solid #e4dfd4",
+                background: paused ? "#faf9f5" : "white",
+                borderLeft: `4px solid ${paused ? "#e4dfd4" : colors.border}`,
+                opacity: paused ? 0.6 : 1,
+            }}
+        >
+            <div className="flex items-center gap-3 min-w-0">
+                <span className="flex-shrink-0" style={{ color: paused ? "#c4bfb4" : colors.text }}>
+                    {getStatusIcon(service.status)}
+                </span>
+                <div className="min-w-0">
+                    <span className="text-sm font-semibold truncate block" style={{ color: "#1a1714" }}>
+                        {service.name}
+                    </span>
+                    {service.monitor_url ? (
+                        <span className="text-[11px] mt-0.5 block" style={{ color: "#b0a898" }}>
+                            auto
+                            {service.response_time_ms != null && (
+                                <> · {service.response_time_ms >= 1000
+                                    ? `${(service.response_time_ms / 1000).toFixed(1)}s`
+                                    : `${service.response_time_ms}ms`}</>
+                            )}
+                            {" · "}
+                            {service.last_checked_at
+                                ? (() => {
+                                    const diff = Math.floor((Date.now() - new Date(service.last_checked_at).getTime()) / 60000);
+                                    return diff < 1 ? "just now" : `${diff}m ago`;
+                                })()
+                                : "checking soon"}
+                        </span>
+                    ) : (
+                        <button
+                            onClick={onAddMonitoring}
+                            className="text-[11px] mt-0.5 cursor-pointer transition-colors"
+                            style={{ color: "#c4bfb4" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "#e8500a")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "#c4bfb4")}
+                        >
+                            + add monitoring
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+                {paused ? (
+                    <span
+                        className="hidden sm:inline text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
+                        style={{ background: "rgba(211,47,47,0.08)", color: "#d32f2f", border: "1.5px solid rgba(211,47,47,0.3)" }}
+                    >
+                        Paused
+                    </span>
+                ) : (
+                    <span
+                        className="hidden sm:inline text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
+                        style={{ background: colors.bg, color: colors.text, border: `1.5px solid ${colors.border}` }}
+                    >
+                        {getStatusLabel(service.status)}
+                    </span>
+                )}
+                <button
+                    onClick={() => !paused && onEdit()}
+                    disabled={paused}
+                    className="rounded-[4px] p-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ color: "#8a8070" }}
+                    onMouseEnter={(e) => { if (!paused) e.currentTarget.style.color = "#1a1714"; }}
+                    onMouseLeave={(e) => { if (!paused) e.currentTarget.style.color = "#8a8070"; }}
+                    title={paused ? "Upgrade to edit" : "Edit service"}
+                >
+                    <Edit2 size={14} strokeWidth={2} />
+                </button>
+                <button
+                    onClick={onDelete}
+                    className="rounded-[4px] p-1.5 transition-colors cursor-pointer"
+                    style={{ color: "#8a8070" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#d32f2f")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8070")}
+                    title="Delete service"
+                >
+                    <Trash2 size={14} strokeWidth={2} />
+                </button>
+            </div>
+        </div>
+    );
+}
+
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function StatusPageClient({
@@ -513,43 +645,6 @@ export default function StatusPageClient({
                     : i,
             ),
         );
-    }
-
-    function getStatusColor(status: Service["status"]) {
-        switch (status) {
-            case "operational":
-                return { bg: "#e8f5ee", text: "#1a7a4a", border: "#1a7a4a" };
-            case "degraded":
-                return {
-                    bg: "rgba(232,80,10,0.08)",
-                    text: "#e8500a",
-                    border: "#e8500a",
-                };
-            case "outage":
-                return { bg: "#fdeae8", text: "#d32f2f", border: "#d32f2f" };
-        }
-    }
-
-    function getStatusIcon(status: Service["status"]) {
-        switch (status) {
-            case "operational":
-                return <CheckCircle size={18} />;
-            case "degraded":
-                return <AlertCircle size={18} />;
-            case "outage":
-                return <XCircle size={18} />;
-        }
-    }
-
-    function getStatusLabel(status: Service["status"]) {
-        switch (status) {
-            case "operational":
-                return "Operational";
-            case "degraded":
-                return "Degraded";
-            case "outage":
-                return "Outage";
-        }
     }
 
     return (
@@ -770,144 +865,16 @@ export default function StatusPageClient({
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3">
-                        {localServices.map((service) => {
-                            const paused = overLimitServiceIds.has(service.id);
-                            const colors = getStatusColor(service.status);
-                            return (
-                                <div
-                                    key={service.id}
-                                    className="flex items-center justify-between gap-3 px-5 py-4 rounded-[4px]"
-                                    style={{
-                                        border: "1.5px solid #e4dfd4",
-                                        background: paused
-                                            ? "#faf9f5"
-                                            : "white",
-                                        borderLeft: `4px solid ${paused ? "#e4dfd4" : colors.border}`,
-                                        opacity: paused ? 0.6 : 1,
-                                    }}
-                                >
-                                    <div className="flex items-center gap-3 min-w-0">
-                                        <span
-                                            className="flex-shrink-0"
-                                            style={{
-                                                color: paused
-                                                    ? "#c4bfb4"
-                                                    : colors.text,
-                                            }}
-                                        >
-                                            {getStatusIcon(service.status)}
-                                        </span>
-                                        <div className="min-w-0">
-                                            <span
-                                                className="text-sm font-semibold truncate block"
-                                                style={{ color: "#1a1714" }}
-                                            >
-                                                {service.name}
-                                            </span>
-                                            {service.monitor_url ? (
-                                                <span className="text-[11px] mt-0.5 block" style={{ color: "#b0a898" }}>
-                                                    auto
-                                                    {service.response_time_ms != null && (
-                                                        <> · {service.response_time_ms >= 1000
-                                                            ? `${(service.response_time_ms / 1000).toFixed(1)}s`
-                                                            : `${service.response_time_ms}ms`}</>
-                                                    )}
-                                                    {" · "}
-                                                    {service.last_checked_at
-                                                        ? (() => {
-                                                            const diff = Math.floor((Date.now() - new Date(service.last_checked_at).getTime()) / 60000);
-                                                            return diff < 1 ? "just now" : `${diff}m ago`;
-                                                        })()
-                                                        : "checking soon"}
-                                                </span>
-                                            ) : (
-                                                <button
-                                                    onClick={() => { setEditingService(service); setFocusMonitorUrl(true); }}
-                                                    className="text-[11px] mt-0.5 cursor-pointer transition-colors"
-                                                    style={{ color: "#c4bfb4" }}
-                                                    onMouseEnter={(e) => (e.currentTarget.style.color = "#e8500a")}
-                                                    onMouseLeave={(e) => (e.currentTarget.style.color = "#c4bfb4")}
-                                                >
-                                                    + add monitoring
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 flex-shrink-0">
-                                        {paused ? (
-                                            <span
-                                                className="hidden sm:inline text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
-                                                style={{
-                                                    background:
-                                                        "rgba(211,47,47,0.08)",
-                                                    color: "#d32f2f",
-                                                    border: "1.5px solid rgba(211,47,47,0.3)",
-                                                }}
-                                            >
-                                                Paused
-                                            </span>
-                                        ) : (
-                                            <span
-                                                className="hidden sm:inline text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-[2px]"
-                                                style={{
-                                                    background: colors.bg,
-                                                    color: colors.text,
-                                                    border: `1.5px solid ${colors.border}`,
-                                                }}
-                                            >
-                                                {getStatusLabel(service.status)}
-                                            </span>
-                                        )}
-
-                                        <button
-                                            onClick={() =>
-                                                !paused &&
-                                                setEditingService(service)
-                                            }
-                                            disabled={paused}
-                                            className="rounded-[4px] p-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                                            style={{ color: "#8a8070" }}
-                                            onMouseEnter={(e) => {
-                                                if (!paused)
-                                                    e.currentTarget.style.color =
-                                                        "#1a1714";
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                if (!paused)
-                                                    e.currentTarget.style.color =
-                                                        "#8a8070";
-                                            }}
-                                            title={
-                                                paused
-                                                    ? "Upgrade to edit"
-                                                    : "Edit service"
-                                            }
-                                        >
-                                            <Edit2 size={14} strokeWidth={2} />
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                setDeletingService(service)
-                                            }
-                                            className="rounded-[4px] p-1.5 transition-colors cursor-pointer"
-                                            style={{ color: "#8a8070" }}
-                                            onMouseEnter={(e) =>
-                                                (e.currentTarget.style.color =
-                                                    "#d32f2f")
-                                            }
-                                            onMouseLeave={(e) =>
-                                                (e.currentTarget.style.color =
-                                                    "#8a8070")
-                                            }
-                                            title="Delete service"
-                                        >
-                                            <Trash2 size={14} strokeWidth={2} />
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                        {localServices.map((service) => (
+                            <ServiceCard
+                                key={service.id}
+                                service={service}
+                                paused={overLimitServiceIds.has(service.id)}
+                                onEdit={() => setEditingService(service)}
+                                onDelete={() => setDeletingService(service)}
+                                onAddMonitoring={() => { setEditingService(service); setFocusMonitorUrl(true); }}
+                            />
+                        ))}
                     </div>
                 )}
 
@@ -924,7 +891,7 @@ export default function StatusPageClient({
                                 Over plan limit.
                             </span>{" "}
                             You have {localServices.length} services but free plan
-                            allows {PLAN_LIMITS.free.services}. Existing services still work — delete down
+                            allows {PLAN_LIMITS.free.services}. Existing services still work, delete down
                             to {PLAN_LIMITS.free.services} or{" "}
                             <Link
                                 href="/billing"
