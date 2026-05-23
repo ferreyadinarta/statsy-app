@@ -174,7 +174,7 @@ export async function sendIncidentNotification({
     to.map((email) => {
       const token = unsubscribeTokens[email];
       const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
-      const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${pageSlug}`;
+      const pageUrl = `https://${pageSlug}.statsy.page`;
 
       return resend.emails.send({
         from: `${pageName} Status <notifications@statsy.page>`,
@@ -407,7 +407,7 @@ export async function sendOwnerStatusAlert({
   pageSlug: string;
   pageName: string;
 }) {
-  const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${pageSlug}`;
+  const pageUrl = `https://${pageSlug}.statsy.page`;
   const sc = STATUS_STYLES[newStatus];
   const subject = newStatus === "operational"
     ? `✓ Recovered: ${serviceName} is back up`
@@ -436,7 +436,7 @@ export async function sendSubscriberStatusChangeAlert({
   pageName: string;
   isPro: boolean;
 }) {
-  const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${pageSlug}`;
+  const pageUrl = `https://${pageSlug}.statsy.page`;
   const sc = STATUS_STYLES[newStatus];
   const subject = newStatus === "operational"
     ? `✓ Recovered: ${serviceName} is back up — ${pageName}`

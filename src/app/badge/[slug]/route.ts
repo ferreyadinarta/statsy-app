@@ -62,7 +62,7 @@ export async function GET(
     };
 
     const c = configs[status];
-    const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${slug}`;
+    const pageUrl = `https://${slug}.statsy.page`;
 
     const html = `<!DOCTYPE html>
 <html lang="en">

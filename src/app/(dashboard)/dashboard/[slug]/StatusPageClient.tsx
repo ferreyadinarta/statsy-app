@@ -141,7 +141,7 @@ function EmbedBadgeSection({ slug, services }: { slug: string; services: { id: s
     }, []);
 
     const badgeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/badge/${slug}`;
-    const pageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${slug}`;
+    const pageUrl = `https://${slug}.statsy.page`;
 
     const iframeSnippet = `<iframe
   src="${badgeUrl}"
