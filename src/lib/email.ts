@@ -439,8 +439,8 @@ export async function sendSubscriberStatusChangeAlert({
   const pageUrl = `https://${pageSlug}.statsy.page`;
   const sc = STATUS_STYLES[newStatus];
   const subject = newStatus === "operational"
-    ? `✓ Recovered: ${serviceName} is back up — ${pageName}`
-    : `⚠ ${sc.label}: ${serviceName} — ${pageName}`;
+    ? `✓ Recovered: ${serviceName} is back up · ${pageName}`
+    : `⚠ ${sc.label}: ${serviceName} · ${pageName}`;
 
   const results = await Promise.allSettled(
     subscribers.map(({ email, token }) => {

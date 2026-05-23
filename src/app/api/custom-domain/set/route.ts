@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
   if (!isValidDomain(cleanDomain)) {
     return NextResponse.json(
-      { error: "Invalid domain. Enter something like status.yoursite.com — no http://, no trailing slash." },
+      { error: "Invalid domain. Enter something like status.yoursite.com. No http://, no trailing slash." },
       { status: 400 }
     );
   }

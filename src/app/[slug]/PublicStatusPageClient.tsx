@@ -429,7 +429,7 @@ export default function PublicStatusPageClient({
         <section className="mb-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-0.5">
             <span className="text-sm font-medium" style={{ color: "#8a8070" }}>
-              {incidentDays}-day uptime —{" "}
+              {incidentDays}-day uptime:{" "}
               <span className="font-bold" style={{ color: "#1a1714" }}>
                 {uptimePct}%
               </span>

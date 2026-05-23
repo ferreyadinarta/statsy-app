@@ -11,7 +11,7 @@ tags: ["status-page", "indie-dev", "uptime-monitoring"]
 Indie developers don't need enterprise status page tools. You need a public page at your own domain, automated uptime monitoring, and email alerts when something breaks. Free tiers from tools like Statsy cover all three. Setup takes minutes, not days, and costs $0 instead of $100+/mo.
 </QuickAnswer>
 
-You're shipping side projects. One breaks at 3am. Three users tweet at you. Two more email support. By the time you wake up, the trust damage is done — not because the bug existed, but because nobody knew you were aware of it.
+You're shipping side projects. One breaks at 3am. Three users tweet at you. Two more email support. By the time you wake up, the trust damage is done, not because the bug existed, but because nobody knew you were aware of it.
 
 This is the gap a status page closes. And the good news: as an indie dev, you need maybe 10% of what the enterprise tools sell.
 
@@ -62,7 +62,7 @@ Three options, in order of effort:
 
 This is what most indie devs should do. Sign up for a free hosted service like [Statsy](https://statsy.page/signup), add your services (the URLs you want monitored), point a CNAME at it if you want a custom domain, and you're done.
 
-Trade-off: you depend on the host. But for an indie product, that's fine — you depend on Vercel, Cloudflare, Supabase, and Stripe already. One more dependency at $0 isn't the bottleneck.
+Trade-off: you depend on the host. But for an indie product, that's fine because you depend on Vercel, Cloudflare, Supabase, and Stripe already. One more dependency at $0 isn't the bottleneck.
 
 ### Option 2: Self-host an open source tool (a few hours)
 
@@ -82,25 +82,25 @@ If you already have a marketing site, your status page should live at a clear, p
 
 For an indie product, keep it to four things:
 
-1. **Overall status banner** — "All systems operational" or "Investigating an issue"
-2. **Service list** — your 3-10 components (API, database, dashboard, etc.) each with green/yellow/red
-3. **Active incidents** — only if there is one
-4. **Recent incidents** — last 7 days, collapsed
+1. **Overall status banner** - "All systems operational" or "Investigating an issue"
+2. **Service list** - your 3-10 components (API, database, dashboard, etc.) each with green/yellow/red
+3. **Active incidents** - only if there is one
+4. **Recent incidents** - last 7 days, collapsed
 
 That's the entire UI. The instinct to add uptime percentage graphs, P99 latency charts, and per-region maps is the same instinct that leads you to use $99/mo tools. Resist.
 
 ## How does automated monitoring work?
 
-A monitoring service (your status page tool, or a separate uptime checker) pings each of your service URLs on a schedule — typically every 1–5 minutes — and flips the status based on what it sees:
+A monitoring service (your status page tool, or a separate uptime checker) pings each of your service URLs on a schedule, typically every 1 to 5 minutes, and flips the status based on what it sees:
 
 - **2xx or 3xx in time**: operational
 - **Slow response** (e.g. >2s for 2 consecutive checks): degraded
 - **5xx, timeout, or DNS failure** (for 2 consecutive checks): outage
 
-The "2 consecutive checks" part is critical. Single failures happen all the time — a packet drops, a CDN node hiccups, your check fires during a deploy. If your status flips to "outage" on every blip, your subscribers ignore it within a week.
+The "2 consecutive checks" part is critical. Single failures happen all the time: a packet drops, a CDN node hiccups, your check fires during a deploy. If your status flips to "outage" on every blip, your subscribers ignore it within a week.
 
 <Callout variant="warning">
-Free monitoring tiers usually check every 5 minutes, not every minute. That means your worst-case detection time is ~10 minutes (2 failed checks × 5 min). For an indie product, that's fine. If you need 1-minute detection, you're probably ready for a paid tier — and probably ready for paying customers anyway.
+Free monitoring tiers usually check every 5 minutes, not every minute. That means your worst-case detection time is ~10 minutes (2 failed checks × 5 min). For an indie product, that's fine. If you need 1-minute detection, you're probably ready for a paid tier, and probably ready for paying customers anyway.
 </Callout>
 
 ## What should I write when an incident happens?
@@ -113,7 +113,7 @@ Three updates, no more:
 
 **3. Resolved** (when it's fixed): "Resolved. [One-sentence summary of cause]. Subscribers: thanks for your patience."
 
-That's the whole template. Don't write a postmortem in the status update — that's a follow-up blog post. Don't apologize five times. Just communicate.
+That's the whole template. Don't write a postmortem in the status update. That's a follow-up blog post. Don't apologize five times. Just communicate.
 
 ## When should I upgrade from a free tier?
 
@@ -121,7 +121,7 @@ Three signals:
 
 1. You hit the free plan's limit (services, subscribers, or monitoring frequency)
 2. You need a custom domain (most free tiers gate this)
-3. You want faster check intervals (1-min vs 5-min) — usually means you're past 100 active customers
+3. You want faster check intervals (1-min vs 5-min), usually means you're past 100 active customers
 
 For most indie products, the free tier carries you through your first 100–500 users. By the time you outgrow it, $15/mo for Pro is a rounding error.
 
@@ -129,6 +129,6 @@ For most indie products, the free tier carries you through your first 100–500 
 
 ## TL;DR
 
-You don't need an enterprise status page. You need a free tier that gives you a public page, automated monitoring, and email subscribers. Skip the temptation to build your own — ship the thing you actually want to ship instead.
+You don't need an enterprise status page. You need a free tier that gives you a public page, automated monitoring, and email subscribers. Skip the temptation to build your own. Ship the thing you actually want to ship instead.
 
 Statsy's free plan is built for exactly this: solo developers and small teams who want to communicate when things break, without paying $100/mo for the privilege.

@@ -17,6 +17,7 @@ export default function CtaButton({
           color: "#ffffff",
           fontFamily: "var(--font-head)",
           letterSpacing: "-0.01em",
+          textDecoration: "none",
         }}
       >
         {children}
