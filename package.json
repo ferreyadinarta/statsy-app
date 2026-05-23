@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "indexnow": "node scripts/ping-indexnow.mjs",
+    "indexnow:all": "node scripts/ping-indexnow.mjs --all"
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.11.0",
