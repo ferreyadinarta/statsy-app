@@ -224,7 +224,7 @@ export default function SettingsClient({ page, plan }: Props) {
                                     className="text-xs"
                                     style={{ color: "#8a8070" }}
                                 >
-                                    No http:// — just the hostname, e.g.{" "}
+                                    No http:// - just the hostname, e.g.{" "}
                                     <span style={{ color: "#1a1714" }}>
                                         status.yoursite.com
                                     </span>

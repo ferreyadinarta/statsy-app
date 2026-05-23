@@ -147,7 +147,7 @@ export default async function DashboardPage() {
                     </h1>
                     <p className="mt-2 text-sm" style={{ color: "#8a8070" }}>
                         {pagesWithStatus.length === 0
-                            ? "Let's create your first status page — it only takes a minute."
+                            ? "Let's create your first status page, it only takes a minute."
                             : "Manage your pages, services, and incidents from here."}
                     </p>
                 </div>

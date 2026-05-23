@@ -54,7 +54,7 @@ function renderPage(title: string, message: string): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title} — Statsy</title>
+  <title>${title} - Statsy</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1714'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23e8500a'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23e8500a' stroke-width='3' opacity='0.5'/%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%23e8500a' stroke-width='2' opacity='0.25'/%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@700;900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -138,7 +138,7 @@ function renderPage(title: string, message: string): string {
     <p>${message}</p>
     <a href="https://statsy.page" class="btn">Back to Statsy →</a>
     <span class="powered">
-      Powered by <a href="https://statsy.page">Statsy</a> — status pages for everyone
+      Powered by <a href="https://statsy.page">Statsy</a> - status pages for everyone
     </span>
   </div>
 </body>

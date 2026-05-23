@@ -545,7 +545,7 @@ export default function BillingClient({
                             }}
                         >
                             <Zap size={15} strokeWidth={2.5} />
-                            Upgrade to Pro — $15/mo
+                            Upgrade to Pro - $15/mo
                             <ArrowRight size={15} strokeWidth={2.5} />
                         </button>
                         <p
@@ -579,7 +579,7 @@ export default function BillingClient({
                     }}
                 >
                     <Zap size={15} strokeWidth={2.5} />
-                    Upgrade to Pro — $15/mo
+                    Upgrade to Pro - $15/mo
                     <ArrowRight size={15} strokeWidth={2.5} />
                 </button>
             </div>

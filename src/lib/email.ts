@@ -290,7 +290,7 @@ function buildEmailHtml(p: BuildEmailHtmlParams): string {
               ${p.isPro ? "" : `<p style="margin:8px 0 0;font-size:0.72rem;color:#c4bfb4;">
                 Powered by
                 <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a>
-                — status pages for everyone
+                - status pages for everyone
               </p>`}
             </td>
           </tr>

@@ -132,7 +132,7 @@ function LoginForm() {
                 border: "1.5px solid rgba(232,80,10,0.2)",
               }}
             >
-              Email confirmation failed. The link may have expired — request a new one.
+              Email confirmation failed. The link may have expired, request a new one.
             </p>
           )}
           <div className="flex flex-col gap-2">

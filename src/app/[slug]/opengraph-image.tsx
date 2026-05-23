@@ -97,7 +97,7 @@ export default async function OGImage({ params }: Props) {
               marginLeft: 4,
             }}
           >
-            — Status pages for everyone
+            - Status pages for everyone
           </span>
         </div>
       </div>

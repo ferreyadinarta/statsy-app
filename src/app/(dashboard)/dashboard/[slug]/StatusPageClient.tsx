@@ -430,7 +430,7 @@ function EmbedBadgeSection({ slug, services }: { slug: string; services: { id: s
                     <span className="text-xs" style={{ color: "#8a8070" }}>
                         {activeTab === "iframe"
                             ? "Works in HTML, Notion, Webflow, etc."
-                            : "Paste before </body> — works on any website"}
+                            : "Paste before </body> - works on any website"}
                     </span>
                 </div>
             </div>
@@ -662,7 +662,7 @@ export default function StatusPageClient({
                             className="text-sm font-semibold"
                             style={{ color: "#1a1714" }}
                         >
-                            ⚠ Payment failed — {graceInfo.daysLeft} day
+                            ⚠ Payment failed - {graceInfo.daysLeft} day
                             {graceInfo.daysLeft === 1 ? "" : "s"} left in your
                             grace period
                         </p>
@@ -798,7 +798,7 @@ export default function StatusPageClient({
                             style={{ color: "#8a8070" }}
                         >
                             {localServices.length === 0
-                                ? "No services yet — add your first one"
+                                ? "No services yet - add your first one"
                                 : `${localServices.length} service${localServices.length === 1 ? "" : "s"}`}
                         </p>
                     </div>
@@ -983,8 +983,8 @@ export default function StatusPageClient({
                         >
                             {activeIncidents.length === 0
                                 ? hasServiceIssues
-                                    ? "No active incidents — but services are reporting issues"
-                                    : "No active incidents — all systems operational"
+                                    ? "No active incidents - but services are reporting issues"
+                                    : "No active incidents - all systems operational"
                                 : `${activeIncidents.length} active ${activeIncidents.length === 1 ? "incident" : "incidents"}`}
                         </p>
                     </div>
@@ -1035,7 +1035,7 @@ export default function StatusPageClient({
                             style={{ color: "#3d3830" }}
                         >
                             {hasServiceIssues
-                                ? "Service issues detected — no incident posted yet"
+                                ? "Service issues detected - no incident posted yet"
                                 : "All systems operational"}
                         </p>
                     </div>

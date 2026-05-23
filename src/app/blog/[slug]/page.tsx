@@ -91,16 +91,24 @@ export default async function BlogPost({ params }: PageProps) {
             borderBottom: "1.5px solid #e4dfd4",
           }}
         >
-          <Link
-            href="/"
-            className="text-lg font-black no-underline"
-            style={{
-              color: "#1a1714",
-              fontFamily: "var(--font-head)",
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Statsy
+          <Link href="/" className="flex items-center gap-2 no-underline">
+            <span
+              className="w-[7px] h-[7px] rounded-full flex-shrink-0"
+              style={{
+                background: "#e8500a",
+                animation: "blink 2.4s ease-in-out infinite",
+              }}
+            />
+            <span
+              className="text-lg font-black"
+              style={{
+                color: "#1a1714",
+                fontFamily: "var(--font-head)",
+                letterSpacing: "-0.03em",
+              }}
+            >
+              Statsy
+            </span>
           </Link>
           <nav className="flex items-center gap-6 text-sm">
             <Link

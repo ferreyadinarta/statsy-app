@@ -84,7 +84,7 @@ export default function DashboardClient({ pages: initialPages, plan, overLimitPa
                 >
                     <div className="flex flex-col gap-1">
                         <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
-                            ⚠ Payment failed — {graceInfo.daysLeft} day{graceInfo.daysLeft === 1 ? "" : "s"} left in your grace period
+                            ⚠ Payment failed - {graceInfo.daysLeft} day{graceInfo.daysLeft === 1 ? "" : "s"} left in your grace period
                         </p>
                         <p className="text-xs" style={{ color: "#8a8070" }}>
                             Your Pro features are still active. If payment isn&apos;t resolved by{" "}
