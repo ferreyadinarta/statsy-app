@@ -1,0 +1,134 @@
+---
+title: "The Status Page Playbook for Indie Developers"
+description: "Most status page tools are built for enterprises and priced like it. Here's how to ship a clean, professional status page as an indie developer without the $100/mo bill."
+quickAnswer: "Indie developers don't need enterprise status page tools. You need a public page at your own domain, automated uptime monitoring, and email alerts when something breaks. Free tiers from tools like Statsy cover all three. Setup takes minutes, not days, and costs $0 instead of $100+/mo."
+date: "2026-05-23"
+author: "Statsy"
+tags: ["status-page", "indie-dev", "uptime-monitoring"]
+---
+
+<QuickAnswer>
+Indie developers don't need enterprise status page tools. You need a public page at your own domain, automated uptime monitoring, and email alerts when something breaks. Free tiers from tools like Statsy cover all three. Setup takes minutes, not days, and costs $0 instead of $100+/mo.
+</QuickAnswer>
+
+You're shipping side projects. One breaks at 3am. Three users tweet at you. Two more email support. By the time you wake up, the trust damage is done — not because the bug existed, but because nobody knew you were aware of it.
+
+This is the gap a status page closes. And the good news: as an indie dev, you need maybe 10% of what the enterprise tools sell.
+
+## Why do indie developers even need a status page?
+
+Three reasons, in order of impact:
+
+**1. Your users find out about outages from someone other than you.** Trust loss compounds. A user who sees a tweet about your service being down before they see your acknowledgment is a user who learned to distrust the official channel.
+
+**2. Support load drops dramatically during incidents.** Without a status page, every affected user opens a ticket. With one, the ones who check it first stop. You can answer 50 tickets or you can post 1 status update.
+
+**3. You sleep better.** A status page with automated monitoring catches issues you would have learned about from a Hacker News comment.
+
+## What does an indie status page actually need?
+
+Strip away the enterprise checklist. As an indie, you need:
+
+- A **public page** at a URL you can put in your app footer ("System status →")
+- **Automated monitoring** so you don't have to manually flip switches when things break
+- **Email notifications** to subscribers so they hear from you, not from each other
+- A way to **post incident updates** when you're actively working on something
+
+That's it. You don't need:
+
+- Slack integrations (you'll see the email)
+- Multi-tenant org management (you're one person)
+- SOC 2 compliance reports (you're not selling to Fortune 500)
+- A dashboard with 200 metrics (you have 3 services)
+
+## How much do the enterprise tools actually cost?
+
+The honest numbers as of 2026:
+
+| Tool | Starting price | Free plan? |
+|------|----------------|------------|
+| Atlassian Statuspage | $29/mo (basic), $99/mo (standard) | No |
+| Better Stack | $29/mo | Limited |
+| Instatus | $20/mo | Limited |
+| Statsy | Free forever | Yes, no card |
+
+For an indie shipping their first SaaS to 50 users, that $29–99/mo is your hosting budget. Or your domain budget for the next 3 projects. The math doesn't make sense.
+
+## How do I set up a status page without writing my own?
+
+Three options, in order of effort:
+
+### Option 1: Use a hosted free tier (5 minutes)
+
+This is what most indie devs should do. Sign up for a free hosted service like [Statsy](https://statsy.page/signup), add your services (the URLs you want monitored), point a CNAME at it if you want a custom domain, and you're done.
+
+Trade-off: you depend on the host. But for an indie product, that's fine — you depend on Vercel, Cloudflare, Supabase, and Stripe already. One more dependency at $0 isn't the bottleneck.
+
+### Option 2: Self-host an open source tool (a few hours)
+
+Tools like Cachet, Statping, and Uptime Kuma exist. You'll need to host them, monitor them (yes, the meta problem of who monitors your monitor), keep them updated, and configure email delivery.
+
+Trade-off: zero ongoing cost beyond hosting, full control. But you're now maintaining infrastructure to communicate about your other infrastructure.
+
+### Option 3: Build it yourself
+
+Don't. Unless building status pages IS your product, this is procrastination. The "I'll just throw together a Next.js app" path ends with you building uptime monitoring, subscriber management, and email templates instead of shipping the thing you actually wanted to ship.
+
+<Callout variant="tip">
+If you already have a marketing site, your status page should live at a clear, predictable URL like `status.yoursite.com`. Add a "System status" link in your app footer pointing there. That's the only place 90% of users will look during an outage.
+</Callout>
+
+## What should the page actually show?
+
+For an indie product, keep it to four things:
+
+1. **Overall status banner** — "All systems operational" or "Investigating an issue"
+2. **Service list** — your 3-10 components (API, database, dashboard, etc.) each with green/yellow/red
+3. **Active incidents** — only if there is one
+4. **Recent incidents** — last 7 days, collapsed
+
+That's the entire UI. The instinct to add uptime percentage graphs, P99 latency charts, and per-region maps is the same instinct that leads you to use $99/mo tools. Resist.
+
+## How does automated monitoring work?
+
+A monitoring service (your status page tool, or a separate uptime checker) pings each of your service URLs on a schedule — typically every 1–5 minutes — and flips the status based on what it sees:
+
+- **2xx or 3xx in time**: operational
+- **Slow response** (e.g. >2s for 2 consecutive checks): degraded
+- **5xx, timeout, or DNS failure** (for 2 consecutive checks): outage
+
+The "2 consecutive checks" part is critical. Single failures happen all the time — a packet drops, a CDN node hiccups, your check fires during a deploy. If your status flips to "outage" on every blip, your subscribers ignore it within a week.
+
+<Callout variant="warning">
+Free monitoring tiers usually check every 5 minutes, not every minute. That means your worst-case detection time is ~10 minutes (2 failed checks × 5 min). For an indie product, that's fine. If you need 1-minute detection, you're probably ready for a paid tier — and probably ready for paying customers anyway.
+</Callout>
+
+## What should I write when an incident happens?
+
+Three updates, no more:
+
+**1. Investigating** (within 5 minutes of detection): "We're aware of an issue affecting [service]. Investigating now."
+
+**2. Identified** (when you know what broke): "Root cause: [thing]. Working on a fix. ETA: [time or 'updating in 30 min']."
+
+**3. Resolved** (when it's fixed): "Resolved. [One-sentence summary of cause]. Subscribers: thanks for your patience."
+
+That's the whole template. Don't write a postmortem in the status update — that's a follow-up blog post. Don't apologize five times. Just communicate.
+
+## When should I upgrade from a free tier?
+
+Three signals:
+
+1. You hit the free plan's limit (services, subscribers, or monitoring frequency)
+2. You need a custom domain (most free tiers gate this)
+3. You want faster check intervals (1-min vs 5-min) — usually means you're past 100 active customers
+
+For most indie products, the free tier carries you through your first 100–500 users. By the time you outgrow it, $15/mo for Pro is a rounding error.
+
+<CtaButton href="https://statsy.page/signup">Set up your status page in 5 minutes →</CtaButton>
+
+## TL;DR
+
+You don't need an enterprise status page. You need a free tier that gives you a public page, automated monitoring, and email subscribers. Skip the temptation to build your own — ship the thing you actually want to ship instead.
+
+Statsy's free plan is built for exactly this: solo developers and small teams who want to communicate when things break, without paying $100/mo for the privilege.
