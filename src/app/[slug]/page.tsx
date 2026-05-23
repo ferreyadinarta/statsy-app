@@ -127,17 +127,39 @@ export default async function PublicStatusPage({ params }: PageProps) {
 
     const lastUpdated = computeLastUpdated(services ?? [], incidents ?? []);
 
+    const allowedServices = (services ?? []).slice(0, PLAN_LIMITS[ownerPlan].services);
+    const hasOutage = allowedServices.some((s) => s.status === "outage");
+    const hasDegraded = allowedServices.some((s) => s.status === "degraded");
+    const overallStatus = hasOutage
+        ? "Some systems are experiencing an outage"
+        : hasDegraded
+        ? "Some systems are degraded"
+        : "All systems operational";
+
+    const pageUrl = `https://${slug}.statsy.page`;
     const jsonLd = {
         "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: `${page.name} Status`,
-        description: `Live status and incident updates for ${page.name}. Check if all systems are operational.`,
-        url: `https://${slug}.statsy.page`,
-        publisher: {
-            "@type": "Organization",
-            name: "Statsy",
-            url: "https://statsy.page",
-        },
+        "@graph": [
+            {
+                "@type": "WebPage",
+                "@id": `${pageUrl}/#webpage`,
+                url: pageUrl,
+                name: `${page.name} Status`,
+                description: `Current status of ${page.name}: ${overallStatus}. Live service health and incident updates.`,
+                about: { "@id": `${pageUrl}/#organization` },
+                publisher: {
+                    "@type": "Organization",
+                    name: "Statsy",
+                    url: "https://statsy.page",
+                },
+            },
+            {
+                "@type": "Organization",
+                "@id": `${pageUrl}/#organization`,
+                name: page.name,
+                url: pageUrl,
+            },
+        ],
     };
 
     return (

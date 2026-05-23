@@ -1,0 +1,33 @@
+# Statsy
+
+> Free status pages with automated uptime monitoring. The affordable alternative to StatusPage.io, Better Stack, and Instatus, built for indie developers and small teams.
+
+Statsy is a status page SaaS. Users create a public status page in minutes, add services with monitoring URLs, and Statsy automatically pings each service on a schedule (every 5 minutes on Free, down to every minute on Pro) to detect outages, slow responses, and timeouts. Subscribers get email alerts on status changes.
+
+## Key Pages
+
+- [Marketing landing](https://landing.statsy.page): Features, pricing, FAQ
+- [Sign up](https://statsy.page/signup): Free account, no credit card
+- [Log in](https://statsy.page/login): Existing user login
+- [Live example](https://status.statsy.page): Statsy's own status page
+
+## Public Status Pages
+
+Each user's status page lives at `{slug}.statsy.page` (e.g. `acme.statsy.page`) or a custom domain on paid plans. These pages are public and indexable. They show real-time service health, uptime history, and incident updates.
+
+## Pricing
+
+- **Free** ($0): 1 page, 3 services, 30 subscribers, 7-day incident history, 5-min monitoring, Statsy subdomain
+- **Pro** ($15/mo): 3 pages, 10 services, 500 subscribers, 90-day history, 1-min + custom monitoring intervals, custom domain, embeddable badge
+- **Business** ($39/mo, coming soon): Unlimited everything, Slack/webhook alerts, priority support
+
+## Differentiators
+
+- Free plan includes automated monitoring (most competitors gate this)
+- No credit card required
+- Setup in minutes
+- Built for small teams and indie devs, not enterprises
+
+## Contact
+
+Email: hello@statsy.page
