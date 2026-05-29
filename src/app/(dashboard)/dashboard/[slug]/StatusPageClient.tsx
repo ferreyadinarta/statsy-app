@@ -1,7 +1,7 @@
 // src/app/(dashboard)/dashboard/[slug]/StatusPageClient.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import {
@@ -24,6 +24,8 @@ import AddServiceModal from "@/components/services/AddServiceModal";
 import EditServiceModal from "@/components/services/EditServiceModal";
 import CreateIncidentModal from "@/components/incidents/CreateIncidentModal";
 import IncidentCard from "@/components/incidents/IncidentCard";
+import ScheduleMaintenanceModal from "@/components/maintenance/ScheduleMaintenanceModal";
+import MaintenanceCard, { type Maintenance } from "@/components/maintenance/MaintenanceCard";
 
 type IncidentStatus = "investigating" | "identified" | "monitoring" | "resolved";
 
@@ -588,6 +590,26 @@ export default function StatusPageClient({
     const [focusMonitorUrl, setFocusMonitorUrl] = useState(false);
     const [deletingService, setDeletingService] = useState<Service | null>(null);
     const [showCreateIncident, setShowCreateIncident] = useState(false);
+    const [maintenance, setMaintenance] = useState<Maintenance[]>([]);
+    const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+    const [editingMaintenance, setEditingMaintenance] = useState<Maintenance | null>(null);
+
+    const loadMaintenance = useCallback(async () => {
+        const res = await fetch(`/api/public-status/${page.slug}`);
+        if (res.ok) {
+            const data = await res.json();
+            setMaintenance(data.maintenance ?? []);
+        }
+    }, [page.slug]);
+
+    useEffect(() => {
+        loadMaintenance();
+    }, [loadMaintenance]);
+
+    const serviceNames = useMemo(
+        () => Object.fromEntries(localServices.map((s) => [s.id, s.name])),
+        [localServices],
+    );
 
     const overLimitServiceIds = useMemo(
         () => new Set(localServices.slice(PLAN_LIMITS[plan].services).map((s) => s.id)),
@@ -595,6 +617,12 @@ export default function StatusPageClient({
     );
 
     const atLimit = localServices.length >= (plan === "pro" ? PLAN_LIMITS.pro.services : PLAN_LIMITS.free.services);
+
+    const activeMaintenanceCount = maintenance.filter(
+        (m) => m.state === "scheduled" || m.state === "in_progress",
+    ).length;
+    const maintenanceLimit = PLAN_LIMITS[plan].activeMaintenance;
+    const atMaintenanceLimit = maintenanceLimit != null && activeMaintenanceCount >= maintenanceLimit;
 
     useEffect(() => {
         const supabase = createClient();
@@ -609,9 +637,14 @@ export default function StatusPageClient({
                     );
                 }
             )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "maintenance_windows", filter: `status_page_id=eq.${page.id}` },
+                () => { loadMaintenance(); }
+            )
             .subscribe();
         return () => { supabase.removeChannel(channel); };
-    }, [page.id]);
+    }, [page.id, loadMaintenance]);
 
     const activeIncidents = localIncidents.filter((i) => i.status !== "resolved");
     const resolvedIncidents = localIncidents.filter((i) => i.status === "resolved");
@@ -1081,6 +1114,128 @@ export default function StatusPageClient({
                 </section>
             )}
 
+            {/* ── MAINTENANCE ── */}
+            <section className="mb-10">
+                <div className="flex items-end justify-between mb-6">
+                    <div>
+                        <h2
+                            className="text-xl font-black mb-2"
+                            style={{
+                                fontFamily: "var(--font-head)",
+                                color: "#1a1714",
+                                letterSpacing: "-0.03em",
+                            }}
+                        >
+                            Maintenance
+                        </h2>
+                        <p className="text-sm font-medium" style={{ color: "#8a8070" }}>
+                            {maintenance.length === 0
+                                ? "No maintenance scheduled"
+                                : `${maintenance.length} maintenance ${maintenance.length === 1 ? "window" : "windows"}`}
+                        </p>
+                    </div>
+                    {!atMaintenanceLimit && (
+                        <button
+                            onClick={() => setShowMaintenanceModal(true)}
+                            className="flex items-center gap-1.5 rounded-[4px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                            style={{
+                                background: "#1a1714",
+                                color: "#f5f2eb",
+                                border: "1.5px solid #1a1714",
+                                boxShadow: "2px 2px 0 #1a1714",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#e8500a";
+                                e.currentTarget.style.borderColor = "#e8500a";
+                                e.currentTarget.style.boxShadow = "2px 2px 0 #e8500a";
+                                e.currentTarget.style.transform = "translate(-1px, -1px)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "#1a1714";
+                                e.currentTarget.style.borderColor = "#1a1714";
+                                e.currentTarget.style.boxShadow = "2px 2px 0 #1a1714";
+                                e.currentTarget.style.transform = "translate(0, 0)";
+                            }}
+                        >
+                            <Plus size={14} strokeWidth={3} />
+                            Schedule Maintenance
+                        </button>
+                    )}
+                </div>
+
+                {atMaintenanceLimit && (
+                    <div
+                        className="flex items-center justify-between gap-4 px-4 py-3 rounded-[4px] mb-4"
+                        style={{
+                            background: "#fdf9f5",
+                            border: "1.5px solid #e4dfd4",
+                            borderLeft: "3px solid #e8500a",
+                        }}
+                    >
+                        <div className="flex items-center gap-3">
+                            <Zap size={14} style={{ color: "#e8500a", flexShrink: 0 }} />
+                            <div>
+                                <p className="text-xs font-semibold" style={{ color: "#1a1714" }}>
+                                    1 active maintenance window on free plan
+                                </p>
+                                <p className="text-xs" style={{ color: "#8a8070" }}>
+                                    Upgrade to Pro to schedule unlimited maintenance windows.
+                                </p>
+                            </div>
+                        </div>
+                        <Link
+                            href="/billing"
+                            className="flex-shrink-0 text-xs font-semibold rounded-[4px] px-3 py-1.5 transition-colors"
+                            style={{ background: "#1a1714", color: "#f5f2eb", border: "1.5px solid #1a1714" }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#e8500a";
+                                e.currentTarget.style.borderColor = "#e8500a";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "#1a1714";
+                                e.currentTarget.style.borderColor = "#1a1714";
+                            }}
+                        >
+                            Upgrade →
+                        </Link>
+                    </div>
+                )}
+
+                {maintenance.length === 0 ? (
+                    <div
+                        className="flex items-center gap-3 px-6 py-5 rounded-[4px]"
+                        style={{ border: "1.5px solid #e4dfd4", background: "white" }}
+                    >
+                        <div
+                            className="w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ background: "#1a7a4a" }}
+                        />
+                        <p className="text-sm font-medium" style={{ color: "#3d3830" }}>
+                            No maintenance scheduled
+                        </p>
+                    </div>
+                ) : (
+                    <div className="flex flex-col gap-6">
+                        {maintenance.map((m) => (
+                            <MaintenanceCard
+                                key={m.id}
+                                maintenance={m}
+                                serviceNames={serviceNames}
+                                onUpdated={(updated) =>
+                                    setMaintenance((prev) =>
+                                        prev.map((x) => (x.id === updated.id ? { ...x, ...updated } : x)),
+                                    )
+                                }
+                                onDeleted={(id) =>
+                                    setMaintenance((prev) => prev.filter((x) => x.id !== id))
+                                }
+                                onEdit={(window) => setEditingMaintenance(window)}
+                            />
+                        ))}
+                    </div>
+                )}
+            </section>
+
             {/* ── EMBED BADGE (Pro only) ── */}
             {plan === "pro" ? (
                 <EmbedBadgeSection slug={page.slug} services={localServices} />
@@ -1165,6 +1320,28 @@ export default function StatusPageClient({
                     pageId={page.id}
                     onClose={() => setShowCreateIncident(false)}
                     onSuccess={handleIncidentCreated}
+                />
+            )}
+            {(showMaintenanceModal || editingMaintenance) && (
+                <ScheduleMaintenanceModal
+                    statusPageId={page.id}
+                    services={localServices}
+                    existing={editingMaintenance}
+                    onClose={() => {
+                        setShowMaintenanceModal(false);
+                        setEditingMaintenance(null);
+                    }}
+                    onSuccess={(saved) => {
+                        if (editingMaintenance) {
+                            setMaintenance((prev) =>
+                                prev.map((x) => (x.id === saved.id ? { ...x, ...saved } : x)),
+                            );
+                            setEditingMaintenance(null);
+                        } else {
+                            setMaintenance((prev) => [saved, ...prev]);
+                            setShowMaintenanceModal(false);
+                        }
+                    }}
                 />
             )}
         </>

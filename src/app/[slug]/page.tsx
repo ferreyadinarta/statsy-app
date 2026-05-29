@@ -125,6 +125,15 @@ export default async function PublicStatusPage({ params }: PageProps) {
         .gte("created_at", dateThreshold.toISOString())
         .order("created_at", { ascending: false });
 
+    const { data: maintenance } = await supabase
+        .from("maintenance_windows")
+        .select(
+            "id, title, description, starts_at, ends_at, state, started_at, completed_at, maintenance_window_services(service_id)",
+        )
+        .eq("status_page_id", page.id)
+        .gte("ends_at", dateThreshold.toISOString())
+        .order("starts_at", { ascending: false });
+
     const lastUpdated = computeLastUpdated(services ?? [], incidents ?? []);
 
     const allowedServices = (services ?? []).slice(0, PLAN_LIMITS[ownerPlan].services);
@@ -247,6 +256,7 @@ export default async function PublicStatusPage({ params }: PageProps) {
                             PLAN_LIMITS[ownerPlan].services,
                         )}
                         incidents={incidents ?? []}
+                        maintenance={maintenance ?? []}
                         incidentDays={daysToShow}
                         lastUpdated={lastUpdated}
                     />
