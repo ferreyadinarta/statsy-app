@@ -14,7 +14,8 @@ type Props = {
 
 type FieldErrors = {
   title?: string;
-  time?: string;
+  startsAt?: string;
+  endsAt?: string;
 };
 
 export default function ScheduleMaintenanceModal({
@@ -45,10 +46,11 @@ export default function ScheduleMaintenanceModal({
     } else if (title.trim().length < 3) {
       errors.title = "Title must be at least 3 characters.";
     }
-    if (!startsAt || !endsAt) {
-      errors.time = "Start and end times are required.";
-    } else if (new Date(endsAt) <= new Date(startsAt)) {
-      errors.time = "End time must be after start time.";
+    if (!startsAt) errors.startsAt = "Start time is required.";
+    if (!endsAt) {
+      errors.endsAt = "End time is required.";
+    } else if (startsAt && new Date(endsAt) <= new Date(startsAt)) {
+      errors.endsAt = "End time must be after start time.";
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -166,7 +168,7 @@ export default function ScheduleMaintenanceModal({
 
           {/* Window */}
           <div className="flex flex-col gap-2">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 items-start">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
                   Starts
@@ -176,14 +178,19 @@ export default function ScheduleMaintenanceModal({
                   value={startsAt}
                   onChange={(e) => {
                     setStartsAt(e.target.value);
-                    setFieldErrors((prev) => ({ ...prev, time: undefined }));
+                    setFieldErrors((prev) => ({ ...prev, startsAt: undefined, endsAt: undefined }));
                   }}
                   className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white"
                   style={{
-                    border: `1.5px solid ${fieldErrors.time ? "#d32f2f" : "#e4dfd4"}`,
+                    border: `1.5px solid ${fieldErrors.startsAt ? "#d32f2f" : "#e4dfd4"}`,
                     color: "#1a1714",
                   }}
                 />
+                {fieldErrors.startsAt && (
+                  <span className="text-xs" style={{ color: "#d32f2f" }}>
+                    {fieldErrors.startsAt}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
@@ -194,21 +201,21 @@ export default function ScheduleMaintenanceModal({
                   value={endsAt}
                   onChange={(e) => {
                     setEndsAt(e.target.value);
-                    setFieldErrors((prev) => ({ ...prev, time: undefined }));
+                    setFieldErrors((prev) => ({ ...prev, endsAt: undefined }));
                   }}
                   className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white"
                   style={{
-                    border: `1.5px solid ${fieldErrors.time ? "#d32f2f" : "#e4dfd4"}`,
+                    border: `1.5px solid ${fieldErrors.endsAt ? "#d32f2f" : "#e4dfd4"}`,
                     color: "#1a1714",
                   }}
                 />
+                {fieldErrors.endsAt && (
+                  <span className="text-xs" style={{ color: "#d32f2f" }}>
+                    {fieldErrors.endsAt}
+                  </span>
+                )}
               </div>
             </div>
-            {fieldErrors.time && (
-              <span className="text-xs" style={{ color: "#d32f2f" }}>
-                {fieldErrors.time}
-              </span>
-            )}
           </div>
 
           {/* Affected services */}
