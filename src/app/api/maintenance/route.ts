@@ -109,3 +109,71 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true, maintenance: mw });
 }
+
+export async function PATCH(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "Missing maintenance id." }, { status: 400 });
+
+  let body: {
+    title?: string;
+    description?: string;
+    starts_at?: string;
+    ends_at?: string;
+    action?: "start" | "complete" | "cancel";
+  };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+
+  const user = getUserFromRequest(req);
+  if (!user) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
+  const supabase = await createClient();
+
+  // Ownership check.
+  const { data: existing } = await supabase
+    .from("maintenance_windows")
+    .select("id, user_id")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+  if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
+
+  const now = new Date().toISOString();
+  const update: Record<string, unknown> = {};
+
+  if (body.title !== undefined) update.title = body.title;
+  if (body.description !== undefined) update.description = body.description?.trim() || null;
+  if (body.starts_at !== undefined) update.starts_at = body.starts_at;
+  if (body.ends_at !== undefined) update.ends_at = body.ends_at;
+
+  if (body.starts_at && body.ends_at && new Date(body.ends_at) <= new Date(body.starts_at)) {
+    return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
+  }
+
+  if (body.action === "start") {
+    update.state = "in_progress";
+    update.started_at = now;
+  } else if (body.action === "complete") {
+    update.state = "completed";
+    update.completed_at = now;
+  } else if (body.action === "cancel") {
+    update.state = "cancelled";
+  }
+
+  const { data: mw, error } = await supabase
+    .from("maintenance_windows")
+    .update(update)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) {
+    console.error("maintenance patch error:", error);
+    return NextResponse.json({ error: "Update failed." }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true, maintenance: mw });
+}
