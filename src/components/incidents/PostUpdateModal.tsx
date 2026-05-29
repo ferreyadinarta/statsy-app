@@ -1,5 +1,5 @@
 "use client";
-
+import DiscardConfirmModal from "@/components/ui/DiscardConfirmModal";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -78,11 +78,20 @@ export default function PostUpdateModal({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
 
   const supabase = createClient();
   const router = useRouter();
   const { success, error: showError } = useToast();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  function handleClose() {
+    if (message.trim()) {
+      setShowDiscard(true);
+      return;
+    }
+    onClose();
+  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -171,10 +180,11 @@ export default function PostUpdateModal({
   }
 
   return (
+    <>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-6"
       style={{ background: "rgba(26,23,20,0.5)" }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         className="w-full max-w-md bg-white rounded-[4px]"
@@ -200,7 +210,7 @@ export default function PostUpdateModal({
             Post update
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="transition-colors rounded-[4px] p-1 cursor-pointer"
             style={{ color: "#8a8070" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
@@ -344,7 +354,7 @@ export default function PostUpdateModal({
           >
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={loading}
               className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
@@ -389,5 +399,7 @@ export default function PostUpdateModal({
         </form>
       </div>
     </div>
+    <DiscardConfirmModal isOpen={showDiscard} onConfirm={onClose} onCancel={() => setShowDiscard(false)} />
+    </>
   );
 }

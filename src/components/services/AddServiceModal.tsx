@@ -1,5 +1,5 @@
 "use client";
-
+import DiscardConfirmModal from "@/components/ui/DiscardConfirmModal";
 import { JSX, useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, CheckCircle, AlertCircle, XCircle, ChevronDown } from "lucide-react";
@@ -128,9 +128,18 @@ export default function AddServiceModal({ pageId, plan, onClose, onSuccess }: Pr
   const [degradedThreshold, setDegradedThreshold] = useState(3000);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
 
   const router = useRouter();
   const { success, error: showError } = useToast();
+
+  function handleClose() {
+    if (name.trim() || monitorUrl.trim()) {
+      setShowDiscard(true);
+      return;
+    }
+    onClose();
+  }
 
   function validate(): boolean {
     const errors: FieldErrors = {};
@@ -207,10 +216,11 @@ export default function AddServiceModal({ pageId, plan, onClose, onSuccess }: Pr
   ];
 
   return (
+    <>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-6"
       style={{ background: "rgba(26,23,20,0.5)" }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         className="w-full max-w-md bg-white rounded-[4px]"
@@ -236,7 +246,7 @@ export default function AddServiceModal({ pageId, plan, onClose, onSuccess }: Pr
             Add service
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="transition-colors rounded-[4px] p-1 cursor-pointer"
             style={{ color: "#8a8070" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
@@ -408,7 +418,7 @@ export default function AddServiceModal({ pageId, plan, onClose, onSuccess }: Pr
           <div className="flex gap-3 pt-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-1 rounded-[4px] px-5 py-3 text-sm font-medium transition-colors duration-150 cursor-pointer"
               style={{
                 background: "white",
@@ -452,5 +462,7 @@ export default function AddServiceModal({ pageId, plan, onClose, onSuccess }: Pr
         </form>
       </div>
     </div>
+    <DiscardConfirmModal isOpen={showDiscard} onConfirm={onClose} onCancel={() => setShowDiscard(false)} />
+    </>
   );
 }

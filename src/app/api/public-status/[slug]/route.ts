@@ -2,6 +2,18 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserPlan, PLAN_LIMITS } from "@/lib/plan";
 
+function resolveMaintenanceState(
+  starts_at: string,
+  ends_at: string,
+  storedState: string,
+): "scheduled" | "in_progress" | "completed" | "cancelled" {
+  if (storedState === "cancelled") return "cancelled";
+  const now = new Date();
+  if (now >= new Date(ends_at)) return "completed";
+  if (now >= new Date(starts_at)) return "in_progress";
+  return "scheduled";
+}
+
 function computeLastUpdated(
   services: { created_at: string }[],
   incidents: {
@@ -90,7 +102,10 @@ export async function GET(
       pagePaused,
       services: trimmedServices,
       incidents: incidents ?? [],
-      maintenance: maintenance ?? [],
+      maintenance: (maintenance ?? []).map((m) => ({
+        ...m,
+        state: resolveMaintenanceState(m.starts_at, m.ends_at, m.state),
+      })),
       incidentDays: daysToShow,
       lastUpdated,
     },

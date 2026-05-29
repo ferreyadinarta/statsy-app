@@ -1,5 +1,5 @@
 "use client";
-
+import DiscardConfirmModal from "@/components/ui/DiscardConfirmModal";
 import { useState } from "react";
 import { X, Check, Plus } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -51,7 +51,19 @@ export default function ScheduleMaintenanceModal({
   );
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
   const { success, error: showError } = useToast();
+
+  function handleClose() {
+    const dirty = editing
+      ? title.trim() !== (existing?.title ?? "") || description.trim() !== (existing?.description ?? "")
+      : title.trim() || description.trim() || startsAt || endsAt;
+    if (dirty) {
+      setShowDiscard(true);
+      return;
+    }
+    onClose();
+  }
 
   const minLocal = toLocalInput(new Date());
 
@@ -118,10 +130,11 @@ export default function ScheduleMaintenanceModal({
   }
 
   return (
+    <>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-6"
       style={{ background: "rgba(26,23,20,0.5)" }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-white rounded-[4px]"
@@ -144,7 +157,7 @@ export default function ScheduleMaintenanceModal({
             {editing ? "Edit maintenance" : "Schedule maintenance"}
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="transition-colors rounded-[4px] p-1 cursor-pointer"
             style={{ color: "#8a8070" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
@@ -307,7 +320,7 @@ export default function ScheduleMaintenanceModal({
           <div className="flex gap-3 pt-4" style={{ borderTop: "1.5px solid #e4dfd4" }}>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={submitting}
               className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ background: "white", border: "1.5px solid #e4dfd4", color: "#3d3830" }}
@@ -348,5 +361,7 @@ export default function ScheduleMaintenanceModal({
         </form>
       </div>
     </div>
+    <DiscardConfirmModal isOpen={showDiscard} onConfirm={onClose} onCancel={() => setShowDiscard(false)} />
+    </>
   );
 }

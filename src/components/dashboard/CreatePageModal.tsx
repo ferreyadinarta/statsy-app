@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DiscardConfirmModal from "@/components/ui/DiscardConfirmModal";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
@@ -37,9 +38,18 @@ export default function CreatePageModal({ onClose, onSuccess }: Props) {
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
 
   const router = useRouter();
   const { success, error: showError } = useToast();
+
+  function handleClose() {
+    if (name.trim() || slug.trim()) {
+      setShowDiscard(true);
+      return;
+    }
+    onClose();
+  }
 
   function handleNameChange(val: string) {
     setName(val);
@@ -105,6 +115,7 @@ export default function CreatePageModal({ onClose, onSuccess }: Props) {
   }
 
   return (
+    <>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-6"
       style={{ background: "rgba(26,23,20,0.5)" }}
@@ -132,7 +143,7 @@ export default function CreatePageModal({ onClose, onSuccess }: Props) {
             New status page
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             disabled={loading}
             className="transition-colors rounded-[4px] p-1 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             style={{ color: "#8a8070" }}
@@ -216,7 +227,7 @@ export default function CreatePageModal({ onClose, onSuccess }: Props) {
           <div className="flex gap-3 mt-1">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={loading}
               className="flex-1 rounded-[4px] py-3 text-sm font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
@@ -259,5 +270,11 @@ export default function CreatePageModal({ onClose, onSuccess }: Props) {
         </form>
       </div>
     </div>
+    <DiscardConfirmModal
+      isOpen={showDiscard}
+      onConfirm={onClose}
+      onCancel={() => setShowDiscard(false)}
+    />
+    </>
   );
 }

@@ -3,6 +3,7 @@
 import IncidentCard from "@/components/incidents/IncidentCard";
 import { createClient } from "@/lib/supabase/client";
 import { useCallback, useEffect, useState } from "react";
+import { Wrench, Calendar } from "lucide-react";
 import {
   computeUptimeBars as computeBars,
   maintenanceDayKeys,
@@ -173,54 +174,101 @@ function MaintenanceBanner({
   ongoing: boolean;
   serviceNames: Record<string, string>;
 }) {
-  const accent = ongoing ? "#e8500a" : "#1a1714";
-  const when = `${new Date(m.starts_at).toLocaleString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  })} – ${new Date(m.ends_at).toLocaleString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+  const [expanded, setExpanded] = useState(false);
+  const hasDetail = !!(m.description || (m.maintenance_window_services ?? []).length > 0);
+  const starts = new Date(m.starts_at);
+  const ends = new Date(m.ends_at);
+
+  const dateStr = starts.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const startTime = starts.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  const endTime = ends.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  const timeRange = `${startTime} – ${endTime}`;
+
+  function getRelative() {
+    const now = Date.now();
+    if (ongoing) {
+      const minsLeft = Math.ceil((ends.getTime() - now) / 60000);
+      if (minsLeft <= 0) return "ending soon";
+      if (minsLeft < 60) return `${minsLeft}m left`;
+      return `${Math.ceil(minsLeft / 60)}h left`;
+    } else {
+      const minsUntil = Math.ceil((starts.getTime() - now) / 60000);
+      if (minsUntil < 60) return `in ${minsUntil}m`;
+      if (minsUntil < 1440) return `in ${Math.ceil(minsUntil / 60)}h`;
+      return `in ${Math.ceil(minsUntil / 1440)}d`;
+    }
+  }
+
   const names = (m.maintenance_window_services ?? [])
     .map((l) => serviceNames[l.service_id])
     .filter(Boolean);
+
+  const accentColor = ongoing ? "#e8500a" : "#8a8070";
+  const bg = ongoing ? "rgba(232,80,10,0.03)" : "#edeae3";
+  const borderColor = ongoing ? "rgba(232,80,10,0.2)" : "#c4bfb4";
+
   return (
     <div
-      className="rounded-[4px] px-5 py-4 mb-4"
-      style={{
-        border: `1.5px solid ${accent}`,
-        background: ongoing ? "rgba(232,80,10,0.06)" : "rgba(26,23,20,0.04)",
-        boxShadow: "3px 3px 0 #1a1714",
-      }}
+      className="rounded-[4px] mb-3 overflow-hidden"
+      style={{ background: bg, border: `1.5px solid ${borderColor}` }}
     >
-      <div className="flex items-center gap-2 mb-1">
-        {ongoing && (
-          <span
-            className="w-2 h-2 rounded-full animate-pulse"
-            style={{ background: accent }}
-          />
-        )}
-        <span
-          className="text-[11px] font-bold uppercase tracking-wider"
-          style={{ color: accent }}
-        >
+      {/* Strip row */}
+      <div
+        className={`px-5 py-3 flex items-center gap-3 transition-colors duration-150 ${hasDetail ? "cursor-pointer select-none" : ""}`}
+        style={hasDetail ? { ["--hover-bg" as string]: ongoing ? "rgba(232,80,10,0.1)" : "#e4e0d8" } : undefined}
+        onClick={hasDetail ? () => setExpanded((p) => !p) : undefined}
+        onMouseEnter={hasDetail ? (e) => { e.currentTarget.style.background = ongoing ? "rgba(232,80,10,0.1)" : "#e4e0d8"; } : undefined}
+        onMouseLeave={hasDetail ? (e) => { e.currentTarget.style.background = ""; } : undefined}
+      >
+        {ongoing
+          ? <Wrench size={13} style={{ color: accentColor, flexShrink: 0 }} />
+          : <Calendar size={13} style={{ color: accentColor, flexShrink: 0 }} />}
+        <span className="text-sm font-semibold flex-1 min-w-0" style={{ color: "#1a1714" }}>
           {ongoing ? "Maintenance in progress" : "Scheduled maintenance"}
+          {m.title ? <span style={{ color: "#8a8070" }}> — {m.title}</span> : null}
         </span>
+        <span className="text-xs font-semibold flex-shrink-0" style={{ color: accentColor }}>
+          {ongoing ? getRelative() : `${dateStr} · ${timeRange}`}
+        </span>
+        {hasDetail && (
+          <span className="flex-shrink-0 text-xs ml-1" style={{ color: "#b0a898" }}>
+            {expanded ? "▴" : "▾"}
+          </span>
+        )}
       </div>
-      <p className="font-black text-base" style={{ color: "#1a1714" }}>
-        {m.title}
-      </p>
-      <p className="text-xs font-semibold" style={{ color: "#8a8070" }}>
-        {when}
-      </p>
-      {m.description && (
-        <p className="text-sm mt-1.5" style={{ color: "#3d3830" }}>
-          {m.description}
-        </p>
+
+      {/* Expanded detail */}
+      {hasDetail && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateRows: expanded ? "1fr" : "0fr",
+            transition: "grid-template-rows 0.22s ease",
+          }}
+        >
+        <div style={{ overflow: "hidden" }}>
+        <div
+          className="px-5 pt-3 pb-4 flex flex-col gap-2"
+          style={{ borderTop: `1px solid ${borderColor}`, background: "rgba(255,255,255,0.6)" }}
+        >
+          {ongoing && (
+            <p className="text-xs font-semibold" style={{ color: "#8a8070" }}>
+              {dateStr} · {timeRange}
+            </p>
+          )}
+          {m.description && (
+            <p className="text-sm leading-relaxed" style={{ color: "#1a1714" }}>{m.description}</p>
+          )}
+          {names.length > 0 && (
+            <p className="text-xs" style={{ color: "#8a8070" }}>
+              <span className="font-semibold" style={{ color: "#3d3830" }}>Affects:</span>{" "}
+              {names.join(", ")}
+            </p>
+          )}
+        </div>
+        </div>
+        </div>
       )}
-      <p className="text-xs mt-1" style={{ color: "#8a8070" }}>
-        {names.length > 0 ? `Affected: ${names.join(", ")}` : "Affects: All systems"}
-      </p>
     </div>
   );
 }
@@ -263,7 +311,9 @@ export default function PublicStatusPageClient({
       .on("postgres_changes", { event: "*", schema: "public", table: "incident_updates" }, refresh)
       .on("postgres_changes", { event: "*", schema: "public", table: "maintenance_windows", filter: `status_page_id=eq.${page.id}` }, refresh)
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    // Poll every 60s to pick up time-based maintenance state transitions
+    const timer = setInterval(refresh, 60_000);
+    return () => { supabase.removeChannel(channel); clearInterval(timer); };
   }, [page.id, refresh]);
   function getOverallStatus() {
     if (services.length === 0) return "operational";
@@ -392,9 +442,9 @@ export default function PublicStatusPageClient({
   const pastIncidents = incidents.filter((i) => i.status === "resolved");
   const upcomingMaintenance = maintenance.filter((m) => m.state === "scheduled");
   const ongoingMaintenance = maintenance.filter((m) => m.state === "in_progress");
-  const pastMaintenance = maintenance.filter(
-    (m) => m.state === "completed" || m.state === "cancelled",
-  );
+  const pastMaintenance = maintenance
+    .filter((m) => m.state === "completed" || m.state === "cancelled")
+    .sort((a, b) => new Date(b.ends_at).getTime() - new Date(a.ends_at).getTime());
   const serviceNames = Object.fromEntries(services.map((s) => [s.id, s.name]));
 
   return (
@@ -449,6 +499,18 @@ export default function PublicStatusPageClient({
           style={{ height: "1.5px", background: "#1a1714" }}
         />
       </div>
+
+      {/* ── MAINTENANCE BANNERS ── */}
+      {(ongoingMaintenance.length > 0 || upcomingMaintenance.length > 0) && (
+        <div className="mb-8">
+          {ongoingMaintenance.map((m) => (
+            <MaintenanceBanner key={m.id} m={m} ongoing serviceNames={serviceNames} />
+          ))}
+          {upcomingMaintenance.map((m) => (
+            <MaintenanceBanner key={m.id} m={m} ongoing={false} serviceNames={serviceNames} />
+          ))}
+        </div>
+      )}
 
       {/* ── SERVICES ── */}
       <section className="mb-10">
@@ -509,17 +571,6 @@ export default function PublicStatusPageClient({
         )}
       </section>
 
-      {/* ── MAINTENANCE BANNERS ── */}
-      {(ongoingMaintenance.length > 0 || upcomingMaintenance.length > 0) && (
-        <div className="mb-10">
-          {ongoingMaintenance.map((m) => (
-            <MaintenanceBanner key={m.id} m={m} ongoing serviceNames={serviceNames} />
-          ))}
-          {upcomingMaintenance.map((m) => (
-            <MaintenanceBanner key={m.id} m={m} ongoing={false} serviceNames={serviceNames} />
-          ))}
-        </div>
-      )}
 
       {/* ── UPTIME BARS ── */}
       {services.length > 0 && (
@@ -539,15 +590,15 @@ export default function PublicStatusPageClient({
           </div>
 
           {uptimeBars.some((b) => b.status === "maintenance") && (
-            <div className="flex items-center gap-3 mb-3 text-[11px]" style={{ color: "#8a8070" }}>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ background: "#1a7a4a" }} /> Operational
+            <div className="flex items-center gap-4 mb-3 text-[11px]" style={{ color: "#8a8070" }}>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-3 rounded-[2px]" style={{ background: "#1a7a4a" }} /> Operational
               </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ background: "#e8500a" }} /> Incident
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-3 rounded-[2px]" style={{ background: "#e8500a" }} /> Incident
               </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ background: "#8a8070" }} /> Maintenance
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-3 rounded-[2px]" style={{ background: "#8a8070" }} /> Maintenance
               </span>
             </div>
           )}
@@ -616,50 +667,107 @@ export default function PublicStatusPageClient({
 
       {/* ── PAST MAINTENANCE ── */}
       {pastMaintenance.length > 0 && (
-        <section className="mt-8">
-          <h3
-            className="text-xs font-bold uppercase tracking-[0.12em] mb-3"
-            style={{ color: "#8a8070" }}
+        <PastMaintenanceSection pastMaintenance={pastMaintenance} serviceNames={serviceNames} />
+      )}
+    </>
+  );
+}
+
+const MAINTENANCE_INITIAL_SHOW = 3;
+
+function PastMaintenanceSection({ pastMaintenance, serviceNames }: { pastMaintenance: PublicMaintenance[]; serviceNames: Record<string, string> }) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? pastMaintenance : pastMaintenance.slice(0, MAINTENANCE_INITIAL_SHOW);
+  const hidden = pastMaintenance.length - MAINTENANCE_INITIAL_SHOW;
+
+  return (
+        <section className="mt-10">
+          <h2
+            className="text-xl font-black mb-6"
+            style={{ fontFamily: "var(--font-head)", color: "#1a1714", letterSpacing: "-0.03em" }}
           >
-            Past maintenance
-          </h3>
-          <div className="space-y-2">
-            {pastMaintenance.map((m) => {
+            Past Maintenance
+          </h2>
+          <div className="flex flex-col gap-6">
+            {visible.map((m) => {
               const cancelled = m.state === "cancelled";
+              const starts = new Date(m.starts_at);
+              const ends = new Date(m.ends_at);
+              const dateStr = starts.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+              const startTime = starts.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+              const endTime = ends.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+              const badgeColor = cancelled ? "#8a8070" : "#1a7a4a";
+              const headerBg = cancelled ? "rgba(26,23,20,0.04)" : "#e8f5ee";
               return (
                 <div
                   key={m.id}
-                  className="rounded-[4px] px-4 py-3 flex items-start justify-between gap-3"
-                  style={{ border: "1.5px solid #e4dfd4", background: "white" }}
+                  className="rounded-[4px] overflow-hidden"
+                  style={{ border: "1.5px solid #1a1714", background: "white", boxShadow: "3px 3px 0 #1a1714" }}
                 >
-                  <div>
-                    <p className="text-sm font-bold" style={{ color: "#3d3830" }}>
-                      {m.title}
-                    </p>
-                    <p className="text-xs" style={{ color: "#8a8070" }}>
-                      {new Date(m.starts_at).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                  <span
-                    className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-[4px] flex-shrink-0"
-                    style={{
-                      color: cancelled ? "#8a8070" : "#1a7a4a",
-                      background: cancelled ? "#f5f2eb" : "#e8f5ee",
-                      border: `1px solid ${cancelled ? "#d8d2c6" : "#1a7a4a"}`,
-                    }}
+                  {/* Header */}
+                  <div
+                    className="px-6 py-4"
+                    style={{ background: headerBg, borderBottom: `2px solid ${badgeColor}` }}
                   >
-                    {cancelled ? "Cancelled" : "Completed"}
-                  </span>
+                    <div className="mb-2">
+                      <span
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wider"
+                        style={{ background: badgeColor, color: "white" }}
+                      >
+                        <Wrench size={10} />
+                        {cancelled ? "Cancelled" : "Completed"}
+                      </span>
+                    </div>
+                    <h3
+                      className="text-xl font-black"
+                      style={{ fontFamily: "var(--font-head)", color: "#1a1714", letterSpacing: "-0.03em", lineHeight: "1.2" }}
+                    >
+                      {m.title}
+                    </h3>
+                    <span className="text-xs font-medium mt-1 block" style={{ color: "#8a8070" }}>
+                      {dateStr} · {startTime} – {endTime}
+                    </span>
+                  </div>
+
+                  {/* Description or affected services */}
+                  {(m.description || (m.maintenance_window_services ?? []).length > 0) && (
+                    <div className="px-6 py-4">
+                      {m.description && (
+                        <p className="text-sm leading-relaxed" style={{ color: "#3d3830" }}>{m.description}</p>
+                      )}
+                      {(m.maintenance_window_services ?? []).length > 0 && (
+                        <p className="text-xs mt-1" style={{ color: "#8a8070" }}>
+                          Affected: {(m.maintenance_window_services ?? []).map((l) => serviceNames[l.service_id]).filter(Boolean).join(", ")}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
+          {hidden > 0 && !expanded && (
+            <button
+              onClick={() => setExpanded(true)}
+              className="mt-4 text-sm font-semibold cursor-pointer"
+              style={{ color: "#7c6f5e" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#282625")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#7c6f5e")}
+            >
+              + {hidden} more {hidden === 1 ? "window" : "windows"} ▾
+            </button>
+          )}
+          {expanded && pastMaintenance.length > MAINTENANCE_INITIAL_SHOW && (
+            <button
+              onClick={() => setExpanded(false)}
+              className="mt-4 text-sm font-semibold cursor-pointer"
+              style={{ color: "#7c6f5e" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#282625")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#7c6f5e")}
+            >
+              Show less ▴
+            </button>
+          )}
         </section>
-      )}
-    </>
   );
 }

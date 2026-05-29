@@ -1,5 +1,5 @@
 "use client";
-
+import DiscardConfirmModal from "@/components/ui/DiscardConfirmModal";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, ChevronDown } from "lucide-react";
@@ -78,10 +78,19 @@ export default function CreateIncidentModal({ pageId, onClose, onSuccess }: Prop
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { success, error: showError } = useToast();
+
+  function handleClose() {
+    if (title.trim() || description.trim()) {
+      setShowDiscard(true);
+      return;
+    }
+    onClose();
+  }
 
   const selectedOption = statusOptions.find((o) => o.value === status)!;
 
@@ -153,10 +162,11 @@ export default function CreateIncidentModal({ pageId, onClose, onSuccess }: Prop
   }
 
   return (
+    <>
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-6"
       style={{ background: "rgba(26,23,20,0.5)" }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         className="w-full max-w-md bg-white rounded-[4px]"
@@ -182,7 +192,7 @@ export default function CreateIncidentModal({ pageId, onClose, onSuccess }: Prop
             Post incident
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="transition-colors rounded-[4px] p-1 cursor-pointer"
             style={{ color: "#8a8070" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
@@ -346,7 +356,7 @@ export default function CreateIncidentModal({ pageId, onClose, onSuccess }: Prop
           >
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={loading}
               className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
@@ -391,5 +401,7 @@ export default function CreateIncidentModal({ pageId, onClose, onSuccess }: Prop
         </form>
       </div>
     </div>
+    <DiscardConfirmModal isOpen={showDiscard} onConfirm={onClose} onCancel={() => setShowDiscard(false)} />
+    </>
   );
 }
