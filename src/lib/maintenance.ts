@@ -148,3 +148,74 @@ export async function notifyMaintenance(
   else await sendMaintenanceCompleted(payload);
   return to.length;
 }
+
+// Reconciles stored state to time-derived state and fires the completion email.
+// Returns counts for logging. Uses the service-role client (RLS bypassed).
+export async function processMaintenanceTransitions(
+  serviceClient: SupabaseClient,
+): Promise<{ started: number; completed: number; emailed: number }> {
+  const now = new Date();
+
+  // Only rows that could still move.
+  const { data: rows } = await serviceClient
+    .from("maintenance_windows")
+    .select(
+      "id, status_page_id, title, description, starts_at, ends_at, state, started_at, completed_at, notified_scheduled, notified_completed",
+    )
+    .in("state", ["scheduled", "in_progress"]);
+
+  if (!rows || rows.length === 0) return { started: 0, completed: 0, emailed: 0 };
+
+  let started = 0;
+  let completed = 0;
+  let emailed = 0;
+
+  // Resolve page slug/name only for rows that complete (for emails).
+  for (const row of rows as (MaintenanceRow & {
+    status_page_id: string;
+    title: string;
+    description: string | null;
+  })[]) {
+    const action = computeTransition(row, now);
+    if (action.type === "to_in_progress") {
+      await serviceClient
+        .from("maintenance_windows")
+        .update({ state: "in_progress", started_at: row.started_at ?? now.toISOString() })
+        .eq("id", row.id);
+      started++;
+    } else if (action.type === "to_completed") {
+      await serviceClient
+        .from("maintenance_windows")
+        .update({
+          state: "completed",
+          started_at: row.started_at ?? row.starts_at,
+          completed_at: now.toISOString(),
+          notified_completed: true,
+        })
+        .eq("id", row.id);
+      completed++;
+
+      if (!row.notified_completed) {
+        const { data: page } = await serviceClient
+          .from("status_pages")
+          .select("slug, name")
+          .eq("id", row.status_page_id)
+          .single();
+        if (page) {
+          emailed += await notifyMaintenance(serviceClient, {
+            kind: "completed",
+            statusPageId: row.status_page_id,
+            pageSlug: page.slug,
+            pageName: page.name,
+            title: row.title,
+            message: row.description ?? "Maintenance has completed. All systems back to normal.",
+            startsAt: row.starts_at,
+            endsAt: row.ends_at,
+          });
+        }
+      }
+    }
+  }
+
+  return { started, completed, emailed };
+}
