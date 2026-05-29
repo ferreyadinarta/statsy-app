@@ -458,3 +458,79 @@ export async function sendSubscriberStatusChangeAlert({
     if (r.status === "rejected") console.error(`Failed to send alert to ${subscribers[i].email}:`, r.reason);
   });
 }
+
+// ── Maintenance notifications ────────────────────────────────────────────────
+
+interface SendMaintenanceParams {
+  to: string[];
+  pageSlug: string;
+  pageName: string;
+  title: string;
+  message: string;
+  whenLabel: string; // human window range, e.g. "Sat, Jun 6, 2:00–4:00 AM UTC"
+  unsubscribeTokens: Record<string, string>;
+}
+
+function buildMaintenanceHtml(p: {
+  pageName: string;
+  pageUrl: string;
+  title: string;
+  message: string;
+  whenLabel: string;
+  heading: string;
+  unsubscribeUrl: string;
+}): string {
+  const blue = "#3d6b9e";
+  return `
+  <div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a1714;">
+    <div style="border:1.5px solid #1a1714;border-radius:4px;box-shadow:3px 3px 0 #1a1714;overflow:hidden;">
+      <div style="background:rgba(61,107,158,0.08);border-bottom:2px solid ${blue};padding:16px 20px;">
+        <span style="display:inline-block;background:${blue};color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:5px 10px;border-radius:4px;">${p.heading}</span>
+        <h2 style="margin:12px 0 4px;font-size:20px;">${p.title}</h2>
+        <p style="margin:0;color:#2f5580;font-weight:600;font-size:13px;">${p.whenLabel}</p>
+      </div>
+      <div style="padding:20px;">
+        <p style="margin:0 0 16px;line-height:1.6;white-space:pre-wrap;">${p.message}</p>
+        <a href="${p.pageUrl}" style="display:inline-block;background:#1a1714;color:#f5f2eb;text-decoration:none;font-weight:700;font-size:13px;padding:10px 16px;border-radius:4px;">View status page</a>
+      </div>
+    </div>
+    <p style="margin:16px 0 0;font-size:11px;color:#8a8070;text-align:center;">
+      ${p.pageName} status updates · <a href="${p.unsubscribeUrl}" style="color:#8a8070;">Unsubscribe</a>
+    </p>
+  </div>`;
+}
+
+export async function sendMaintenanceScheduled(params: SendMaintenanceParams) {
+  return sendMaintenanceEmail(params, "Scheduled maintenance", `Scheduled: ${params.title}`);
+}
+
+export async function sendMaintenanceCompleted(params: SendMaintenanceParams) {
+  return sendMaintenanceEmail(params, "Maintenance complete", `Completed: ${params.title}`);
+}
+
+async function sendMaintenanceEmail(
+  { to, pageSlug, pageName, title, message, whenLabel, unsubscribeTokens }: SendMaintenanceParams,
+  heading: string,
+  subject: string,
+) {
+  const results = await Promise.allSettled(
+    to.map((email) => {
+      const token = unsubscribeTokens[email];
+      const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
+      const pageUrl = `https://${pageSlug}.statsy.page`;
+      return resend.emails.send({
+        from: `${pageName} Status <notifications@statsy.page>`,
+        to: email,
+        subject,
+        html: buildMaintenanceHtml({
+          pageName, pageUrl, title, message, whenLabel, heading, unsubscribeUrl,
+        }),
+      });
+    }),
+  );
+  results.forEach((result, i) => {
+    if (result.status === "rejected") {
+      console.error(`Failed to send maintenance email to ${to[i]}:`, result.reason);
+    }
+  });
+}
