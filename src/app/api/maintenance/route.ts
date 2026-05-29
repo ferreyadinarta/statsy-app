@@ -133,14 +133,25 @@ export async function PATCH(req: NextRequest) {
 
   const supabase = await createClient();
 
-  // Ownership check (also fetch times to cross-validate partial updates).
+  // Ownership check (also fetch state + times to validate the transition).
   const { data: existing } = await supabase
     .from("maintenance_windows")
-    .select("id, user_id, starts_at, ends_at")
+    .select("id, user_id, state, starts_at, ends_at")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
   if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
+
+  // Guard state transitions: start/cancel only from scheduled; complete only from in_progress.
+  if (body.action === "start" && existing.state !== "scheduled") {
+    return NextResponse.json({ error: "Only scheduled maintenance can be started." }, { status: 409 });
+  }
+  if (body.action === "cancel" && existing.state !== "scheduled") {
+    return NextResponse.json({ error: "Only scheduled maintenance can be cancelled." }, { status: 409 });
+  }
+  if (body.action === "complete" && existing.state !== "in_progress") {
+    return NextResponse.json({ error: "Only in-progress maintenance can be completed." }, { status: 409 });
+  }
 
   // Validate the effective range, even when only one bound is supplied.
   if (body.starts_at !== undefined || body.ends_at !== undefined) {
@@ -185,6 +196,31 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Update failed." }, { status: 500 });
   }
 
+  // Tell subscribers a previously-announced maintenance is off (best-effort).
+  if (body.action === "cancel" && mw) {
+    try {
+      const { data: page } = await supabase
+        .from("status_pages")
+        .select("slug, name")
+        .eq("id", mw.status_page_id)
+        .single();
+      if (page) {
+        await notifyMaintenance(getServiceClient(), {
+          kind: "cancelled",
+          statusPageId: mw.status_page_id,
+          pageSlug: page.slug,
+          pageName: page.name,
+          title: mw.title,
+          message: "This scheduled maintenance has been cancelled.",
+          startsAt: mw.starts_at,
+          endsAt: mw.ends_at,
+        });
+      }
+    } catch (e) {
+      console.error("cancellation email error:", e);
+    }
+  }
+
   return NextResponse.json({ success: true, maintenance: mw });
 }
 
@@ -200,11 +236,19 @@ export async function DELETE(req: NextRequest) {
 
   const { data: existing } = await supabase
     .from("maintenance_windows")
-    .select("id")
+    .select("id, state")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
   if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
+
+  // A live window must be completed or cancelled before it can be deleted.
+  if (existing.state === "in_progress") {
+    return NextResponse.json(
+      { error: "Complete the maintenance before deleting it." },
+      { status: 409 },
+    );
+  }
 
   const { error } = await supabase
     .from("maintenance_windows")

@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { sendMaintenanceScheduled, sendMaintenanceCompleted } from "@/lib/email";
+import { sendMaintenanceScheduled, sendMaintenanceCompleted, sendMaintenanceCancelled } from "@/lib/email";
 
 export type MaintenanceState =
   | "scheduled"
@@ -113,7 +113,7 @@ export function formatWindowRange(startsAt: string, endsAt: string): string {
 export async function notifyMaintenance(
   serviceClient: SupabaseClient,
   opts: {
-    kind: "scheduled" | "completed";
+    kind: "scheduled" | "completed" | "cancelled";
     statusPageId: string;
     pageSlug: string;
     pageName: string;
@@ -145,6 +145,7 @@ export async function notifyMaintenance(
   };
 
   if (opts.kind === "scheduled") await sendMaintenanceScheduled(payload);
+  else if (opts.kind === "cancelled") await sendMaintenanceCancelled(payload);
   else await sendMaintenanceCompleted(payload);
   return to.length;
 }

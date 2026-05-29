@@ -79,7 +79,6 @@ export async function GET(
       "id, title, description, starts_at, ends_at, state, started_at, completed_at, maintenance_window_services(service_id)",
     )
     .eq("status_page_id", page.id)
-    .neq("state", "cancelled")
     .gte("ends_at", dateThreshold.toISOString())
     .order("starts_at", { ascending: false });
 

@@ -508,6 +508,10 @@ export async function sendMaintenanceCompleted(params: SendMaintenanceParams) {
   return sendMaintenanceEmail(params, "Maintenance complete", `Completed: ${params.title}`);
 }
 
+export async function sendMaintenanceCancelled(params: SendMaintenanceParams) {
+  return sendMaintenanceEmail(params, "Maintenance cancelled", `Cancelled: ${params.title}`);
+}
+
 async function sendMaintenanceEmail(
   { to, pageSlug, pageName, title, message, whenLabel, unsubscribeTokens }: SendMaintenanceParams,
   heading: string,

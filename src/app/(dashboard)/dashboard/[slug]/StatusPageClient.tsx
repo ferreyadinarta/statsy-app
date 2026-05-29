@@ -1174,7 +1174,14 @@ export default function StatusPageClient({
                                 key={m.id}
                                 maintenance={m}
                                 serviceNames={serviceNames}
-                                onChanged={loadMaintenance}
+                                onUpdated={(updated) =>
+                                    setMaintenance((prev) =>
+                                        prev.map((x) => (x.id === updated.id ? { ...x, ...updated } : x)),
+                                    )
+                                }
+                                onDeleted={(id) =>
+                                    setMaintenance((prev) => prev.filter((x) => x.id !== id))
+                                }
                             />
                         ))}
                     </div>

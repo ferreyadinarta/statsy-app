@@ -392,7 +392,9 @@ export default function PublicStatusPageClient({
   const pastIncidents = incidents.filter((i) => i.status === "resolved");
   const upcomingMaintenance = maintenance.filter((m) => m.state === "scheduled");
   const ongoingMaintenance = maintenance.filter((m) => m.state === "in_progress");
-  const pastMaintenance = maintenance.filter((m) => m.state === "completed");
+  const pastMaintenance = maintenance.filter(
+    (m) => m.state === "completed" || m.state === "cancelled",
+  );
   const serviceNames = Object.fromEntries(services.map((s) => [s.id, s.name]));
 
   return (
@@ -622,24 +624,39 @@ export default function PublicStatusPageClient({
             Past maintenance
           </h3>
           <div className="space-y-2">
-            {pastMaintenance.map((m) => (
-              <div
-                key={m.id}
-                className="rounded-[4px] px-4 py-3"
-                style={{ border: "1.5px solid #e4dfd4", background: "white" }}
-              >
-                <p className="text-sm font-bold" style={{ color: "#3d3830" }}>
-                  {m.title}
-                </p>
-                <p className="text-xs" style={{ color: "#8a8070" }}>
-                  {new Date(m.starts_at).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </p>
-              </div>
-            ))}
+            {pastMaintenance.map((m) => {
+              const cancelled = m.state === "cancelled";
+              return (
+                <div
+                  key={m.id}
+                  className="rounded-[4px] px-4 py-3 flex items-start justify-between gap-3"
+                  style={{ border: "1.5px solid #e4dfd4", background: "white" }}
+                >
+                  <div>
+                    <p className="text-sm font-bold" style={{ color: "#3d3830" }}>
+                      {m.title}
+                    </p>
+                    <p className="text-xs" style={{ color: "#8a8070" }}>
+                      {new Date(m.starts_at).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-[4px] flex-shrink-0"
+                    style={{
+                      color: cancelled ? "#8a8070" : "#1a7a4a",
+                      background: cancelled ? "#f5f2eb" : "#e8f5ee",
+                      border: `1px solid ${cancelled ? "#d8d2c6" : "#1a7a4a"}`,
+                    }}
+                  >
+                    {cancelled ? "Cancelled" : "Completed"}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
