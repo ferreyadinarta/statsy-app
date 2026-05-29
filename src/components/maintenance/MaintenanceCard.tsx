@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
+import { useToast } from "@/lib/use-toast";
 
 export type MaintenanceState = "scheduled" | "in_progress" | "completed" | "cancelled";
 
@@ -43,37 +44,49 @@ function formatRange(startsAt: string, endsAt: string): string {
   return `${s} – ${e}`;
 }
 
+type PendingAction = "start" | "complete" | "cancel" | "delete";
+
+const actionSuccess: Record<PendingAction, string> = {
+  start: "Maintenance started.",
+  complete: "Maintenance completed.",
+  cancel: "Maintenance cancelled.",
+  delete: "Maintenance deleted.",
+};
+
 export default function MaintenanceCard({ maintenance: m, serviceNames, onChanged }: Props) {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState<PendingAction | null>(null);
   const muted = m.state === "completed" || m.state === "cancelled";
   const colors = stateColors[m.state];
+  const busy = pending !== null;
+  const { success, error: showError } = useToast();
 
   async function act(action: "start" | "complete" | "cancel") {
-    setBusy(true);
-    setError(null);
+    setPending(action);
     const res = await fetch(`/api/maintenance?id=${m.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action }),
     });
-    setBusy(false);
+    setPending(null);
     if (!res.ok) {
-      setError("Action failed. Please try again.");
+      const data = await res.json().catch(() => ({}));
+      showError(data.error || "Couldn't update maintenance.");
       return;
     }
+    success(actionSuccess[action]);
     onChanged();
   }
 
   async function remove() {
-    setBusy(true);
-    setError(null);
+    setPending("delete");
     const res = await fetch(`/api/maintenance?id=${m.id}`, { method: "DELETE" });
-    setBusy(false);
+    setPending(null);
     if (!res.ok) {
-      setError("Delete failed. Please try again.");
+      const data = await res.json().catch(() => ({}));
+      showError(data.error || "Couldn't delete maintenance.");
       return;
     }
+    success(actionSuccess.delete);
     onChanged();
   }
 
@@ -126,13 +139,13 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
           {/* Owner actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
             {m.state === "scheduled" && (
-              <ActionButton label="Start now" onClick={() => act("start")} disabled={busy} />
+              <ActionButton label="Start now" loadingLabel="Starting…" loading={pending === "start"} onClick={() => act("start")} disabled={busy} />
             )}
             {m.state === "in_progress" && (
-              <ActionButton label="Complete" onClick={() => act("complete")} disabled={busy} />
+              <ActionButton label="Complete" loadingLabel="Completing…" loading={pending === "complete"} onClick={() => act("complete")} disabled={busy} />
             )}
             {!muted && (
-              <ActionButton label="Cancel" onClick={() => act("cancel")} disabled={busy} subtle />
+              <ActionButton label="Cancel" loadingLabel="Cancelling…" loading={pending === "cancel"} onClick={() => act("cancel")} disabled={busy} subtle />
             )}
             <button
               onClick={remove}
@@ -169,25 +182,27 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
           )}
         </div>
       )}
-
-      {error && (
-        <p className="px-6 py-3 text-xs font-semibold" style={{ color: "#d32f2f", borderTop: "1.5px solid #e4dfd4" }}>
-          {error}
-        </p>
-      )}
     </div>
   );
 }
 
 function ActionButton({
-  label, onClick, disabled, subtle,
-}: { label: string; onClick: () => void; disabled?: boolean; subtle?: boolean }) {
+  label, loadingLabel, loading, onClick, disabled, subtle,
+}: {
+  label: string;
+  loadingLabel?: string;
+  loading?: boolean;
+  onClick: () => void;
+  disabled?: boolean;
+  subtle?: boolean;
+}) {
+  const text = loading && loadingLabel ? loadingLabel : label;
   if (subtle) {
     return (
       <button
         onClick={onClick}
         disabled={disabled}
-        className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+        className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         style={{ background: "white", border: "1.5px solid #e4dfd4", color: "#8a8070" }}
         onMouseEnter={(e) => {
           if (!disabled) e.currentTarget.style.background = "#f5f2eb";
@@ -196,7 +211,7 @@ function ActionButton({
           if (!disabled) e.currentTarget.style.background = "white";
         }}
       >
-        {label}
+        {text}
       </button>
     );
   }
@@ -204,7 +219,7 @@ function ActionButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+      className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       style={{ background: "#1a1714", border: "1.5px solid #1a1714", color: "#f5f2eb" }}
       onMouseEnter={(e) => {
         if (!disabled) {
@@ -219,7 +234,7 @@ function ActionButton({
         }
       }}
     >
-      {label}
+      {text}
     </button>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, Check, Plus } from "lucide-react";
+import { useToast } from "@/lib/use-toast";
 
 type Service = { id: string; name: string };
 
@@ -30,8 +31,8 @@ export default function ScheduleMaintenanceModal({
   const [endsAt, setEndsAt] = useState("");
   const [serviceIds, setServiceIds] = useState<string[]>([]);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const { success, error: showError } = useToast();
 
   function toggleService(id: string) {
     setServiceIds((prev) =>
@@ -58,7 +59,6 @@ export default function ScheduleMaintenanceModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setFormError(null);
     if (!validate()) return;
 
     setSubmitting(true);
@@ -77,9 +77,10 @@ export default function ScheduleMaintenanceModal({
     setSubmitting(false);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setFormError(data.error || "Something went wrong.");
+      showError(data.error || "Couldn't schedule maintenance.");
       return;
     }
+    success("Maintenance scheduled.");
     onSuccess();
   }
 
@@ -262,12 +263,6 @@ export default function ScheduleMaintenanceModal({
                 })}
               </div>
             </div>
-          )}
-
-          {formError && (
-            <span className="text-xs" style={{ color: "#d32f2f" }}>
-              {formError}
-            </span>
           )}
 
           {/* Actions */}
