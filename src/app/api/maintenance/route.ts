@@ -142,6 +142,15 @@ export async function PATCH(req: NextRequest) {
     .single();
   if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
 
+  // Validate before building the update.
+  if (
+    body.starts_at !== undefined &&
+    body.ends_at !== undefined &&
+    new Date(body.ends_at) <= new Date(body.starts_at)
+  ) {
+    return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
+  }
+
   const now = new Date().toISOString();
   const update: Record<string, unknown> = {};
 
@@ -149,10 +158,6 @@ export async function PATCH(req: NextRequest) {
   if (body.description !== undefined) update.description = body.description?.trim() || null;
   if (body.starts_at !== undefined) update.starts_at = body.starts_at;
   if (body.ends_at !== undefined) update.ends_at = body.ends_at;
-
-  if (body.starts_at && body.ends_at && new Date(body.ends_at) <= new Date(body.starts_at)) {
-    return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
-  }
 
   if (body.action === "start") {
     update.state = "in_progress";
@@ -168,6 +173,7 @@ export async function PATCH(req: NextRequest) {
     .from("maintenance_windows")
     .update(update)
     .eq("id", id)
+    .eq("user_id", user.id)
     .select()
     .single();
   if (error) {
