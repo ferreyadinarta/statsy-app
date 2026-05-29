@@ -311,10 +311,23 @@ export default function PublicStatusPageClient({
       .on("postgres_changes", { event: "*", schema: "public", table: "incident_updates" }, refresh)
       .on("postgres_changes", { event: "*", schema: "public", table: "maintenance_windows", filter: `status_page_id=eq.${page.id}` }, refresh)
       .subscribe();
-    // Poll every 60s to pick up time-based maintenance state transitions
-    const timer = setInterval(refresh, 60_000);
-    return () => { supabase.removeChannel(channel); clearInterval(timer); };
+    return () => { supabase.removeChannel(channel); };
   }, [page.id, refresh]);
+
+  // Precise timeouts for maintenance state transitions
+  useEffect(() => {
+    const now = Date.now();
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    maintenance.forEach((m) => {
+      const startsAt = new Date(m.starts_at).getTime();
+      const endsAt = new Date(m.ends_at).getTime();
+      if (startsAt > now) timeouts.push(setTimeout(refresh, startsAt - now + 300));
+      if (endsAt > now) timeouts.push(setTimeout(refresh, endsAt - now + 300));
+    });
+
+    return () => timeouts.forEach(clearTimeout);
+  }, [maintenance, refresh]);
   function getOverallStatus() {
     if (services.length === 0) return "operational";
     if (services.some((s) => s.status === "outage")) return "outage";
