@@ -1,7 +1,7 @@
 // src/app/(dashboard)/dashboard/[slug]/StatusPageClient.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import {
@@ -24,6 +24,8 @@ import AddServiceModal from "@/components/services/AddServiceModal";
 import EditServiceModal from "@/components/services/EditServiceModal";
 import CreateIncidentModal from "@/components/incidents/CreateIncidentModal";
 import IncidentCard from "@/components/incidents/IncidentCard";
+import ScheduleMaintenanceModal from "@/components/maintenance/ScheduleMaintenanceModal";
+import MaintenanceCard, { type Maintenance } from "@/components/maintenance/MaintenanceCard";
 
 type IncidentStatus = "investigating" | "identified" | "monitoring" | "resolved";
 
@@ -588,6 +590,25 @@ export default function StatusPageClient({
     const [focusMonitorUrl, setFocusMonitorUrl] = useState(false);
     const [deletingService, setDeletingService] = useState<Service | null>(null);
     const [showCreateIncident, setShowCreateIncident] = useState(false);
+    const [maintenance, setMaintenance] = useState<Maintenance[]>([]);
+    const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+
+    const loadMaintenance = useCallback(async () => {
+        const res = await fetch(`/api/public-status/${page.slug}`);
+        if (res.ok) {
+            const data = await res.json();
+            setMaintenance(data.maintenance ?? []);
+        }
+    }, [page.slug]);
+
+    useEffect(() => {
+        loadMaintenance();
+    }, [loadMaintenance]);
+
+    const serviceNames = useMemo(
+        () => Object.fromEntries(localServices.map((s) => [s.id, s.name])),
+        [localServices],
+    );
 
     const overLimitServiceIds = useMemo(
         () => new Set(localServices.slice(PLAN_LIMITS[plan].services).map((s) => s.id)),
@@ -1081,6 +1102,52 @@ export default function StatusPageClient({
                 </section>
             )}
 
+            {/* ── MAINTENANCE ── */}
+            <section className="mb-10">
+                <div className="flex items-center justify-between mb-6">
+                    <h2
+                        className="text-xl font-black"
+                        style={{
+                            fontFamily: "var(--font-head)",
+                            color: "#1a1714",
+                            letterSpacing: "-0.03em",
+                        }}
+                    >
+                        Maintenance
+                    </h2>
+                    <button
+                        onClick={() => setShowMaintenanceModal(true)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider cursor-pointer"
+                        style={{ background: "#3d6b9e", border: "1.5px solid #3d6b9e", color: "white" }}
+                    >
+                        <Plus size={14} strokeWidth={3} />
+                        Schedule Maintenance
+                    </button>
+                </div>
+
+                {maintenance.length === 0 ? (
+                    <div
+                        className="flex items-center gap-3 px-6 py-5 rounded-[4px]"
+                        style={{ border: "1.5px solid #e4dfd4", background: "white" }}
+                    >
+                        <p className="text-sm font-medium" style={{ color: "#3d3830" }}>
+                            No maintenance scheduled.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="flex flex-col gap-6">
+                        {maintenance.map((m) => (
+                            <MaintenanceCard
+                                key={m.id}
+                                maintenance={m}
+                                serviceNames={serviceNames}
+                                onChanged={loadMaintenance}
+                            />
+                        ))}
+                    </div>
+                )}
+            </section>
+
             {/* ── EMBED BADGE (Pro only) ── */}
             {plan === "pro" ? (
                 <EmbedBadgeSection slug={page.slug} services={localServices} />
@@ -1165,6 +1232,17 @@ export default function StatusPageClient({
                     pageId={page.id}
                     onClose={() => setShowCreateIncident(false)}
                     onSuccess={handleIncidentCreated}
+                />
+            )}
+            {showMaintenanceModal && (
+                <ScheduleMaintenanceModal
+                    statusPageId={page.id}
+                    services={localServices}
+                    onClose={() => setShowMaintenanceModal(false)}
+                    onSuccess={() => {
+                        setShowMaintenanceModal(false);
+                        loadMaintenance();
+                    }}
                 />
             )}
         </>
