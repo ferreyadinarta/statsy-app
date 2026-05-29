@@ -88,7 +88,7 @@ export default function ScheduleMaintenanceModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-[4px]"
+        className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-white rounded-[4px]"
         style={{ border: "1.5px solid #1a1714", boxShadow: "6px 6px 0 #1a1714" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -166,7 +166,7 @@ export default function ScheduleMaintenanceModal({
 
           {/* Window */}
           <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
                   Starts
