@@ -3,6 +3,11 @@
 import IncidentCard from "@/components/incidents/IncidentCard";
 import { createClient } from "@/lib/supabase/client";
 import { useCallback, useEffect, useState } from "react";
+import {
+  computeUptimeBars as computeBars,
+  maintenanceDayKeys,
+  dayKey,
+} from "@/lib/maintenance";
 
 type IncidentUpdate = {
   id: string;
@@ -34,17 +39,28 @@ type StatusPage = {
   slug: string;
 };
 
+type PublicMaintenance = {
+  id: string;
+  title: string;
+  description: string | null;
+  starts_at: string;
+  ends_at: string;
+  state: "scheduled" | "in_progress" | "completed" | "cancelled";
+  maintenance_window_services?: { service_id: string }[];
+};
+
 type Props = {
   page: StatusPage;
   services: Service[];
   incidents: Incident[];
+  maintenance: PublicMaintenance[];
   incidentDays: number;
   lastUpdated: string | null;
 };
 
 const INITIAL_SHOW = 3;
 
-type UptimeBar = { date: Date; status: "operational" | "incident" };
+type UptimeBar = { date: Date; status: "operational" | "incident" | "maintenance" };
 
 function UptimeBarTrack({
   bars,
@@ -76,7 +92,12 @@ function UptimeBarTrack({
                 className="w-full rounded-[3px] cursor-default transition-all duration-150 group-hover:brightness-125 group-hover:scale-y-110 origin-bottom"
                 style={{
                   height: `${barHeight}px`,
-                  background: bar.status === "operational" ? "#1a7a4a" : "#e8500a",
+                  background:
+                    bar.status === "maintenance"
+                      ? "#3d6b9e"
+                      : bar.status === "operational"
+                        ? "#1a7a4a"
+                        : "#e8500a",
                 }}
               />
               <div className={`absolute bottom-full mb-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-20 ${tooltipAlign}`}>
@@ -84,8 +105,8 @@ function UptimeBarTrack({
                   <p className="text-[11px] font-bold whitespace-nowrap" style={{ color: "#f5f2eb" }}>
                     {bar.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </p>
-                  <p className="text-[11px] font-medium whitespace-nowrap" style={{ color: bar.status === "operational" ? "#4ade80" : "#fb923c" }}>
-                    {bar.status === "operational" ? "Operational" : "Incident"}
+                  <p className="text-[11px] font-medium whitespace-nowrap" style={{ color: bar.status === "operational" ? "#4ade80" : bar.status === "maintenance" ? "#7da7d9" : "#fb923c" }}>
+                    {bar.status === "operational" ? "Operational" : bar.status === "maintenance" ? "Scheduled maintenance" : "Incident"}
                   </p>
                 </div>
                 <div className={`absolute top-full ${arrowAlign} w-0 h-0`} style={{ borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "5px solid #1a1714" }} />
@@ -143,15 +164,78 @@ function ActiveIncidentsSection({ incidents }: { incidents: Incident[] }) {
   );
 }
 
+function MaintenanceBanner({
+  m,
+  ongoing,
+  serviceNames,
+}: {
+  m: PublicMaintenance;
+  ongoing: boolean;
+  serviceNames: Record<string, string>;
+}) {
+  const blue = "#3d6b9e";
+  const when = `${new Date(m.starts_at).toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  })} – ${new Date(m.ends_at).toLocaleString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+  const names = (m.maintenance_window_services ?? [])
+    .map((l) => serviceNames[l.service_id])
+    .filter(Boolean);
+  return (
+    <div
+      className="rounded-[4px] px-5 py-4 mb-4"
+      style={{
+        border: `1.5px solid ${blue}`,
+        background: "rgba(61,107,158,0.08)",
+        boxShadow: "3px 3px 0 #1a1714",
+      }}
+    >
+      <div className="flex items-center gap-2 mb-1">
+        {ongoing && (
+          <span
+            className="w-2 h-2 rounded-full animate-pulse"
+            style={{ background: blue }}
+          />
+        )}
+        <span
+          className="text-[11px] font-bold uppercase tracking-wider"
+          style={{ color: "#2f5580" }}
+        >
+          {ongoing ? "Maintenance in progress" : "Scheduled maintenance"}
+        </span>
+      </div>
+      <p className="font-black text-base" style={{ color: "#1a1714" }}>
+        {m.title}
+      </p>
+      <p className="text-xs font-semibold" style={{ color: "#2f5580" }}>
+        {when}
+      </p>
+      {m.description && (
+        <p className="text-sm mt-1.5" style={{ color: "#3d3830" }}>
+          {m.description}
+        </p>
+      )}
+      <p className="text-xs mt-1" style={{ color: "#8a8070" }}>
+        {names.length > 0 ? `Affected: ${names.join(", ")}` : "Affects: All systems"}
+      </p>
+    </div>
+  );
+}
+
 export default function PublicStatusPageClient({
   page,
   services: initialServices,
   incidents: initialIncidents,
+  maintenance: initialMaintenance,
   incidentDays: initialIncidentDays,
   lastUpdated: initialLastUpdated,
 }: Props) {
   const [services, setServices] = useState<Service[]>(initialServices);
   const [incidents, setIncidents] = useState<Incident[]>(initialIncidents);
+  const [maintenance, setMaintenance] = useState<PublicMaintenance[]>(initialMaintenance);
   const [incidentDays, setIncidentDays] = useState(initialIncidentDays);
   const [lastUpdated, setLastUpdated] = useState<string | null>(initialLastUpdated);
 
@@ -162,6 +246,7 @@ export default function PublicStatusPageClient({
       const data = await res.json();
       setServices(data.services);
       setIncidents(data.incidents);
+      setMaintenance(data.maintenance ?? []);
       setIncidentDays(data.incidentDays);
       setLastUpdated(data.lastUpdated);
     } catch {
@@ -176,6 +261,7 @@ export default function PublicStatusPageClient({
       .on("postgres_changes", { event: "*", schema: "public", table: "services", filter: `status_page_id=eq.${page.id}` }, refresh)
       .on("postgres_changes", { event: "*", schema: "public", table: "incidents", filter: `status_page_id=eq.${page.id}` }, refresh)
       .on("postgres_changes", { event: "*", schema: "public", table: "incident_updates" }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "maintenance_windows", filter: `status_page_id=eq.${page.id}` }, refresh)
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [page.id, refresh]);
@@ -263,34 +349,27 @@ export default function PublicStatusPageClient({
 
   function computeUptimeBars() {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
-    const badDays = new Set<string>();
+    const incidentDayKeys = new Set<string>();
     incidents.forEach((incident) => {
-      const d = new Date(incident.created_at);
-      d.setHours(0, 0, 0, 0);
-      badDays.add(d.toISOString().split("T")[0]);
+      incidentDayKeys.add(dayKey(new Date(incident.created_at)));
     });
 
-    const bars: { date: Date; status: "operational" | "incident" }[] = [];
-    for (let i = incidentDays - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      bars.push({
-        date: d,
-        status: badDays.has(d.toISOString().split("T")[0])
-          ? "incident"
-          : "operational",
-      });
-    }
+    const mKeys = maintenanceDayKeys(
+      maintenance.map((m) => ({
+        starts_at: m.starts_at,
+        ends_at: m.ends_at,
+        state: m.state,
+      })),
+      today,
+    );
 
-    const goodDays = bars.filter((b) => b.status === "operational").length;
-    const uptimePct =
-      incidentDays > 0
-        ? ((goodDays / incidentDays) * 100).toFixed(1)
-        : "100.0";
-
-    return { bars, uptimePct };
+    return computeBars({
+      days: incidentDays,
+      today,
+      incidentDayKeys,
+      maintenanceDayKeys: mKeys,
+    });
   }
 
   function computeStreak() {
@@ -311,6 +390,10 @@ export default function PublicStatusPageClient({
   const statusConfig = getOverallStatusConfig();
   const activeIncidents = incidents.filter((i) => i.status !== "resolved");
   const pastIncidents = incidents.filter((i) => i.status === "resolved");
+  const upcomingMaintenance = maintenance.filter((m) => m.state === "scheduled");
+  const ongoingMaintenance = maintenance.filter((m) => m.state === "in_progress");
+  const pastMaintenance = maintenance.filter((m) => m.state === "completed");
+  const serviceNames = Object.fromEntries(services.map((s) => [s.id, s.name]));
 
   return (
     <>
@@ -424,6 +507,18 @@ export default function PublicStatusPageClient({
         )}
       </section>
 
+      {/* ── MAINTENANCE BANNERS ── */}
+      {(ongoingMaintenance.length > 0 || upcomingMaintenance.length > 0) && (
+        <div className="mb-10">
+          {ongoingMaintenance.map((m) => (
+            <MaintenanceBanner key={m.id} m={m} ongoing serviceNames={serviceNames} />
+          ))}
+          {upcomingMaintenance.map((m) => (
+            <MaintenanceBanner key={m.id} m={m} ongoing={false} serviceNames={serviceNames} />
+          ))}
+        </div>
+      )}
+
       {/* ── UPTIME BARS ── */}
       {services.length > 0 && (
         <section className="mb-10">
@@ -440,6 +535,20 @@ export default function PublicStatusPageClient({
                 : `${streak} day${streak === 1 ? "" : "s"} without incident`}
             </span>
           </div>
+
+          {uptimeBars.some((b) => b.status === "maintenance") && (
+            <div className="flex items-center gap-3 mb-3 text-[11px]" style={{ color: "#8a8070" }}>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full" style={{ background: "#1a7a4a" }} /> Operational
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full" style={{ background: "#e8500a" }} /> Incident
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full" style={{ background: "#3d6b9e" }} /> Maintenance
+              </span>
+            </div>
+          )}
 
           {/* Mobile: last 30 bars */}
           <UptimeBarTrack
@@ -502,6 +611,38 @@ export default function PublicStatusPageClient({
           </div>
         )}
       </section>
+
+      {/* ── PAST MAINTENANCE ── */}
+      {pastMaintenance.length > 0 && (
+        <section className="mt-8">
+          <h3
+            className="text-xs font-bold uppercase tracking-[0.12em] mb-3"
+            style={{ color: "#8a8070" }}
+          >
+            Past maintenance
+          </h3>
+          <div className="space-y-2">
+            {pastMaintenance.map((m) => (
+              <div
+                key={m.id}
+                className="rounded-[4px] px-4 py-3"
+                style={{ border: "1.5px solid #e4dfd4", background: "white" }}
+              >
+                <p className="text-sm font-bold" style={{ color: "#3d3830" }}>
+                  {m.title}
+                </p>
+                <p className="text-xs" style={{ color: "#8a8070" }}>
+                  {new Date(m.starts_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }
