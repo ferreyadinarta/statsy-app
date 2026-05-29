@@ -1,24 +1,40 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: any = null;
+
+function getResend() {
+    if (resend) return resend;
+    // Prevent constructing the client in the browser bundle
+    if (typeof window !== "undefined") {
+        throw new Error("Resend client must only be used on the server");
+    }
+    const key = process.env.RESEND_API_KEY;
+    if (!key) {
+        throw new Error(
+            "Missing API key. Set RESEND_API_KEY in the server environment.",
+        );
+    }
+    resend = new Resend(key);
+    return resend;
+}
 
 export async function sendSignupConfirmationEmail({
-  to,
-  confirmLink,
-}: {
-  to: string;
-  confirmLink: string;
-}) {
-  return resend.emails.send({
-    from: "Statsy <noreply@statsy.page>",
     to,
-    subject: "Confirm your Statsy account",
-    html: buildSignupConfirmationEmailHtml(confirmLink),
-  });
+    confirmLink,
+}: {
+    to: string;
+    confirmLink: string;
+}) {
+    return getResend().emails.send({
+        from: "Statsy <noreply@statsy.page>",
+        to,
+        subject: "Confirm your Statsy account",
+        html: buildSignupConfirmationEmailHtml(confirmLink),
+    });
 }
 
 function buildSignupConfirmationEmailHtml(confirmLink: string): string {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -72,22 +88,22 @@ function buildSignupConfirmationEmailHtml(confirmLink: string): string {
 }
 
 export async function sendPasswordResetEmail({
-  to,
-  resetLink,
-}: {
-  to: string;
-  resetLink: string;
-}) {
-  return resend.emails.send({
-    from: "Statsy <noreply@statsy.page>",
     to,
-    subject: "Reset your Statsy password",
-    html: buildPasswordResetEmailHtml(resetLink),
-  });
+    resetLink,
+}: {
+    to: string;
+    resetLink: string;
+}) {
+    return getResend().emails.send({
+        from: "Statsy <noreply@statsy.page>",
+        to,
+        subject: "Reset your Statsy password",
+        html: buildPasswordResetEmailHtml(resetLink),
+    });
 }
 
 function buildPasswordResetEmailHtml(resetLink: string): string {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -150,83 +166,83 @@ function buildPasswordResetEmailHtml(resetLink: string): string {
 }
 
 interface SendIncidentNotificationParams {
-  to: string[]; // email
-  pageSlug: string;
-  pageName: string;
-  incidentTitle: string;
-  incidentStatus: string;
-  incidentMessage: string;
-  unsubscribeTokens: Record<string, string>; // email -> token
-  isPro: boolean;
+    to: string[]; // email
+    pageSlug: string;
+    pageName: string;
+    incidentTitle: string;
+    incidentStatus: string;
+    incidentMessage: string;
+    unsubscribeTokens: Record<string, string>; // email -> token
+    isPro: boolean;
 }
 
 export async function sendIncidentNotification({
-  to,
-  pageSlug,
-  pageName,
-  incidentTitle,
-  incidentStatus,
-  incidentMessage,
-  unsubscribeTokens,
-  isPro,
+    to,
+    pageSlug,
+    pageName,
+    incidentTitle,
+    incidentStatus,
+    incidentMessage,
+    unsubscribeTokens,
+    isPro,
 }: SendIncidentNotificationParams) {
-  const results = await Promise.allSettled(
-    to.map((email) => {
-      const token = unsubscribeTokens[email];
-      const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
-      const pageUrl = `https://${pageSlug}.statsy.page`;
+    const results = await Promise.allSettled(
+        to.map((email) => {
+            const token = unsubscribeTokens[email];
+            const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
+            const pageUrl = `https://${pageSlug}.statsy.page`;
 
-      return resend.emails.send({
-        from: `${pageName} Status <notifications@statsy.page>`,
-        to: email,
-        subject: `[${incidentStatus.toUpperCase()}] ${incidentTitle}`,
-        html: buildEmailHtml({
-          pageName,
-          pageUrl,
-          incidentTitle,
-          incidentStatus,
-          incidentMessage,
-          unsubscribeUrl,
-          isPro,
+            return getResend().emails.send({
+                from: `${pageName} Status <notifications@statsy.page>`,
+                to: email,
+                subject: `[${incidentStatus.toUpperCase()}] ${incidentTitle}`,
+                html: buildEmailHtml({
+                    pageName,
+                    pageUrl,
+                    incidentTitle,
+                    incidentStatus,
+                    incidentMessage,
+                    unsubscribeUrl,
+                    isPro,
+                }),
+            });
         }),
-      });
-    }),
-  );
+    );
 
-  // Log failures
-  results.forEach((result, i) => {
-    if (result.status === "rejected") {
-      console.error(`Failed to send email to ${to[i]}:`, result.reason);
-    }
-  });
+    // Log failures
+    results.forEach((result, i) => {
+        if (result.status === "rejected") {
+            console.error(`Failed to send email to ${to[i]}:`, result.reason);
+        }
+    });
 }
 
 interface BuildEmailHtmlParams {
-  pageName: string;
-  pageUrl: string;
-  incidentTitle: string;
-  incidentStatus: string;
-  incidentMessage: string;
-  unsubscribeUrl: string;
-  isPro: boolean;
+    pageName: string;
+    pageUrl: string;
+    incidentTitle: string;
+    incidentStatus: string;
+    incidentMessage: string;
+    unsubscribeUrl: string;
+    isPro: boolean;
 }
 
 function buildEmailHtml(p: BuildEmailHtmlParams): string {
-  const statusColors: Record<
-    string,
-    { bg: string; color: string; border: string }
-  > = {
-    investigating: { bg: "#fff3e0", color: "#e65100", border: "#fb8c00" },
-    identified: { bg: "#fff3e0", color: "#e65100", border: "#fb8c00" },
-    monitoring: { bg: "#e8f5ee", color: "#1a7a4a", border: "#1a7a4a" },
-    resolved: { bg: "#e8f5ee", color: "#1a7a4a", border: "#1a7a4a" },
-  };
+    const statusColors: Record<
+        string,
+        { bg: string; color: string; border: string }
+    > = {
+        investigating: { bg: "#fff3e0", color: "#e65100", border: "#fb8c00" },
+        identified: { bg: "#fff3e0", color: "#e65100", border: "#fb8c00" },
+        monitoring: { bg: "#e8f5ee", color: "#1a7a4a", border: "#1a7a4a" },
+        resolved: { bg: "#e8f5ee", color: "#1a7a4a", border: "#1a7a4a" },
+    };
 
-  const sc = statusColors[p.incidentStatus] ?? statusColors.investigating;
-  const statusText =
-    p.incidentStatus.charAt(0).toUpperCase() + p.incidentStatus.slice(1);
+    const sc = statusColors[p.incidentStatus] ?? statusColors.investigating;
+    const statusText =
+        p.incidentStatus.charAt(0).toUpperCase() + p.incidentStatus.slice(1);
 
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -287,11 +303,15 @@ function buildEmailHtml(p: BuildEmailHtmlParams): string {
                 &nbsp;·&nbsp;
                 <a href="${p.unsubscribeUrl}" style="color:#8a8070;text-decoration:underline;">Unsubscribe</a>
               </p>
-              ${p.isPro ? "" : `<p style="margin:8px 0 0;font-size:0.72rem;color:#c4bfb4;">
+              ${
+                  p.isPro
+                      ? ""
+                      : `<p style="margin:8px 0 0;font-size:0.72rem;color:#c4bfb4;">
                 Powered by
                 <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a>
                 - status pages for everyone
-              </p>`}
+              </p>`
+              }
             </td>
           </tr>
 
@@ -305,39 +325,57 @@ function buildEmailHtml(p: BuildEmailHtmlParams): string {
 
 // ── Monitoring alerts ────────────────────────────────────────────────────────
 
-const STATUS_STYLES: Record<string, { bg: string; color: string; border: string; label: string }> = {
-  outage:      { bg: "#fdeae8", color: "#d32f2f", border: "#d32f2f", label: "Outage" },
-  degraded:    { bg: "rgba(232,80,10,0.08)", color: "#e8500a", border: "#e8500a", label: "Degraded" },
-  operational: { bg: "#e8f5ee", color: "#1a7a4a", border: "#1a7a4a", label: "Operational" },
+const STATUS_STYLES: Record<
+    string,
+    { bg: string; color: string; border: string; label: string }
+> = {
+    outage: {
+        bg: "#fdeae8",
+        color: "#d32f2f",
+        border: "#d32f2f",
+        label: "Outage",
+    },
+    degraded: {
+        bg: "rgba(232,80,10,0.08)",
+        color: "#e8500a",
+        border: "#e8500a",
+        label: "Degraded",
+    },
+    operational: {
+        bg: "#e8f5ee",
+        color: "#1a7a4a",
+        border: "#1a7a4a",
+        label: "Operational",
+    },
 };
 
 function buildMonitoringAlertHtml({
-  pageName,
-  pageUrl,
-  serviceName,
-  newStatus,
-  unsubscribeUrl,
-  isPro,
-  isOwner,
+    pageName,
+    pageUrl,
+    serviceName,
+    newStatus,
+    unsubscribeUrl,
+    isPro,
+    isOwner,
 }: {
-  pageName: string;
-  pageUrl: string;
-  serviceName: string;
-  newStatus: "operational" | "degraded" | "outage";
-  unsubscribeUrl?: string;
-  isPro: boolean;
-  isOwner: boolean;
+    pageName: string;
+    pageUrl: string;
+    serviceName: string;
+    newStatus: "operational" | "degraded" | "outage";
+    unsubscribeUrl?: string;
+    isPro: boolean;
+    isOwner: boolean;
 }): string {
-  const sc = STATUS_STYLES[newStatus];
-  const isDown = newStatus === "outage" || newStatus === "degraded";
-  const headline = isDown
-    ? `${serviceName} is ${sc.label.toLowerCase()}`
-    : `${serviceName} has recovered`;
-  const body = isDown
-    ? `Statsy detected that <strong>${serviceName}</strong> on your <strong>${pageName}</strong> status page is reporting <strong>${sc.label}</strong>. Check your service and update your status page accordingly.`
-    : `<strong>${serviceName}</strong> on <strong>${pageName}</strong> is back to <strong>Operational</strong>.`;
+    const sc = STATUS_STYLES[newStatus];
+    const isDown = newStatus === "outage" || newStatus === "degraded";
+    const headline = isDown
+        ? `${serviceName} is ${sc.label.toLowerCase()}`
+        : `${serviceName} has recovered`;
+    const body = isDown
+        ? `Statsy detected that <strong>${serviceName}</strong> on your <strong>${pageName}</strong> status page is reporting <strong>${sc.label}</strong>. Check your service and update your status page accordingly.`
+        : `<strong>${serviceName}</strong> on <strong>${pageName}</strong> is back to <strong>Operational</strong>.`;
 
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -378,9 +416,10 @@ function buildMonitoringAlertHtml({
           <tr>
             <td style="border-top:1px solid #e8e2d9;padding:14px 32px;">
               <p style="margin:0;font-size:0.75rem;color:#8a8070;line-height:1.6;">
-                ${isOwner
-                  ? `Automated monitoring alert from <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a>.`
-                  : `You're receiving this because you subscribed to updates from <a href="${pageUrl}" style="color:#e8500a;text-decoration:none;font-weight:600;">${pageName}</a>.${unsubscribeUrl ? ` &nbsp;·&nbsp; <a href="${unsubscribeUrl}" style="color:#8a8070;text-decoration:underline;">Unsubscribe</a>` : ""}`
+                ${
+                    isOwner
+                        ? `Automated monitoring alert from <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a>.`
+                        : `You're receiving this because you subscribed to updates from <a href="${pageUrl}" style="color:#e8500a;text-decoration:none;font-weight:600;">${pageName}</a>.${unsubscribeUrl ? ` &nbsp;·&nbsp; <a href="${unsubscribeUrl}" style="color:#8a8070;text-decoration:underline;">Unsubscribe</a>` : ""}`
                 }
               </p>
               ${!isPro ? `<p style="margin:8px 0 0;font-size:0.72rem;color:#c4bfb4;">Powered by <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a></p>` : ""}
@@ -395,93 +434,114 @@ function buildMonitoringAlertHtml({
 }
 
 export async function sendOwnerStatusAlert({
-  to,
-  serviceName,
-  newStatus,
-  pageSlug,
-  pageName,
-}: {
-  to: string;
-  serviceName: string;
-  newStatus: "operational" | "degraded" | "outage";
-  pageSlug: string;
-  pageName: string;
-}) {
-  const pageUrl = `https://${pageSlug}.statsy.page`;
-  const sc = STATUS_STYLES[newStatus];
-  const subject = newStatus === "operational"
-    ? `✓ Recovered: ${serviceName} is back up`
-    : `⚠ ${sc.label}: ${serviceName} on ${pageName}`;
-
-  return resend.emails.send({
-    from: "Statsy Monitoring <noreply@statsy.page>",
     to,
-    subject,
-    html: buildMonitoringAlertHtml({ pageName, pageUrl, serviceName, newStatus, isPro: true, isOwner: true }),
-  });
+    serviceName,
+    newStatus,
+    pageSlug,
+    pageName,
+}: {
+    to: string;
+    serviceName: string;
+    newStatus: "operational" | "degraded" | "outage";
+    pageSlug: string;
+    pageName: string;
+}) {
+    const pageUrl = `https://${pageSlug}.statsy.page`;
+    const sc = STATUS_STYLES[newStatus];
+    const subject =
+        newStatus === "operational"
+            ? `✓ Recovered: ${serviceName} is back up`
+            : `⚠ ${sc.label}: ${serviceName} on ${pageName}`;
+
+    return getResend().emails.send({
+        from: "Statsy Monitoring <noreply@statsy.page>",
+        to,
+        subject,
+        html: buildMonitoringAlertHtml({
+            pageName,
+            pageUrl,
+            serviceName,
+            newStatus,
+            isPro: true,
+            isOwner: true,
+        }),
+    });
 }
 
 export async function sendSubscriberStatusChangeAlert({
-  subscribers,
-  serviceName,
-  newStatus,
-  pageSlug,
-  pageName,
-  isPro,
+    subscribers,
+    serviceName,
+    newStatus,
+    pageSlug,
+    pageName,
+    isPro,
 }: {
-  subscribers: { email: string; token: string }[];
-  serviceName: string;
-  newStatus: "operational" | "degraded" | "outage";
-  pageSlug: string;
-  pageName: string;
-  isPro: boolean;
+    subscribers: { email: string; token: string }[];
+    serviceName: string;
+    newStatus: "operational" | "degraded" | "outage";
+    pageSlug: string;
+    pageName: string;
+    isPro: boolean;
 }) {
-  const pageUrl = `https://${pageSlug}.statsy.page`;
-  const sc = STATUS_STYLES[newStatus];
-  const subject = newStatus === "operational"
-    ? `✓ Recovered: ${serviceName} is back up · ${pageName}`
-    : `⚠ ${sc.label}: ${serviceName} · ${pageName}`;
+    const pageUrl = `https://${pageSlug}.statsy.page`;
+    const sc = STATUS_STYLES[newStatus];
+    const subject =
+        newStatus === "operational"
+            ? `✓ Recovered: ${serviceName} is back up · ${pageName}`
+            : `⚠ ${sc.label}: ${serviceName} · ${pageName}`;
 
-  const results = await Promise.allSettled(
-    subscribers.map(({ email, token }) => {
-      const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
-      return resend.emails.send({
-        from: `${pageName} Status <notifications@statsy.page>`,
-        to: email,
-        subject,
-        html: buildMonitoringAlertHtml({ pageName, pageUrl, serviceName, newStatus, unsubscribeUrl, isPro, isOwner: false }),
-      });
-    }),
-  );
+    const results = await Promise.allSettled(
+        subscribers.map(({ email, token }) => {
+            const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
+            return getResend().emails.send({
+                from: `${pageName} Status <notifications@statsy.page>`,
+                to: email,
+                subject,
+                html: buildMonitoringAlertHtml({
+                    pageName,
+                    pageUrl,
+                    serviceName,
+                    newStatus,
+                    unsubscribeUrl,
+                    isPro,
+                    isOwner: false,
+                }),
+            });
+        }),
+    );
 
-  results.forEach((r, i) => {
-    if (r.status === "rejected") console.error(`Failed to send alert to ${subscribers[i].email}:`, r.reason);
-  });
+    results.forEach((r, i) => {
+        if (r.status === "rejected")
+            console.error(
+                `Failed to send alert to ${subscribers[i].email}:`,
+                r.reason,
+            );
+    });
 }
 
 // ── Maintenance notifications ────────────────────────────────────────────────
 
 interface SendMaintenanceParams {
-  to: string[];
-  pageSlug: string;
-  pageName: string;
-  title: string;
-  message: string;
-  whenLabel: string; // human window range, e.g. "Sat, Jun 6, 2:00–4:00 AM UTC"
-  unsubscribeTokens: Record<string, string>;
+    to: string[];
+    pageSlug: string;
+    pageName: string;
+    title: string;
+    message: string;
+    whenLabel: string; // human window range, e.g. "Sat, Jun 6, 2:00–4:00 AM UTC"
+    unsubscribeTokens: Record<string, string>;
 }
 
 function buildMaintenanceHtml(p: {
-  pageName: string;
-  pageUrl: string;
-  title: string;
-  message: string;
-  whenLabel: string;
-  heading: string;
-  unsubscribeUrl: string;
+    pageName: string;
+    pageUrl: string;
+    title: string;
+    message: string;
+    whenLabel: string;
+    heading: string;
+    unsubscribeUrl: string;
 }): string {
-  const accent = "#1a1714";
-  return `
+    const accent = "#1a1714";
+    return `
   <div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a1714;">
     <div style="border:1.5px solid #1a1714;border-radius:4px;box-shadow:3px 3px 0 #1a1714;overflow:hidden;">
       <div style="background:rgba(26,23,20,0.04);border-bottom:2px solid ${accent};padding:16px 20px;">
@@ -501,40 +561,69 @@ function buildMaintenanceHtml(p: {
 }
 
 export async function sendMaintenanceScheduled(params: SendMaintenanceParams) {
-  return sendMaintenanceEmail(params, "Scheduled maintenance", `Scheduled: ${params.title}`);
+    return sendMaintenanceEmail(
+        params,
+        "Scheduled maintenance",
+        `Scheduled: ${params.title}`,
+    );
 }
 
 export async function sendMaintenanceCompleted(params: SendMaintenanceParams) {
-  return sendMaintenanceEmail(params, "Maintenance complete", `Completed: ${params.title}`);
+    return sendMaintenanceEmail(
+        params,
+        "Maintenance complete",
+        `Completed: ${params.title}`,
+    );
 }
 
 export async function sendMaintenanceCancelled(params: SendMaintenanceParams) {
-  return sendMaintenanceEmail(params, "Maintenance cancelled", `Cancelled: ${params.title}`);
+    return sendMaintenanceEmail(
+        params,
+        "Maintenance cancelled",
+        `Cancelled: ${params.title}`,
+    );
 }
 
 async function sendMaintenanceEmail(
-  { to, pageSlug, pageName, title, message, whenLabel, unsubscribeTokens }: SendMaintenanceParams,
-  heading: string,
-  subject: string,
+    {
+        to,
+        pageSlug,
+        pageName,
+        title,
+        message,
+        whenLabel,
+        unsubscribeTokens,
+    }: SendMaintenanceParams,
+    heading: string,
+    subject: string,
 ) {
-  const results = await Promise.allSettled(
-    to.map((email) => {
-      const token = unsubscribeTokens[email];
-      const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
-      const pageUrl = `https://${pageSlug}.statsy.page`;
-      return resend.emails.send({
-        from: `${pageName} Status <notifications@statsy.page>`,
-        to: email,
-        subject,
-        html: buildMaintenanceHtml({
-          pageName, pageUrl, title, message, whenLabel, heading, unsubscribeUrl,
+    const results = await Promise.allSettled(
+        to.map((email) => {
+            const token = unsubscribeTokens[email];
+            const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/unsubscribe?token=${token}`;
+            const pageUrl = `https://${pageSlug}.statsy.page`;
+            return getResend().emails.send({
+                from: `${pageName} Status <notifications@statsy.page>`,
+                to: email,
+                subject,
+                html: buildMaintenanceHtml({
+                    pageName,
+                    pageUrl,
+                    title,
+                    message,
+                    whenLabel,
+                    heading,
+                    unsubscribeUrl,
+                }),
+            });
         }),
-      });
-    }),
-  );
-  results.forEach((result, i) => {
-    if (result.status === "rejected") {
-      console.error(`Failed to send maintenance email to ${to[i]}:`, result.reason);
-    }
-  });
+    );
+    results.forEach((result, i) => {
+        if (result.status === "rejected") {
+            console.error(
+                `Failed to send maintenance email to ${to[i]}:`,
+                result.reason,
+            );
+        }
+    });
 }
