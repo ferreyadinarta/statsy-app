@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local-only Claude superpowers planning docs (not tracked)
+docs/superpowers/
