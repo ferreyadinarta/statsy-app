@@ -37,7 +37,7 @@ export default function ScheduleMaintenanceModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!title || !startsAt || !endsAt) {
+    if (!title.trim() || !startsAt || !endsAt) {
       setError("Title, start, and end are required.");
       return;
     }
@@ -51,8 +51,8 @@ export default function ScheduleMaintenanceModal({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         status_page_id: statusPageId,
-        title,
-        description,
+        title: title.trim(),
+        description: description.trim() || null,
         starts_at: new Date(startsAt).toISOString(),
         ends_at: new Date(endsAt).toISOString(),
         service_ids: serviceIds,
@@ -69,72 +69,110 @@ export default function ScheduleMaintenanceModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center px-6"
       style={{ background: "rgba(26,23,20,0.5)" }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[4px] bg-white"
-        style={{ border: "1.5px solid #1a1714", boxShadow: "3px 3px 0 #1a1714" }}
+        className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-[4px]"
+        style={{ border: "1.5px solid #1a1714", boxShadow: "6px 6px 0 #1a1714" }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header */}
         <div
-          className="flex items-center justify-between px-6 py-4"
-          style={{ background: "rgba(61,107,158,0.08)", borderBottom: `2px solid ${BLUE}` }}
+          className="flex items-center justify-between px-8 pt-7 pb-6"
+          style={{ borderBottom: "1.5px solid #e4dfd4" }}
         >
-          <h3 className="text-lg font-black" style={{ color: "#1a1714" }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-head)",
+              fontWeight: 900,
+              fontSize: "1.4rem",
+              letterSpacing: "-0.03em",
+            }}
+          >
             Schedule maintenance
-          </h3>
-          <button onClick={onClose} className="cursor-pointer" style={{ color: "#8a8070" }}>
-            <X size={20} />
+          </h2>
+          <button
+            onClick={onClose}
+            className="transition-colors rounded-[4px] p-1 cursor-pointer"
+            style={{ color: "#8a8070" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#1a1714")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#8a8070")}
+          >
+            <X size={18} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          <Field label="Title">
+        {/* Form */}
+        <form onSubmit={handleSubmit} noValidate className="px-8 py-6 flex flex-col gap-5">
+          {/* Title */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+              Title
+            </label>
             <input
+              type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Database upgrade"
-              className="w-full px-3 py-2 rounded-[4px] text-sm"
-              style={{ border: "1.5px solid #e4dfd4" }}
+              placeholder="e.g. Database upgrade"
+              className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4]"
+              style={{ border: "1.5px solid #e4dfd4", color: "#1a1714" }}
+              maxLength={200}
+              autoFocus
             />
-          </Field>
+          </div>
 
-          <Field label="Description (optional)">
+          {/* Description */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+              Description (optional)
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              placeholder="What will happen and the expected impact."
-              className="w-full px-3 py-2 rounded-[4px] text-sm"
-              style={{ border: "1.5px solid #e4dfd4" }}
+              placeholder="What will happen and the expected impact..."
+              rows={4}
+              className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4] resize-none"
+              style={{ border: "1.5px solid #e4dfd4", color: "#1a1714" }}
+              maxLength={1000}
             />
-          </Field>
+          </div>
 
+          {/* Window */}
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Starts">
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+                Starts
+              </label>
               <input
                 type="datetime-local"
                 value={startsAt}
                 onChange={(e) => setStartsAt(e.target.value)}
-                className="w-full px-3 py-2 rounded-[4px] text-sm"
-                style={{ border: "1.5px solid #e4dfd4" }}
+                className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white"
+                style={{ border: "1.5px solid #e4dfd4", color: "#1a1714" }}
               />
-            </Field>
-            <Field label="Ends">
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+                Ends
+              </label>
               <input
                 type="datetime-local"
                 value={endsAt}
                 onChange={(e) => setEndsAt(e.target.value)}
-                className="w-full px-3 py-2 rounded-[4px] text-sm"
-                style={{ border: "1.5px solid #e4dfd4" }}
+                className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white"
+                style={{ border: "1.5px solid #e4dfd4", color: "#1a1714" }}
               />
-            </Field>
+            </div>
           </div>
 
+          {/* Affected services */}
           {services.length > 0 && (
-            <Field label="Affected services (optional - none = all systems)">
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+                Affected services (optional — none = all systems)
+              </label>
               <div className="flex flex-wrap gap-2">
                 {services.map((s) => {
                   const on = serviceIds.includes(s.id);
@@ -143,7 +181,7 @@ export default function ScheduleMaintenanceModal({
                       type="button"
                       key={s.id}
                       onClick={() => toggleService(s.id)}
-                      className="px-3 py-1.5 rounded-[4px] text-xs font-bold cursor-pointer"
+                      className="px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wide cursor-pointer transition-colors"
                       style={{
                         border: `1.5px solid ${on ? BLUE : "#e4dfd4"}`,
                         background: on ? "rgba(61,107,158,0.08)" : "white",
@@ -155,49 +193,59 @@ export default function ScheduleMaintenanceModal({
                   );
                 })}
               </div>
-            </Field>
+            </div>
           )}
 
           {error && (
-            <p className="text-sm font-semibold" style={{ color: "#d32f2f" }}>
+            <span className="text-xs" style={{ color: "#d32f2f" }}>
               {error}
-            </p>
+            </span>
           )}
 
-          <div className="flex justify-end gap-2 pt-2">
+          {/* Actions */}
+          <div className="flex gap-3 pt-4" style={{ borderTop: "1.5px solid #e4dfd4" }}>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider cursor-pointer"
-              style={{ border: "1.5px solid #e4dfd4", color: "#8a8070" }}
+              disabled={submitting}
+              className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: "white", border: "1.5px solid #e4dfd4", color: "#3d3830" }}
+              onMouseEnter={(e) => {
+                if (!submitting) e.currentTarget.style.background = "#f5f2eb";
+              }}
+              onMouseLeave={(e) => {
+                if (!submitting) e.currentTarget.style.background = "white";
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider cursor-pointer"
-              style={{ background: BLUE, border: `1.5px solid ${BLUE}`, color: "white" }}
+              className="flex-1 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: submitting ? "#8a8070" : "#1a1714",
+                border: "1.5px solid #1a1714",
+                color: "#f5f2eb",
+              }}
+              onMouseEnter={(e) => {
+                if (!submitting) {
+                  e.currentTarget.style.background = "#e8500a";
+                  e.currentTarget.style.borderColor = "#e8500a";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!submitting) {
+                  e.currentTarget.style.background = "#1a1714";
+                  e.currentTarget.style.borderColor = "#1a1714";
+                }
+              }}
             >
-              {submitting ? "Scheduling…" : "Schedule"}
+              {submitting ? "Scheduling..." : "Schedule"}
             </button>
           </div>
         </form>
       </div>
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label
-        className="block text-xs font-bold uppercase tracking-wider mb-1.5"
-        style={{ color: "#1a1714" }}
-      >
-        {label}
-      </label>
-      {children}
     </div>
   );
 }

@@ -1109,21 +1109,45 @@ export default function StatusPageClient({
 
             {/* ── MAINTENANCE ── */}
             <section className="mb-10">
-                <div className="flex items-center justify-between mb-6">
-                    <h2
-                        className="text-xl font-black"
-                        style={{
-                            fontFamily: "var(--font-head)",
-                            color: "#1a1714",
-                            letterSpacing: "-0.03em",
-                        }}
-                    >
-                        Maintenance
-                    </h2>
+                <div className="flex items-end justify-between mb-6">
+                    <div>
+                        <h2
+                            className="text-xl font-black mb-2"
+                            style={{
+                                fontFamily: "var(--font-head)",
+                                color: "#1a1714",
+                                letterSpacing: "-0.03em",
+                            }}
+                        >
+                            Maintenance
+                        </h2>
+                        <p className="text-sm font-medium" style={{ color: "#8a8070" }}>
+                            {maintenance.length === 0
+                                ? "No maintenance scheduled"
+                                : `${maintenance.length} maintenance ${maintenance.length === 1 ? "window" : "windows"}`}
+                        </p>
+                    </div>
                     <button
                         onClick={() => setShowMaintenanceModal(true)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider cursor-pointer"
-                        style={{ background: "#3d6b9e", border: "1.5px solid #3d6b9e", color: "white" }}
+                        className="flex items-center gap-1.5 rounded-[4px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                        style={{
+                            background: "#1a1714",
+                            color: "#f5f2eb",
+                            border: "1.5px solid #1a1714",
+                            boxShadow: "2px 2px 0 #1a1714",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "#e8500a";
+                            e.currentTarget.style.borderColor = "#e8500a";
+                            e.currentTarget.style.boxShadow = "2px 2px 0 #e8500a";
+                            e.currentTarget.style.transform = "translate(-1px, -1px)";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "#1a1714";
+                            e.currentTarget.style.borderColor = "#1a1714";
+                            e.currentTarget.style.boxShadow = "2px 2px 0 #1a1714";
+                            e.currentTarget.style.transform = "translate(0, 0)";
+                        }}
                     >
                         <Plus size={14} strokeWidth={3} />
                         Schedule Maintenance
@@ -1135,8 +1159,12 @@ export default function StatusPageClient({
                         className="flex items-center gap-3 px-6 py-5 rounded-[4px]"
                         style={{ border: "1.5px solid #e4dfd4", background: "white" }}
                     >
+                        <div
+                            className="w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ background: "#1a7a4a" }}
+                        />
                         <p className="text-sm font-medium" style={{ color: "#3d3830" }}>
-                            No maintenance scheduled.
+                            No maintenance scheduled
                         </p>
                     </div>
                 ) : (

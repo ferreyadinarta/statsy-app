@@ -85,46 +85,79 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
         opacity: muted ? 0.7 : 1,
       }}
     >
+      {/* Header with status banner (matches IncidentCard) */}
       <div
-        className="px-5 py-3"
+        className="px-6 py-4"
         style={{ background: "rgba(61,107,158,0.08)", borderBottom: `2px solid ${BLUE}` }}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <span
-              className="inline-block px-2.5 py-1 rounded-[4px] text-[11px] font-bold uppercase tracking-wider mb-1.5"
-              style={{ background: BLUE, color: "white" }}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="mb-2">
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wider"
+                style={{ background: BLUE, color: "white" }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                {stateLabels[m.state]}
+              </span>
+            </div>
+            <h3
+              className="text-xl font-black break-words"
+              style={{
+                fontFamily: "var(--font-head)",
+                color: "#1a1714",
+                letterSpacing: "-0.03em",
+                lineHeight: "1.2",
+              }}
             >
-              {stateLabels[m.state]}
-            </span>
-            <h4 className="text-lg font-black break-words" style={{ color: "#1a1714" }}>
               {m.title}
-            </h4>
-            <p className="text-xs font-semibold mt-0.5" style={{ color: "#2f5580" }}>
+            </h3>
+            <span className="text-xs font-semibold mt-1 block" style={{ color: "#2f5580" }}>
               {formatRange(m.starts_at, m.ends_at)}
-            </p>
+            </span>
           </div>
-          <button
-            onClick={remove}
-            disabled={busy}
-            title="Delete"
-            className="p-2 rounded-[4px] cursor-pointer flex-shrink-0"
-            style={{ border: "1.5px solid #e4dfd4", color: "#8a8070" }}
-          >
-            <Trash2 size={14} />
-          </button>
+
+          {/* Owner actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {m.state === "scheduled" && (
+              <ActionButton label="Start now" onClick={() => act("start")} disabled={busy} />
+            )}
+            {m.state === "in_progress" && (
+              <ActionButton label="Complete" onClick={() => act("complete")} disabled={busy} />
+            )}
+            {!muted && (
+              <ActionButton label="Cancel" onClick={() => act("cancel")} disabled={busy} subtle />
+            )}
+            <button
+              onClick={remove}
+              disabled={busy}
+              title="Delete maintenance"
+              className="p-2 rounded-[4px] transition-colors cursor-pointer"
+              style={{ background: "white", border: "1.5px solid #e4dfd4", color: "#8a8070" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#d32f2f";
+                e.currentTarget.style.color = "#d32f2f";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#e4dfd4";
+                e.currentTarget.style.color = "#8a8070";
+              }}
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
         </div>
       </div>
 
       {(m.description || linkedNames.length > 0) && (
-        <div className="px-5 py-4 space-y-2">
+        <div className="px-6 py-5 space-y-2" style={{ borderBottom: error ? "1.5px solid #e4dfd4" : undefined }}>
           {m.description && (
-            <p className="text-sm whitespace-pre-wrap" style={{ color: "#3d3830" }}>
+            <p className="text-base leading-relaxed whitespace-pre-wrap break-words" style={{ color: "#3d3830" }}>
               {m.description}
             </p>
           )}
           {linkedNames.length > 0 && (
-            <p className="text-xs" style={{ color: "#8a8070" }}>
+            <p className="text-xs font-medium" style={{ color: "#8a8070" }}>
               Affected: {linkedNames.join(", ")}
             </p>
           )}
@@ -132,24 +165,9 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
       )}
 
       {error && (
-        <p
-          className="px-5 py-2 text-xs font-semibold"
-          style={{ color: "#d32f2f", borderTop: "1.5px solid #e4dfd4" }}
-        >
+        <p className="px-6 py-3 text-xs font-semibold" style={{ color: "#d32f2f" }}>
           {error}
         </p>
-      )}
-
-      {!muted && (
-        <div className="px-5 py-3 flex gap-2" style={{ borderTop: "1.5px solid #e4dfd4" }}>
-          {m.state === "scheduled" && (
-            <ActionButton label="Start now" onClick={() => act("start")} disabled={busy} />
-          )}
-          {m.state === "in_progress" && (
-            <ActionButton label="Complete" onClick={() => act("complete")} disabled={busy} />
-          )}
-          <ActionButton label="Cancel" onClick={() => act("cancel")} disabled={busy} subtle />
-        </div>
       )}
     </div>
   );
@@ -158,16 +176,42 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
 function ActionButton({
   label, onClick, disabled, subtle,
 }: { label: string; onClick: () => void; disabled?: boolean; subtle?: boolean }) {
+  if (subtle) {
+    return (
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+        style={{ background: "white", border: "1.5px solid #e4dfd4", color: "#8a8070" }}
+        onMouseEnter={(e) => {
+          if (!disabled) e.currentTarget.style.background = "#f5f2eb";
+        }}
+        onMouseLeave={(e) => {
+          if (!disabled) e.currentTarget.style.background = "white";
+        }}
+      >
+        {label}
+      </button>
+    );
+  }
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className="px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wider cursor-pointer"
-      style={
-        subtle
-          ? { border: "1.5px solid #e4dfd4", color: "#8a8070", background: "white" }
-          : { background: "#1a1714", border: "1.5px solid #1a1714", color: "#f5f2eb" }
-      }
+      className="px-4 py-2 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+      style={{ background: "#1a1714", border: "1.5px solid #1a1714", color: "#f5f2eb" }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.background = "#e8500a";
+          e.currentTarget.style.borderColor = "#e8500a";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.background = "#1a1714";
+          e.currentTarget.style.borderColor = "#1a1714";
+        }
+      }}
     >
       {label}
     </button>
