@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       .in("state", ["scheduled", "in_progress"]);
     if ((count ?? 0) >= limit) {
       return NextResponse.json(
-        { error: `Your plan allows ${limit} active maintenance window. Upgrade to Pro for unlimited.` },
+        { error: `Your plan allows ${limit} active maintenance ${limit === 1 ? "window" : "windows"}. Upgrade to Pro for unlimited.` },
         { status: 403 },
       );
     }
@@ -169,6 +169,10 @@ export async function PATCH(req: NextRequest) {
     update.state = "cancelled";
   }
 
+  if (Object.keys(update).length === 0) {
+    return NextResponse.json({ error: "No updatable fields provided." }, { status: 400 });
+  }
+
   const { data: mw, error } = await supabase
     .from("maintenance_windows")
     .update(update)
@@ -202,7 +206,11 @@ export async function DELETE(req: NextRequest) {
     .single();
   if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
 
-  const { error } = await supabase.from("maintenance_windows").delete().eq("id", id);
+  const { error } = await supabase
+    .from("maintenance_windows")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
   if (error) {
     console.error("maintenance delete error:", error);
     return NextResponse.json({ error: "Delete failed." }, { status: 500 });
