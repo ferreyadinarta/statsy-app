@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as dns } from "dns";
 import { isIP } from "net";
 import { sendOwnerStatusAlert, sendSubscriberStatusChangeAlert } from "@/lib/email";
+import { processMaintenanceTransitions } from "@/lib/maintenance";
 
 const DEFAULT_DEGRADED_THRESHOLD_MS = 3000;
 const PING_TIMEOUT_MS = 5000;
@@ -139,6 +140,13 @@ export async function GET(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
+
+  // Reconcile maintenance windows on the same cadence as checks.
+  try {
+    await processMaintenanceTransitions(supabase);
+  } catch (e) {
+    console.error("maintenance transition error:", e);
+  }
 
   const runAt = new Date().toISOString();
 
