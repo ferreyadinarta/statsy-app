@@ -1279,9 +1279,9 @@ export default function StatusPageClient({
                     statusPageId={page.id}
                     services={localServices}
                     onClose={() => setShowMaintenanceModal(false)}
-                    onSuccess={() => {
+                    onSuccess={(created) => {
                         setShowMaintenanceModal(false);
-                        loadMaintenance();
+                        setMaintenance((prev) => [created, ...prev]);
                     }}
                 />
             )}

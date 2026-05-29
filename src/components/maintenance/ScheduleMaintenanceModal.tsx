@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Check, Plus } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
+import type { Maintenance } from "./MaintenanceCard";
 
 type Service = { id: string; name: string };
 
@@ -10,7 +11,7 @@ type Props = {
   statusPageId: string;
   services: Service[];
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (created: Maintenance) => void;
 };
 
 type FieldErrors = {
@@ -75,13 +76,19 @@ export default function ScheduleMaintenanceModal({
       }),
     });
     setSubmitting(false);
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
       showError(data.error || "Couldn't schedule maintenance.");
       return;
     }
     success("Maintenance scheduled.");
-    onSuccess();
+    // Build the created window from the API row + the picked links so the
+    // dashboard can add it instantly (no refetch round-trip).
+    const created: Maintenance = {
+      ...data.maintenance,
+      maintenance_window_services: serviceIds.map((id) => ({ service_id: id })),
+    };
+    onSuccess(created);
   }
 
   return (
