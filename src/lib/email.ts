@@ -480,14 +480,14 @@ function buildMaintenanceHtml(p: {
   heading: string;
   unsubscribeUrl: string;
 }): string {
-  const blue = "#3d6b9e";
+  const accent = "#1a1714";
   return `
   <div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a1714;">
     <div style="border:1.5px solid #1a1714;border-radius:4px;box-shadow:3px 3px 0 #1a1714;overflow:hidden;">
-      <div style="background:rgba(61,107,158,0.08);border-bottom:2px solid ${blue};padding:16px 20px;">
-        <span style="display:inline-block;background:${blue};color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:5px 10px;border-radius:4px;">${p.heading}</span>
+      <div style="background:rgba(26,23,20,0.04);border-bottom:2px solid ${accent};padding:16px 20px;">
+        <span style="display:inline-block;background:${accent};color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:5px 10px;border-radius:4px;">${p.heading}</span>
         <h2 style="margin:12px 0 4px;font-size:20px;">${p.title}</h2>
-        <p style="margin:0;color:#2f5580;font-weight:600;font-size:13px;">${p.whenLabel}</p>
+        <p style="margin:0;color:#8a8070;font-weight:600;font-size:13px;">${p.whenLabel}</p>
       </div>
       <div style="padding:20px;">
         <p style="margin:0 0 16px;line-height:1.6;white-space:pre-wrap;">${p.message}</p>

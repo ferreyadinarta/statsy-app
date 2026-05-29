@@ -21,7 +21,12 @@ type Props = {
   onChanged: () => void;
 };
 
-const BLUE = "#3d6b9e";
+const stateColors: Record<MaintenanceState, { bg: string; border: string }> = {
+  scheduled: { bg: "rgba(26,23,20,0.06)", border: "#1a1714" },
+  in_progress: { bg: "rgba(232,80,10,0.08)", border: "#e8500a" },
+  completed: { bg: "#e8f5ee", border: "#1a7a4a" },
+  cancelled: { bg: "#f5f2eb", border: "#8a8070" },
+};
 
 const stateLabels: Record<MaintenanceState, string> = {
   scheduled: "Scheduled",
@@ -42,6 +47,7 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const muted = m.state === "completed" || m.state === "cancelled";
+  const colors = stateColors[m.state];
 
   async function act(action: "start" | "complete" | "cancel") {
     setBusy(true);
@@ -88,14 +94,14 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
       {/* Header with status banner (matches IncidentCard) */}
       <div
         className="px-6 py-4"
-        style={{ background: "rgba(61,107,158,0.08)", borderBottom: `2px solid ${BLUE}` }}
+        style={{ background: colors.bg, borderBottom: `2px solid ${colors.border}` }}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="mb-2">
               <span
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wider"
-                style={{ background: BLUE, color: "white" }}
+                style={{ background: colors.border, color: "white" }}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 {stateLabels[m.state]}
@@ -112,7 +118,7 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
             >
               {m.title}
             </h3>
-            <span className="text-xs font-semibold mt-1 block" style={{ color: "#2f5580" }}>
+            <span className="text-xs font-semibold mt-1 block" style={{ color: "#8a8070" }}>
               {formatRange(m.starts_at, m.ends_at)}
             </span>
           </div>
@@ -150,7 +156,7 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
       </div>
 
       {(m.description || linkedNames.length > 0) && (
-        <div className="px-6 py-5 space-y-2" style={{ borderBottom: error ? "1.5px solid #e4dfd4" : undefined }}>
+        <div className="px-6 py-5 space-y-2">
           {m.description && (
             <p className="text-base leading-relaxed whitespace-pre-wrap break-words" style={{ color: "#3d3830" }}>
               {m.description}
@@ -165,7 +171,7 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
       )}
 
       {error && (
-        <p className="px-6 py-3 text-xs font-semibold" style={{ color: "#d32f2f" }}>
+        <p className="px-6 py-3 text-xs font-semibold" style={{ color: "#d32f2f", borderTop: "1.5px solid #e4dfd4" }}>
           {error}
         </p>
       )}

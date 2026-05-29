@@ -12,7 +12,10 @@ type Props = {
   onSuccess: () => void;
 };
 
-const BLUE = "#3d6b9e";
+type FieldErrors = {
+  title?: string;
+  time?: string;
+};
 
 export default function ScheduleMaintenanceModal({
   statusPageId,
@@ -25,7 +28,8 @@ export default function ScheduleMaintenanceModal({
   const [startsAt, setStartsAt] = useState("");
   const [endsAt, setEndsAt] = useState("");
   const [serviceIds, setServiceIds] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   function toggleService(id: string) {
@@ -34,17 +38,27 @@ export default function ScheduleMaintenanceModal({
     );
   }
 
+  function validate(): boolean {
+    const errors: FieldErrors = {};
+    if (!title.trim()) {
+      errors.title = "Title is required.";
+    } else if (title.trim().length < 3) {
+      errors.title = "Title must be at least 3 characters.";
+    }
+    if (!startsAt || !endsAt) {
+      errors.time = "Start and end times are required.";
+    } else if (new Date(endsAt) <= new Date(startsAt)) {
+      errors.time = "End time must be after start time.";
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    if (!title.trim() || !startsAt || !endsAt) {
-      setError("Title, start, and end are required.");
-      return;
-    }
-    if (new Date(endsAt) <= new Date(startsAt)) {
-      setError("End time must be after start time.");
-      return;
-    }
+    setFormError(null);
+    if (!validate()) return;
+
     setSubmitting(true);
     const res = await fetch("/api/maintenance", {
       method: "POST",
@@ -61,7 +75,7 @@ export default function ScheduleMaintenanceModal({
     setSubmitting(false);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data.error || "Something went wrong.");
+      setFormError(data.error || "Something went wrong.");
       return;
     }
     onSuccess();
@@ -114,13 +128,24 @@ export default function ScheduleMaintenanceModal({
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setFieldErrors((prev) => ({ ...prev, title: undefined }));
+              }}
               placeholder="e.g. Database upgrade"
               className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white placeholder:text-[#c4bfb4]"
-              style={{ border: "1.5px solid #e4dfd4", color: "#1a1714" }}
+              style={{
+                border: `1.5px solid ${fieldErrors.title ? "#d32f2f" : "#e4dfd4"}`,
+                color: "#1a1714",
+              }}
               maxLength={200}
               autoFocus
             />
+            {fieldErrors.title && (
+              <span className="text-xs" style={{ color: "#d32f2f" }}>
+                {fieldErrors.title}
+              </span>
+            )}
           </div>
 
           {/* Description */}
@@ -140,31 +165,50 @@ export default function ScheduleMaintenanceModal({
           </div>
 
           {/* Window */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
-                Starts
-              </label>
-              <input
-                type="datetime-local"
-                value={startsAt}
-                onChange={(e) => setStartsAt(e.target.value)}
-                className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white"
-                style={{ border: "1.5px solid #e4dfd4", color: "#1a1714" }}
-              />
+          <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+                  Starts
+                </label>
+                <input
+                  type="datetime-local"
+                  value={startsAt}
+                  onChange={(e) => {
+                    setStartsAt(e.target.value);
+                    setFieldErrors((prev) => ({ ...prev, time: undefined }));
+                  }}
+                  className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white"
+                  style={{
+                    border: `1.5px solid ${fieldErrors.time ? "#d32f2f" : "#e4dfd4"}`,
+                    color: "#1a1714",
+                  }}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
+                  Ends
+                </label>
+                <input
+                  type="datetime-local"
+                  value={endsAt}
+                  onChange={(e) => {
+                    setEndsAt(e.target.value);
+                    setFieldErrors((prev) => ({ ...prev, time: undefined }));
+                  }}
+                  className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white"
+                  style={{
+                    border: `1.5px solid ${fieldErrors.time ? "#d32f2f" : "#e4dfd4"}`,
+                    color: "#1a1714",
+                  }}
+                />
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
-                Ends
-              </label>
-              <input
-                type="datetime-local"
-                value={endsAt}
-                onChange={(e) => setEndsAt(e.target.value)}
-                className="rounded-[4px] px-4 py-3 text-sm outline-none bg-white"
-                style={{ border: "1.5px solid #e4dfd4", color: "#1a1714" }}
-              />
-            </div>
+            {fieldErrors.time && (
+              <span className="text-xs" style={{ color: "#d32f2f" }}>
+                {fieldErrors.time}
+              </span>
+            )}
           </div>
 
           {/* Affected services */}
@@ -183,9 +227,9 @@ export default function ScheduleMaintenanceModal({
                       onClick={() => toggleService(s.id)}
                       className="px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wide cursor-pointer transition-colors"
                       style={{
-                        border: `1.5px solid ${on ? BLUE : "#e4dfd4"}`,
-                        background: on ? "rgba(61,107,158,0.08)" : "white",
-                        color: on ? "#2f5580" : "#8a8070",
+                        border: `1.5px solid ${on ? "#e8500a" : "#e4dfd4"}`,
+                        background: on ? "rgba(232,80,10,0.08)" : "white",
+                        color: on ? "#e8500a" : "#8a8070",
                       }}
                     >
                       {s.name}
@@ -196,9 +240,9 @@ export default function ScheduleMaintenanceModal({
             </div>
           )}
 
-          {error && (
+          {formError && (
             <span className="text-xs" style={{ color: "#d32f2f" }}>
-              {error}
+              {formError}
             </span>
           )}
 

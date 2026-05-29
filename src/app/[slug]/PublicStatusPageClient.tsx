@@ -94,7 +94,7 @@ function UptimeBarTrack({
                   height: `${barHeight}px`,
                   background:
                     bar.status === "maintenance"
-                      ? "#3d6b9e"
+                      ? "#8a8070"
                       : bar.status === "operational"
                         ? "#1a7a4a"
                         : "#e8500a",
@@ -105,7 +105,7 @@ function UptimeBarTrack({
                   <p className="text-[11px] font-bold whitespace-nowrap" style={{ color: "#f5f2eb" }}>
                     {bar.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </p>
-                  <p className="text-[11px] font-medium whitespace-nowrap" style={{ color: bar.status === "operational" ? "#4ade80" : bar.status === "maintenance" ? "#7da7d9" : "#fb923c" }}>
+                  <p className="text-[11px] font-medium whitespace-nowrap" style={{ color: bar.status === "operational" ? "#4ade80" : bar.status === "maintenance" ? "#cbb89a" : "#fb923c" }}>
                     {bar.status === "operational" ? "Operational" : bar.status === "maintenance" ? "Scheduled maintenance" : "Incident"}
                   </p>
                 </div>
@@ -173,7 +173,7 @@ function MaintenanceBanner({
   ongoing: boolean;
   serviceNames: Record<string, string>;
 }) {
-  const blue = "#3d6b9e";
+  const accent = ongoing ? "#e8500a" : "#1a1714";
   const when = `${new Date(m.starts_at).toLocaleString("en-US", {
     weekday: "short",
     month: "short",
@@ -188,8 +188,8 @@ function MaintenanceBanner({
     <div
       className="rounded-[4px] px-5 py-4 mb-4"
       style={{
-        border: `1.5px solid ${blue}`,
-        background: "rgba(61,107,158,0.08)",
+        border: `1.5px solid ${accent}`,
+        background: ongoing ? "rgba(232,80,10,0.06)" : "rgba(26,23,20,0.04)",
         boxShadow: "3px 3px 0 #1a1714",
       }}
     >
@@ -197,12 +197,12 @@ function MaintenanceBanner({
         {ongoing && (
           <span
             className="w-2 h-2 rounded-full animate-pulse"
-            style={{ background: blue }}
+            style={{ background: accent }}
           />
         )}
         <span
           className="text-[11px] font-bold uppercase tracking-wider"
-          style={{ color: "#2f5580" }}
+          style={{ color: accent }}
         >
           {ongoing ? "Maintenance in progress" : "Scheduled maintenance"}
         </span>
@@ -210,7 +210,7 @@ function MaintenanceBanner({
       <p className="font-black text-base" style={{ color: "#1a1714" }}>
         {m.title}
       </p>
-      <p className="text-xs font-semibold" style={{ color: "#2f5580" }}>
+      <p className="text-xs font-semibold" style={{ color: "#8a8070" }}>
         {when}
       </p>
       {m.description && (
@@ -545,7 +545,7 @@ export default function PublicStatusPageClient({
                 <span className="w-2 h-2 rounded-full" style={{ background: "#e8500a" }} /> Incident
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full" style={{ background: "#3d6b9e" }} /> Maintenance
+                <span className="w-2 h-2 rounded-full" style={{ background: "#8a8070" }} /> Maintenance
               </span>
             </div>
           )}
