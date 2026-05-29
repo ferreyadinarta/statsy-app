@@ -133,22 +133,22 @@ export async function PATCH(req: NextRequest) {
 
   const supabase = await createClient();
 
-  // Ownership check.
+  // Ownership check (also fetch times to cross-validate partial updates).
   const { data: existing } = await supabase
     .from("maintenance_windows")
-    .select("id, user_id")
+    .select("id, user_id, starts_at, ends_at")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
   if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
 
-  // Validate before building the update.
-  if (
-    body.starts_at !== undefined &&
-    body.ends_at !== undefined &&
-    new Date(body.ends_at) <= new Date(body.starts_at)
-  ) {
-    return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
+  // Validate the effective range, even when only one bound is supplied.
+  if (body.starts_at !== undefined || body.ends_at !== undefined) {
+    const effectiveStart = body.starts_at ?? existing.starts_at;
+    const effectiveEnd = body.ends_at ?? existing.ends_at;
+    if (new Date(effectiveEnd) <= new Date(effectiveStart)) {
+      return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
+    }
   }
 
   const now = new Date().toISOString();

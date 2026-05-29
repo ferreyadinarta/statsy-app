@@ -195,23 +195,30 @@ export async function processMaintenanceTransitions(
         .eq("id", row.id);
       completed++;
 
+      // Completion email is best-effort: a mail failure must not break the
+      // cron loop or other windows. The row is already marked completed, so it
+      // won't be reprocessed regardless.
       if (!row.notified_completed) {
-        const { data: page } = await serviceClient
-          .from("status_pages")
-          .select("slug, name")
-          .eq("id", row.status_page_id)
-          .single();
-        if (page) {
-          emailed += await notifyMaintenance(serviceClient, {
-            kind: "completed",
-            statusPageId: row.status_page_id,
-            pageSlug: page.slug,
-            pageName: page.name,
-            title: row.title,
-            message: row.description ?? "Maintenance has completed. All systems back to normal.",
-            startsAt: row.starts_at,
-            endsAt: row.ends_at,
-          });
+        try {
+          const { data: page } = await serviceClient
+            .from("status_pages")
+            .select("slug, name")
+            .eq("id", row.status_page_id)
+            .single();
+          if (page) {
+            emailed += await notifyMaintenance(serviceClient, {
+              kind: "completed",
+              statusPageId: row.status_page_id,
+              pageSlug: page.slug,
+              pageName: page.name,
+              title: row.title,
+              message: row.description ?? "Maintenance has completed. All systems back to normal.",
+              startsAt: row.starts_at,
+              endsAt: row.ends_at,
+            });
+          }
+        } catch (e) {
+          console.error("maintenance completion email error:", e);
         }
       }
     }

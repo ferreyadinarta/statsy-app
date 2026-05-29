@@ -40,23 +40,34 @@ function formatRange(startsAt: string, endsAt: string): string {
 
 export default function MaintenanceCard({ maintenance: m, serviceNames, onChanged }: Props) {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const muted = m.state === "completed" || m.state === "cancelled";
 
   async function act(action: "start" | "complete" | "cancel") {
     setBusy(true);
-    await fetch(`/api/maintenance?id=${m.id}`, {
+    setError(null);
+    const res = await fetch(`/api/maintenance?id=${m.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action }),
     });
     setBusy(false);
+    if (!res.ok) {
+      setError("Action failed. Please try again.");
+      return;
+    }
     onChanged();
   }
 
   async function remove() {
     setBusy(true);
-    await fetch(`/api/maintenance?id=${m.id}`, { method: "DELETE" });
+    setError(null);
+    const res = await fetch(`/api/maintenance?id=${m.id}`, { method: "DELETE" });
     setBusy(false);
+    if (!res.ok) {
+      setError("Delete failed. Please try again.");
+      return;
+    }
     onChanged();
   }
 
@@ -118,6 +129,15 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onChange
             </p>
           )}
         </div>
+      )}
+
+      {error && (
+        <p
+          className="px-5 py-2 text-xs font-semibold"
+          style={{ color: "#d32f2f", borderTop: "1.5px solid #e4dfd4" }}
+        >
+          {error}
+        </p>
       )}
 
       {!muted && (

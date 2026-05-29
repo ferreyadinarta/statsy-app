@@ -134,7 +134,7 @@ export default function ScheduleMaintenanceModal({
           </div>
 
           {services.length > 0 && (
-            <Field label="Affected services (optional — none = all systems)">
+            <Field label="Affected services (optional - none = all systems)">
               <div className="flex flex-wrap gap-2">
                 {services.map((s) => {
                   const on = serviceIds.includes(s.id);

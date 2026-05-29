@@ -630,9 +630,14 @@ export default function StatusPageClient({
                     );
                 }
             )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "maintenance_windows", filter: `status_page_id=eq.${page.id}` },
+                () => { loadMaintenance(); }
+            )
             .subscribe();
         return () => { supabase.removeChannel(channel); };
-    }, [page.id]);
+    }, [page.id, loadMaintenance]);
 
     const activeIncidents = localIncidents.filter((i) => i.status !== "resolved");
     const resolvedIncidents = localIncidents.filter((i) => i.status === "resolved");
