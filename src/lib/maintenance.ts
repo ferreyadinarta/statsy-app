@@ -1,5 +1,9 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { sendMaintenanceScheduled, sendMaintenanceCompleted, sendMaintenanceCancelled } from "@/lib/email";
+// Pure, client-safe maintenance helpers. NO server-only imports (email, supabase)
+// must live here — this module is imported by client components (public status page).
+// Server-only logic (emails, cron reconciliation) lives in `maintenance-server.ts`.
+
+import { SupabaseClient } from "@supabase/supabase-js";
+import { sendMaintenanceCancelled, sendMaintenanceCompleted, sendMaintenanceScheduled } from "./email";
 
 export type MaintenanceState =
   | "scheduled"
