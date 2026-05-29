@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Check, Plus } from "lucide-react";
 
 type Service = { id: string; name: string };
 
@@ -215,8 +215,11 @@ export default function ScheduleMaintenanceModal({
           {services.length > 0 && (
             <div className="flex flex-col gap-2">
               <label className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: "#3d3830" }}>
-                Affected services (optional — none = all systems)
+                Affected services
               </label>
+              <p className="text-xs -mt-1" style={{ color: "#8a8070" }}>
+                Tap to select. Leave empty if all systems are affected.
+              </p>
               <div className="flex flex-wrap gap-2">
                 {services.map((s) => {
                   const on = serviceIds.includes(s.id);
@@ -225,13 +228,27 @@ export default function ScheduleMaintenanceModal({
                       type="button"
                       key={s.id}
                       onClick={() => toggleService(s.id)}
-                      className="px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wide cursor-pointer transition-colors"
+                      aria-pressed={on}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-bold uppercase tracking-wide cursor-pointer transition-colors"
                       style={{
-                        border: `1.5px solid ${on ? "#e8500a" : "#e4dfd4"}`,
+                        border: on ? "1.5px solid #e8500a" : "1.5px dashed #c4bfb4",
                         background: on ? "rgba(232,80,10,0.08)" : "white",
                         color: on ? "#e8500a" : "#8a8070",
                       }}
+                      onMouseEnter={(e) => {
+                        if (!on) {
+                          e.currentTarget.style.borderColor = "#e8500a";
+                          e.currentTarget.style.color = "#e8500a";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!on) {
+                          e.currentTarget.style.borderColor = "#c4bfb4";
+                          e.currentTarget.style.color = "#8a8070";
+                        }
+                      }}
                     >
+                      {on ? <Check size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
                       {s.name}
                     </button>
                   );
