@@ -1,3 +1,6 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { sendMaintenanceScheduled, sendMaintenanceCompleted } from "@/lib/email";
+
 export type MaintenanceState =
   | "scheduled"
   | "in_progress"
@@ -91,4 +94,57 @@ export function computeUptimeBars(opts: {
   const denom = days - maintenanceDays;
   const uptimePct = denom > 0 ? ((goodDays / denom) * 100).toFixed(1) : "100.0";
   return { bars, uptimePct };
+}
+
+// Formats the window range for emails/UI, e.g. "Sat, Jun 6, 2:00 AM – 4:00 AM UTC".
+export function formatWindowRange(startsAt: string, endsAt: string): string {
+  const opts: Intl.DateTimeFormatOptions = {
+    weekday: "short", month: "short", day: "numeric",
+    hour: "numeric", minute: "2-digit", timeZone: "UTC",
+  };
+  const s = new Date(startsAt).toLocaleString("en-US", opts);
+  const e = new Date(endsAt).toLocaleString("en-US", {
+    hour: "numeric", minute: "2-digit", timeZone: "UTC",
+  });
+  return `${s} – ${e} UTC`;
+}
+
+// Fetches subscribers (service role bypasses RLS) and sends the chosen email kind.
+export async function notifyMaintenance(
+  serviceClient: SupabaseClient,
+  opts: {
+    kind: "scheduled" | "completed";
+    statusPageId: string;
+    pageSlug: string;
+    pageName: string;
+    title: string;
+    message: string;
+    startsAt: string;
+    endsAt: string;
+  },
+): Promise<number> {
+  const { data: subscribers } = await serviceClient
+    .from("subscribers")
+    .select("email, token")
+    .eq("status_page_id", opts.statusPageId);
+
+  if (!subscribers || subscribers.length === 0) return 0;
+
+  const to = subscribers.map((s) => s.email as string);
+  const unsubscribeTokens = Object.fromEntries(
+    subscribers.map((s) => [s.email as string, s.token as string]),
+  );
+  const payload = {
+    to,
+    pageSlug: opts.pageSlug,
+    pageName: opts.pageName,
+    title: opts.title,
+    message: opts.message,
+    whenLabel: formatWindowRange(opts.startsAt, opts.endsAt),
+    unsubscribeTokens,
+  };
+
+  if (opts.kind === "scheduled") await sendMaintenanceScheduled(payload);
+  else await sendMaintenanceCompleted(payload);
+  return to.length;
 }
