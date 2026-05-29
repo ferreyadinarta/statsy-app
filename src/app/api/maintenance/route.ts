@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
   if (new Date(ends_at) <= new Date(starts_at)) {
     return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
   }
+  if (new Date(starts_at).getTime() < Date.now() - 60_000) {
+    return NextResponse.json({ error: "Start time can't be in the past." }, { status: 400 });
+  }
 
   const user = getUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
@@ -120,6 +123,7 @@ export async function PATCH(req: NextRequest) {
     description?: string;
     starts_at?: string;
     ends_at?: string;
+    service_ids?: string[];
     action?: "start" | "complete" | "cancel";
   };
   try {
@@ -161,6 +165,10 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
     }
   }
+  // A rescheduled start can't be moved into the past.
+  if (body.starts_at !== undefined && new Date(body.starts_at).getTime() < Date.now() - 60_000) {
+    return NextResponse.json({ error: "Start time can't be in the past." }, { status: 400 });
+  }
 
   const now = new Date().toISOString();
   const update: Record<string, unknown> = {};
@@ -180,20 +188,43 @@ export async function PATCH(req: NextRequest) {
     update.state = "cancelled";
   }
 
-  if (Object.keys(update).length === 0) {
+  const hasFieldUpdate = Object.keys(update).length > 0;
+  if (!hasFieldUpdate && body.service_ids === undefined) {
     return NextResponse.json({ error: "No updatable fields provided." }, { status: 400 });
   }
 
-  const { data: mw, error } = await supabase
-    .from("maintenance_windows")
-    .update(update)
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .select()
-    .single();
-  if (error) {
-    console.error("maintenance patch error:", error);
-    return NextResponse.json({ error: "Update failed." }, { status: 500 });
+  let mw;
+  if (hasFieldUpdate) {
+    const { data, error } = await supabase
+      .from("maintenance_windows")
+      .update(update)
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .select()
+      .single();
+    if (error) {
+      console.error("maintenance patch error:", error);
+      return NextResponse.json({ error: "Update failed." }, { status: 500 });
+    }
+    mw = data;
+  } else {
+    const { data } = await supabase
+      .from("maintenance_windows")
+      .select()
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .single();
+    mw = data;
+  }
+
+  // Replace affected-service links when provided.
+  if (body.service_ids !== undefined) {
+    await supabase.from("maintenance_window_services").delete().eq("maintenance_window_id", id);
+    if (body.service_ids.length > 0) {
+      const links = body.service_ids.map((sid) => ({ maintenance_window_id: id, service_id: sid }));
+      const { error: linkError } = await supabase.from("maintenance_window_services").insert(links);
+      if (linkError) console.error("maintenance link update error:", linkError);
+    }
   }
 
   // Tell subscribers a previously-announced maintenance is off (best-effort).

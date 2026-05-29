@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import { useToast } from "@/lib/use-toast";
 import ConfirmActionModal, { type ConfirmKind } from "./ConfirmActionModal";
 
@@ -22,6 +22,7 @@ type Props = {
   serviceNames: Record<string, string>;
   onUpdated: (updated: Maintenance) => void;
   onDeleted: (id: string) => void;
+  onEdit: (m: Maintenance) => void;
 };
 
 const stateColors: Record<MaintenanceState, { bg: string; border: string }> = {
@@ -53,7 +54,7 @@ function formatRange(startsAt: string, endsAt: string): string {
   return `${s} – ${e}`;
 }
 
-export default function MaintenanceCard({ maintenance: m, serviceNames, onUpdated, onDeleted }: Props) {
+export default function MaintenanceCard({ maintenance: m, serviceNames, onUpdated, onDeleted, onEdit }: Props) {
   const [confirm, setConfirm] = useState<ConfirmKind | null>(null);
   const [pending, setPending] = useState(false);
   const muted = m.state === "completed" || m.state === "cancelled";
@@ -152,6 +153,24 @@ export default function MaintenanceCard({ maintenance: m, serviceNames, onUpdate
               )}
               {m.state === "scheduled" && (
                 <ActionButton label="Cancel" onClick={() => setConfirm("cancel")} subtle />
+              )}
+              {m.state === "scheduled" && (
+                <button
+                  onClick={() => onEdit(m)}
+                  title="Edit maintenance"
+                  className="p-2 rounded-[4px] transition-colors cursor-pointer"
+                  style={{ background: "white", border: "1.5px solid #e4dfd4", color: "#8a8070" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "#1a1714";
+                    e.currentTarget.style.color = "#1a1714";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "#e4dfd4";
+                    e.currentTarget.style.color = "#8a8070";
+                  }}
+                >
+                  <Pencil size={14} />
+                </button>
               )}
               {m.state !== "in_progress" && (
                 <button

@@ -10,8 +10,9 @@ type Service = { id: string; name: string };
 type Props = {
   statusPageId: string;
   services: Service[];
+  existing?: Maintenance | null;
   onClose: () => void;
-  onSuccess: (created: Maintenance) => void;
+  onSuccess: (saved: Maintenance) => void;
 };
 
 type FieldErrors = {
@@ -20,20 +21,39 @@ type FieldErrors = {
   endsAt?: string;
 };
 
+// "YYYY-MM-DDTHH:MM" in the browser's local time (what datetime-local expects).
+function toLocalInput(d: Date): string {
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+}
+
+// Short timezone label for the current viewer, e.g. "GMT+7".
+function tzLabel(): string {
+  const parts = new Intl.DateTimeFormat("en-US", { timeZoneName: "short" }).formatToParts(new Date());
+  return parts.find((p) => p.type === "timeZoneName")?.value ?? "local time";
+}
+
 export default function ScheduleMaintenanceModal({
   statusPageId,
   services,
+  existing,
   onClose,
   onSuccess,
 }: Props) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [startsAt, setStartsAt] = useState("");
-  const [endsAt, setEndsAt] = useState("");
-  const [serviceIds, setServiceIds] = useState<string[]>([]);
+  const editing = !!existing;
+  const [title, setTitle] = useState(existing?.title ?? "");
+  const [description, setDescription] = useState(existing?.description ?? "");
+  const [startsAt, setStartsAt] = useState(existing ? toLocalInput(new Date(existing.starts_at)) : "");
+  const [endsAt, setEndsAt] = useState(existing ? toLocalInput(new Date(existing.ends_at)) : "");
+  const [serviceIds, setServiceIds] = useState<string[]>(
+    existing?.maintenance_window_services?.map((l) => l.service_id) ?? [],
+  );
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const { success, error: showError } = useToast();
+
+  const minLocal = toLocalInput(new Date());
 
   function toggleService(id: string) {
     setServiceIds((prev) =>
@@ -48,7 +68,11 @@ export default function ScheduleMaintenanceModal({
     } else if (title.trim().length < 3) {
       errors.title = "Title must be at least 3 characters.";
     }
-    if (!startsAt) errors.startsAt = "Start time is required.";
+    if (!startsAt) {
+      errors.startsAt = "Start time is required.";
+    } else if (new Date(startsAt).getTime() < Date.now() - 60_000) {
+      errors.startsAt = "Start time can't be in the past.";
+    }
     if (!endsAt) {
       errors.endsAt = "End time is required.";
     } else if (startsAt && new Date(endsAt) <= new Date(startsAt)) {
@@ -63,32 +87,34 @@ export default function ScheduleMaintenanceModal({
     if (!validate()) return;
 
     setSubmitting(true);
-    const res = await fetch("/api/maintenance", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status_page_id: statusPageId,
-        title: title.trim(),
-        description: description.trim() || null,
-        starts_at: new Date(startsAt).toISOString(),
-        ends_at: new Date(endsAt).toISOString(),
-        service_ids: serviceIds,
-      }),
-    });
+    const payload = {
+      status_page_id: statusPageId,
+      title: title.trim(),
+      description: description.trim() || null,
+      starts_at: new Date(startsAt).toISOString(),
+      ends_at: new Date(endsAt).toISOString(),
+      service_ids: serviceIds,
+    };
+    const res = await fetch(
+      editing ? `/api/maintenance?id=${existing!.id}` : "/api/maintenance",
+      {
+        method: editing ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
     setSubmitting(false);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      showError(data.error || "Couldn't schedule maintenance.");
+      showError(data.error || `Couldn't ${editing ? "save" : "schedule"} maintenance.`);
       return;
     }
-    success("Maintenance scheduled.");
-    // Build the created window from the API row + the picked links so the
-    // dashboard can add it instantly (no refetch round-trip).
-    const created: Maintenance = {
+    success(editing ? "Maintenance updated." : "Maintenance scheduled.");
+    const saved: Maintenance = {
       ...data.maintenance,
       maintenance_window_services: serviceIds.map((id) => ({ service_id: id })),
     };
-    onSuccess(created);
+    onSuccess(saved);
   }
 
   return (
@@ -115,7 +141,7 @@ export default function ScheduleMaintenanceModal({
               letterSpacing: "-0.03em",
             }}
           >
-            Schedule maintenance
+            {editing ? "Edit maintenance" : "Schedule maintenance"}
           </h2>
           <button
             onClick={onClose}
@@ -184,6 +210,7 @@ export default function ScheduleMaintenanceModal({
                 <input
                   type="datetime-local"
                   value={startsAt}
+                  min={minLocal}
                   onChange={(e) => {
                     setStartsAt(e.target.value);
                     setFieldErrors((prev) => ({ ...prev, startsAt: undefined, endsAt: undefined }));
@@ -207,6 +234,7 @@ export default function ScheduleMaintenanceModal({
                 <input
                   type="datetime-local"
                   value={endsAt}
+                  min={startsAt || minLocal}
                   onChange={(e) => {
                     setEndsAt(e.target.value);
                     setFieldErrors((prev) => ({ ...prev, endsAt: undefined }));
@@ -224,6 +252,9 @@ export default function ScheduleMaintenanceModal({
                 )}
               </div>
             </div>
+            <p className="text-xs" style={{ color: "#8a8070" }}>
+              Times are in your local timezone ({tzLabel()}).
+            </p>
           </div>
 
           {/* Affected services */}
@@ -311,7 +342,7 @@ export default function ScheduleMaintenanceModal({
                 }
               }}
             >
-              {submitting ? "Scheduling..." : "Schedule"}
+              {submitting ? "Saving..." : editing ? "Save changes" : "Schedule"}
             </button>
           </div>
         </form>

@@ -592,6 +592,7 @@ export default function StatusPageClient({
     const [showCreateIncident, setShowCreateIncident] = useState(false);
     const [maintenance, setMaintenance] = useState<Maintenance[]>([]);
     const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+    const [editingMaintenance, setEditingMaintenance] = useState<Maintenance | null>(null);
 
     const loadMaintenance = useCallback(async () => {
         const res = await fetch(`/api/public-status/${page.slug}`);
@@ -616,6 +617,12 @@ export default function StatusPageClient({
     );
 
     const atLimit = localServices.length >= (plan === "pro" ? PLAN_LIMITS.pro.services : PLAN_LIMITS.free.services);
+
+    const activeMaintenanceCount = maintenance.filter(
+        (m) => m.state === "scheduled" || m.state === "in_progress",
+    ).length;
+    const maintenanceLimit = PLAN_LIMITS[plan].activeMaintenance;
+    const atMaintenanceLimit = maintenanceLimit != null && activeMaintenanceCount >= maintenanceLimit;
 
     useEffect(() => {
         const supabase = createClient();
@@ -1127,32 +1134,72 @@ export default function StatusPageClient({
                                 : `${maintenance.length} maintenance ${maintenance.length === 1 ? "window" : "windows"}`}
                         </p>
                     </div>
-                    <button
-                        onClick={() => setShowMaintenanceModal(true)}
-                        className="flex items-center gap-1.5 rounded-[4px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                    {!atMaintenanceLimit && (
+                        <button
+                            onClick={() => setShowMaintenanceModal(true)}
+                            className="flex items-center gap-1.5 rounded-[4px] px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                            style={{
+                                background: "#1a1714",
+                                color: "#f5f2eb",
+                                border: "1.5px solid #1a1714",
+                                boxShadow: "2px 2px 0 #1a1714",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#e8500a";
+                                e.currentTarget.style.borderColor = "#e8500a";
+                                e.currentTarget.style.boxShadow = "2px 2px 0 #e8500a";
+                                e.currentTarget.style.transform = "translate(-1px, -1px)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "#1a1714";
+                                e.currentTarget.style.borderColor = "#1a1714";
+                                e.currentTarget.style.boxShadow = "2px 2px 0 #1a1714";
+                                e.currentTarget.style.transform = "translate(0, 0)";
+                            }}
+                        >
+                            <Plus size={14} strokeWidth={3} />
+                            Schedule Maintenance
+                        </button>
+                    )}
+                </div>
+
+                {atMaintenanceLimit && (
+                    <div
+                        className="flex items-center justify-between gap-4 px-4 py-3 rounded-[4px] mb-4"
                         style={{
-                            background: "#1a1714",
-                            color: "#f5f2eb",
-                            border: "1.5px solid #1a1714",
-                            boxShadow: "2px 2px 0 #1a1714",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = "#e8500a";
-                            e.currentTarget.style.borderColor = "#e8500a";
-                            e.currentTarget.style.boxShadow = "2px 2px 0 #e8500a";
-                            e.currentTarget.style.transform = "translate(-1px, -1px)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = "#1a1714";
-                            e.currentTarget.style.borderColor = "#1a1714";
-                            e.currentTarget.style.boxShadow = "2px 2px 0 #1a1714";
-                            e.currentTarget.style.transform = "translate(0, 0)";
+                            background: "#fdf9f5",
+                            border: "1.5px solid #e4dfd4",
+                            borderLeft: "3px solid #e8500a",
                         }}
                     >
-                        <Plus size={14} strokeWidth={3} />
-                        Schedule Maintenance
-                    </button>
-                </div>
+                        <div className="flex items-center gap-3">
+                            <Zap size={14} style={{ color: "#e8500a", flexShrink: 0 }} />
+                            <div>
+                                <p className="text-xs font-semibold" style={{ color: "#1a1714" }}>
+                                    1 active maintenance window on free plan
+                                </p>
+                                <p className="text-xs" style={{ color: "#8a8070" }}>
+                                    Upgrade to Pro to schedule unlimited maintenance windows.
+                                </p>
+                            </div>
+                        </div>
+                        <Link
+                            href="/billing"
+                            className="flex-shrink-0 text-xs font-semibold rounded-[4px] px-3 py-1.5 transition-colors"
+                            style={{ background: "#1a1714", color: "#f5f2eb", border: "1.5px solid #1a1714" }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#e8500a";
+                                e.currentTarget.style.borderColor = "#e8500a";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "#1a1714";
+                                e.currentTarget.style.borderColor = "#1a1714";
+                            }}
+                        >
+                            Upgrade →
+                        </Link>
+                    </div>
+                )}
 
                 {maintenance.length === 0 ? (
                     <div
@@ -1182,6 +1229,7 @@ export default function StatusPageClient({
                                 onDeleted={(id) =>
                                     setMaintenance((prev) => prev.filter((x) => x.id !== id))
                                 }
+                                onEdit={(window) => setEditingMaintenance(window)}
                             />
                         ))}
                     </div>
@@ -1274,14 +1322,25 @@ export default function StatusPageClient({
                     onSuccess={handleIncidentCreated}
                 />
             )}
-            {showMaintenanceModal && (
+            {(showMaintenanceModal || editingMaintenance) && (
                 <ScheduleMaintenanceModal
                     statusPageId={page.id}
                     services={localServices}
-                    onClose={() => setShowMaintenanceModal(false)}
-                    onSuccess={(created) => {
+                    existing={editingMaintenance}
+                    onClose={() => {
                         setShowMaintenanceModal(false);
-                        setMaintenance((prev) => [created, ...prev]);
+                        setEditingMaintenance(null);
+                    }}
+                    onSuccess={(saved) => {
+                        if (editingMaintenance) {
+                            setMaintenance((prev) =>
+                                prev.map((x) => (x.id === saved.id ? { ...x, ...saved } : x)),
+                            );
+                            setEditingMaintenance(null);
+                        } else {
+                            setMaintenance((prev) => [saved, ...prev]);
+                            setShowMaintenanceModal(false);
+                        }
                     }}
                 />
             )}
