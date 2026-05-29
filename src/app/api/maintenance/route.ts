@@ -177,3 +177,29 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json({ success: true, maintenance: mw });
 }
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "Missing maintenance id." }, { status: 400 });
+
+  const user = getUserFromRequest(req);
+  if (!user) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
+  const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("maintenance_windows")
+    .select("id")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+  if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
+
+  const { error } = await supabase.from("maintenance_windows").delete().eq("id", id);
+  if (error) {
+    console.error("maintenance delete error:", error);
+    return NextResponse.json({ error: "Delete failed." }, { status: 500 });
+  }
+  return NextResponse.json({ success: true });
+}
