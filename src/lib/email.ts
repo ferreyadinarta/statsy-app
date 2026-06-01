@@ -627,3 +627,138 @@ async function sendMaintenanceEmail(
         }
     });
 }
+
+// ── Billing lifecycle emails ───────────────────────────────────────────────
+
+export async function sendTrialStartedEmail({ to }: { to: string }) {
+    return getResend().emails.send({
+        from: "Statsy <noreply@statsy.page>",
+        to,
+        subject: "Your 14-day Statsy Pro trial has started",
+        html: `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background:#f5f2eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f2eb;padding:40px 20px;">
+  <tr><td align="center">
+    <table width="520" cellpadding="0" cellspacing="0" style="background:white;border:1.5px solid #1a1714;border-radius:4px;overflow:hidden;max-width:520px;">
+      <tr><td style="background:#1a1714;padding:20px 32px;">
+        <a href="https://statsy.page" style="text-decoration:none;">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;vertical-align:middle;margin-right:7px;"></span>
+          <span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;vertical-align:middle;">Statsy</span>
+        </a>
+      </td></tr>
+      <tr><td style="padding:32px 32px 28px;">
+        <h1 style="margin:0 0 8px;font-size:1.5rem;color:#1a1714;font-weight:900;letter-spacing:-0.04em;line-height:1.2;">Your Pro trial has started</h1>
+        <p style="margin:0 0 20px;font-size:0.9rem;color:#3d3530;line-height:1.7;">You have 14 days of full Pro access. Here's what's unlocked:</p>
+        <ul style="margin:0 0 24px;padding:0 0 0 20px;font-size:0.9rem;color:#3d3530;line-height:2;">
+          <li>Up to 3 status pages</li>
+          <li>10 services per page</li>
+          <li>1-minute monitoring checks</li>
+          <li>Custom domain support</li>
+          <li>500 email subscribers per page</li>
+          <li>90-day incident history</li>
+        </ul>
+        <a href="https://statsy.page/dashboard" style="display:inline-block;background:#e8500a;color:white;padding:12px 24px;border-radius:4px;font-size:0.875rem;text-decoration:none;font-weight:600;">Go to dashboard →</a>
+        <p style="margin:24px 0 0;font-size:0.8rem;color:#8a8070;line-height:1.6;">After 14 days you'll be charged $15/mo. Cancel anytime from your billing page before the trial ends.</p>
+      </td></tr>
+      <tr><td style="border-top:1px solid #e8e2d9;padding:14px 32px;">
+        <p style="margin:0;font-size:0.75rem;color:#8a8070;">
+          <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a> · Status pages for everyone
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`,
+    });
+}
+
+export async function sendTrialEndingEmail({ to, daysLeft }: { to: string; daysLeft: number }) {
+    const urgentColor = daysLeft <= 1 ? "#d32f2f" : "#e8500a";
+    const subject = daysLeft <= 1
+        ? "Your Statsy Pro trial ends tomorrow"
+        : `Your Statsy Pro trial ends in ${daysLeft} days`;
+    return getResend().emails.send({
+        from: "Statsy <noreply@statsy.page>",
+        to,
+        subject,
+        html: `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background:#f5f2eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f2eb;padding:40px 20px;">
+  <tr><td align="center">
+    <table width="520" cellpadding="0" cellspacing="0" style="background:white;border:1.5px solid #1a1714;border-radius:4px;overflow:hidden;max-width:520px;">
+      <tr><td style="background:#1a1714;padding:20px 32px;">
+        <a href="https://statsy.page" style="text-decoration:none;">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;vertical-align:middle;margin-right:7px;"></span>
+          <span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;vertical-align:middle;">Statsy</span>
+        </a>
+      </td></tr>
+      <tr><td style="padding:32px 32px 28px;">
+        <p style="margin:0 0 6px;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${urgentColor};">Trial ending soon</p>
+        <h1 style="margin:0 0 16px;font-size:1.5rem;color:#1a1714;font-weight:900;letter-spacing:-0.04em;line-height:1.2;">
+          ${daysLeft <= 1 ? "Your trial ends tomorrow" : `${daysLeft} days left in your trial`}
+        </h1>
+        <p style="margin:0 0 24px;font-size:0.9rem;color:#3d3530;line-height:1.7;">
+          After your trial, you'll be automatically charged <strong>$15/mo</strong>. No action needed to continue — or cancel before then to avoid any charge.
+        </p>
+        <table cellpadding="0" cellspacing="0" style="margin-bottom:8px;">
+          <tr>
+            <td style="padding-right:12px;">
+              <a href="https://statsy.page/billing" style="display:inline-block;background:#1a1714;color:#f5f2eb;padding:12px 24px;border-radius:4px;font-size:0.875rem;text-decoration:none;font-weight:600;">Manage billing →</a>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:20px 0 0;font-size:0.8rem;color:#8a8070;line-height:1.6;">Questions? Reply to this email anytime.</p>
+      </td></tr>
+      <tr><td style="border-top:1px solid #e8e2d9;padding:14px 32px;">
+        <p style="margin:0;font-size:0.75rem;color:#8a8070;">
+          <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a> · Status pages for everyone
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`,
+    });
+}
+
+export async function sendRefundAccessRevokedEmail({ to }: { to: string }) {
+    return getResend().emails.send({
+        from: "Statsy <noreply@statsy.page>",
+        to,
+        subject: "Your Statsy refund has been processed",
+        html: `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background:#f5f2eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f2eb;padding:40px 20px;">
+  <tr><td align="center">
+    <table width="520" cellpadding="0" cellspacing="0" style="background:white;border:1.5px solid #1a1714;border-radius:4px;overflow:hidden;max-width:520px;">
+      <tr><td style="background:#1a1714;padding:20px 32px;">
+        <a href="https://statsy.page" style="text-decoration:none;">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;vertical-align:middle;margin-right:7px;"></span>
+          <span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;vertical-align:middle;">Statsy</span>
+        </a>
+      </td></tr>
+      <tr><td style="padding:32px 32px 28px;">
+        <h1 style="margin:0 0 8px;font-size:1.5rem;color:#1a1714;font-weight:900;letter-spacing:-0.04em;line-height:1.2;">Refund processed</h1>
+        <p style="margin:0 0 20px;font-size:0.9rem;color:#3d3530;line-height:1.7;">
+          Your refund has been processed and your account has been moved back to the Free plan. Your status pages and services are still saved.
+        </p>
+        <p style="margin:0 0 24px;font-size:0.9rem;color:#3d3530;line-height:1.7;">
+          If you'd like to get Pro access again, you can upgrade anytime from your billing page.
+        </p>
+        <a href="https://statsy.page/billing" style="display:inline-block;background:#1a1714;color:#f5f2eb;padding:12px 24px;border-radius:4px;font-size:0.875rem;text-decoration:none;font-weight:600;">View billing →</a>
+        <p style="margin:24px 0 0;font-size:0.8rem;color:#8a8070;line-height:1.6;">Questions about your refund? Reply to this email.</p>
+      </td></tr>
+      <tr><td style="border-top:1px solid #e8e2d9;padding:14px 32px;">
+        <p style="margin:0;font-size:0.75rem;color:#8a8070;">
+          <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a> · Status pages for everyone
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`,
+    });
+}

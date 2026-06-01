@@ -57,6 +57,20 @@ export async function POST(req: NextRequest) {
   const plan = await getUserPlan(page.user_id);
   const limit = PLAN_LIMITS[plan].subscribers;
 
+  // Rate limit: max 5 new subscribers per page per minute (spam guard)
+  const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
+  const { count: recentCount } = await supabase
+    .from("subscribers")
+    .select("*", { count: "exact", head: true })
+    .eq("status_page_id", status_page_id)
+    .gte("created_at", oneMinuteAgo);
+  if ((recentCount ?? 0) >= 5) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: CORS_HEADERS },
+    );
+  }
+
   // Insert first, then count-check to avoid TOCTOU race condition.
   const { error: insertError } = await supabase
     .from("subscribers")

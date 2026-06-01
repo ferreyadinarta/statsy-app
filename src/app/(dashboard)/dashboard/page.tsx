@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
     const supabase = await createClient();
 
-    const [{ plan, graceInfo }, { data: pagesRaw }] = await Promise.all([
+    const [{ plan, graceInfo, trialInfo }, { data: pagesRaw }] = await Promise.all([
         getUserPlanAndGrace(user.id),
         supabase
             .from("status_pages")
@@ -119,6 +119,60 @@ export default async function DashboardPage() {
                     <LogoutButton />
                 </div>
             </header>
+
+            {/* Payment failed banner */}
+            {graceInfo.inGrace && (
+                <div
+                    className="flex items-center justify-between px-4 sm:px-8 py-2.5 gap-3"
+                    style={{
+                        background: "rgba(211,47,47,0.08)",
+                        borderBottom: "1.5px solid rgba(211,47,47,0.3)",
+                    }}
+                >
+                    <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
+                        <span style={{ color: "#d32f2f" }}>Payment failed</span>
+                        <span className="font-normal" style={{ color: "#8a8070" }}>
+                            {" "}· Pro access ends in {graceInfo.daysLeft} day{graceInfo.daysLeft === 1 ? "" : "s"} if not resolved
+                        </span>
+                    </p>
+                    <Link
+                        href="/billing"
+                        className="text-xs font-bold uppercase tracking-wider flex-shrink-0 hover:underline"
+                        style={{ color: "#d32f2f" }}
+                    >
+                        Update payment →
+                    </Link>
+                </div>
+            )}
+
+            {/* Trial banner */}
+            {trialInfo.isTrialing && (
+                <div
+                    className="flex items-center justify-between px-4 sm:px-8 py-2.5 gap-3"
+                    style={{
+                        background: trialInfo.daysLeft <= 3 ? "rgba(232,80,10,0.1)" : "rgba(232,80,10,0.06)",
+                        borderBottom: "1.5px solid rgba(232,80,10,0.25)",
+                    }}
+                >
+                    <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
+                        <span style={{ color: "#e8500a" }}>
+                            {trialInfo.daysLeft === 0 ? "Trial ends today" : `${trialInfo.daysLeft} day${trialInfo.daysLeft === 1 ? "" : "s"} left in your trial`}
+                        </span>
+                        {trialInfo.endsAt && (
+                            <span className="font-normal" style={{ color: "#8a8070" }}>
+                                {" "}· ends {trialInfo.endsAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                            </span>
+                        )}
+                    </p>
+                    <Link
+                        href="/billing"
+                        className="text-xs font-bold uppercase tracking-wider flex-shrink-0 hover:underline"
+                        style={{ color: "#e8500a" }}
+                    >
+                        Manage billing →
+                    </Link>
+                </div>
+            )}
 
             <main className="max-w-5xl mx-auto px-4 sm:px-8 py-10">
                 {/* Heading */}

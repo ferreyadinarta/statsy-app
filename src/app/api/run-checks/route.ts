@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as dns } from "dns";
 import { isIP } from "net";
 import { sendOwnerStatusAlert, sendSubscriberStatusChangeAlert } from "@/lib/email";
+import { PLAN_LIMITS } from "@/lib/plan-shared";
 import { processMaintenanceTransitions } from "@/lib/maintenance";
 
 const DEFAULT_DEGRADED_THRESHOLD_MS = 3000;
@@ -186,6 +187,29 @@ export async function GET(req: NextRequest) {
     if (email) ownerEmailMap.set(uid, email);
   });
 
+  // Build over-limit service ID set — free users' services beyond plan limit get no alerts
+  const overLimitServiceIds = new Set<string>();
+  const freePlanPageIds = [...new Set(
+    (dueServices as ServiceRow[])
+      .filter((s) => planMap.get(s.user_id) === "free")
+      .map((s) => s.status_page_id),
+  )];
+  if (freePlanPageIds.length > 0) {
+    const { data: orderedServices } = await supabase
+      .from("services")
+      .select("id, status_page_id")
+      .in("status_page_id", freePlanPageIds)
+      .order("created_at", { ascending: true });
+    if (orderedServices) {
+      const countByPage = new Map<string, number>();
+      for (const svc of orderedServices) {
+        const n = (countByPage.get(svc.status_page_id) ?? 0) + 1;
+        countByPage.set(svc.status_page_id, n);
+        if (n > PLAN_LIMITS.free.services) overLimitServiceIds.add(svc.id);
+      }
+    }
+  }
+
   // Collect status changes during checks — status_pages fetched lazily below only if needed
   const notificationTasks: NotificationTask[] = [];
   const stateUpdates: StateUpdate[] = [];
@@ -299,7 +323,7 @@ export async function GET(req: NextRequest) {
       }).eq("id", service.id);
     }
 
-    if (statusChanged) {
+    if (statusChanged && !overLimitServiceIds.has(service.id)) {
       notificationTasks.push({
         serviceName: service.name,
         statusPageId: service.status_page_id,

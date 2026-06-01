@@ -71,12 +71,20 @@ export default function BillingClient({
             : "free";
     const isPro = plan === "pro";
     const isCancelling = subscription?.status === "cancelled";
+    const isTrialing = subscription?.status === "trialing";
+    const isPastDue = subscription?.status === "past_due";
+    const trialDaysLeft = isTrialing && subscription?.current_period_end
+        ? Math.max(0, Math.ceil((new Date(subscription.current_period_end).getTime() - Date.now()) / 86400000))
+        : 0;
 
     const [paddleReady, setPaddleReady] = useState(false);
     const [cancelling, setCancelling] = useState(false);
     const [reactivating, setReactivating] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [inlineCTAVisible, setInlineCTAVisible] = useState(false);
+    const [billingInterval, setBillingInterval] = useState<"monthly" | "annual">("monthly");
+    const [activating, setActivating] = useState(false);
+    const [checkoutOpen, setCheckoutOpen] = useState(false);
     const inlineCTARef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
@@ -89,6 +97,10 @@ export default function BillingClient({
         observer.observe(el);
         return () => observer.disconnect();
     }, []);
+    useEffect(() => {
+        if (isPro && activating) setActivating(false);
+    }, [isPro, activating]);
+
     const { success, error: showError } = useToast();
     const router = useRouter();
 
@@ -104,9 +116,15 @@ export default function BillingClient({
                     token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
                     eventCallback: function (event: Record<string, unknown>) {
                         if (event.name === "checkout.completed") {
-                            setTimeout(() => {
-                                router.refresh();
-                            }, 4000);
+                            setCheckoutOpen(false);
+                            setActivating(true);
+                            // Poll — webhook processing can take 3-15s in sandbox
+                            [3000, 6000, 10000, 15000, 20000].forEach((ms) => {
+                                setTimeout(() => router.refresh(), ms);
+                            });
+                        }
+                        if (event.name === "checkout.closed" || event.name === "checkout.error") {
+                            setCheckoutOpen(false);
                         }
                     },
                 });
@@ -120,17 +138,27 @@ export default function BillingClient({
     }, [router]);
 
     function handleUpgrade() {
-        if (!window.Paddle) return;
+        if (!window.Paddle || checkoutOpen) return;
+        setCheckoutOpen(true);
+        const priceId = billingInterval === "annual"
+            ? process.env.NEXT_PUBLIC_PADDLE_ANNUAL_PRICE_ID
+            : process.env.NEXT_PUBLIC_PADDLE_PRICE_ID;
         window.Paddle.Checkout.open({
-            items: [
-                {
-                    priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_ID,
-                    quantity: 1,
-                },
-            ],
+            items: [{ priceId, quantity: 1 }],
             customer: { email: userEmail },
             customData: { user_id: userId },
         });
+    }
+
+    async function handleOpenPortal() {
+        try {
+            const res = await fetch("/api/paddle/portal", { method: "POST" });
+            const data = await res.json();
+            if (data.url) window.open(data.url, "_blank");
+            else showError("Could not open billing portal. Try again.");
+        } catch {
+            showError("Something went wrong. Please try again.");
+        }
     }
 
     async function handleReactivate() {
@@ -181,6 +209,40 @@ export default function BillingClient({
         });
     }
 
+    // ── ACTIVATING OVERLAY ────────────────────────────────────────────────────
+    if (activating) {
+        return (
+            <div
+                className="fixed inset-0 z-50 flex items-center justify-center"
+                style={{ background: "rgba(26,23,20,0.5)" }}
+            >
+                <div
+                    className="w-full max-w-sm rounded-[4px] p-8 text-center"
+                    style={{ background: "#f5f2eb", border: "1.5px solid #1a1714" }}
+                >
+                    <div
+                        className="w-2.5 h-2.5 rounded-full mx-auto mb-5"
+                        style={{ background: "#e8500a", animation: "blink 1s ease-in-out infinite" }}
+                    />
+                    <h3
+                        style={{
+                            fontFamily: "var(--font-head)",
+                            fontWeight: 900,
+                            fontSize: "1.2rem",
+                            color: "#1a1714",
+                            letterSpacing: "-0.03em",
+                        }}
+                    >
+                        Activating your Pro plan
+                    </h3>
+                    <p className="text-sm mt-2" style={{ color: "#8a8070" }}>
+                        Payment confirmed. Hang on a moment…
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     // ── PRO VIEW ──────────────────────────────────────────────────────────────
     if (isPro) {
         const cardBorder = isCancelling ? "1.5px solid #e8500a" : "1.5px solid #1a7a4a";
@@ -212,7 +274,20 @@ export default function BillingClient({
                                 >
                                     Pro
                                 </h2>
-                                {!isCancelling && (
+                                {isTrialing && (
+                                    <span
+                                        className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-[2px]"
+                                        style={{
+                                            background: "rgba(232,80,10,0.08)",
+                                            color: "#e8500a",
+                                            border: "1.5px solid #e8500a",
+                                        }}
+                                    >
+                                        <Clock size={11} strokeWidth={2.5} />
+                                        Trial
+                                    </span>
+                                )}
+                                {!isCancelling && !isTrialing && (
                                     <span
                                         className="text-xs font-bold px-2.5 py-1 rounded-[2px]"
                                         style={{
@@ -224,7 +299,7 @@ export default function BillingClient({
                                         Active
                                     </span>
                                 )}
-                                {isCancelling && (
+                                {isCancelling && !isTrialing && (
                                     <span
                                         className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-[2px]"
                                         style={{
@@ -239,33 +314,107 @@ export default function BillingClient({
                                     </span>
                                 )}
                             </div>
-                            {!isCancelling && subscription?.current_period_end && (
+                            {isTrialing && subscription?.current_period_end && (
+                                <p className="text-sm" style={{ color: "#8a8070" }}>
+                                    Trial ends {formatDate(subscription.current_period_end)}
+                                    {trialDaysLeft > 0 && (
+                                        <span style={{ color: "#e8500a", fontWeight: 600 }}>
+                                            {" "}({trialDaysLeft} day{trialDaysLeft === 1 ? "" : "s"} left)
+                                        </span>
+                                    )}
+                                </p>
+                            )}
+                            {!isTrialing && !isCancelling && subscription?.current_period_end && (
                                 <p className="text-sm" style={{ color: "#8a8070" }}>
                                     Renews {formatDate(subscription.current_period_end)}
                                 </p>
                             )}
-                            {isCancelling && (
+                            {isCancelling && !isTrialing && (
                                 <p className="text-sm" style={{ color: "#8a8070" }}>
                                     Access continues until{" "}
                                     {formatDate(subscription?.current_period_end ?? null)}
                                 </p>
                             )}
                         </div>
-                        <div
-                            style={{
-                                fontFamily: "var(--font-head)",
-                                fontWeight: 900,
-                                fontSize: "2rem",
-                                color: isCancelling ? "#c4bfb4" : "#1a7a4a",
-                                textDecoration: isCancelling ? "line-through" : "none",
-                            }}
-                        >
-                            $15/mo
+                        <div className="text-right">
+                            <div
+                                style={{
+                                    fontFamily: "var(--font-head)",
+                                    fontWeight: 900,
+                                    fontSize: "2rem",
+                                    color: isCancelling ? "#c4bfb4" : "#1a7a4a",
+                                    textDecoration: isCancelling ? "line-through" : "none",
+                                }}
+                            >
+                                $15/mo
+                            </div>
+                            {isTrialing && (
+                                <p className="text-xs" style={{ color: "#8a8070" }}>after trial</p>
+                            )}
                         </div>
                     </div>
 
+                    {/* Trial notice banner */}
+                    {isTrialing && (
+                        <div
+                            className="rounded-[4px] px-5 py-4 mb-5 flex items-start gap-3"
+                            style={{
+                                background: "rgba(232,80,10,0.06)",
+                                border: "1.5px solid rgba(232,80,10,0.25)",
+                            }}
+                        >
+                            <Clock
+                                size={15}
+                                strokeWidth={2}
+                                style={{ color: "#e8500a", flexShrink: 0, marginTop: 1 }}
+                            />
+                            <div>
+                                <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
+                                    {trialDaysLeft === 0
+                                        ? "Your trial ends today"
+                                        : `Your trial ends in ${trialDaysLeft} day${trialDaysLeft === 1 ? "" : "s"}`}
+                                </p>
+                                <p className="text-sm mt-0.5" style={{ color: "#8a8070" }}>
+                                    After your trial, you&apos;ll be automatically charged{" "}
+                                    <span style={{ color: "#1a1714", fontWeight: 500 }}>$15/mo</span>.
+                                    Cancel anytime before then to avoid charges.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Payment failed banner */}
+                    {isPastDue && (
+                        <div
+                            className="rounded-[4px] px-5 py-4 mb-5 flex items-start justify-between gap-3"
+                            style={{
+                                background: "rgba(211,47,47,0.06)",
+                                border: "1.5px solid rgba(211,47,47,0.3)",
+                            }}
+                        >
+                            <div className="flex items-start gap-3">
+                                <AlertCircle size={15} strokeWidth={2} style={{ color: "#d32f2f", flexShrink: 0, marginTop: 1 }} />
+                                <div>
+                                    <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
+                                        Payment failed
+                                    </p>
+                                    <p className="text-sm mt-0.5" style={{ color: "#8a8070" }}>
+                                        We couldn&apos;t charge your payment method. Update it to keep Pro access.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleOpenPortal}
+                                className="flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-[3px] cursor-pointer transition-colors"
+                                style={{ background: "#d32f2f", color: "white", border: "1.5px solid #d32f2f" }}
+                            >
+                                Update payment
+                            </button>
+                        </div>
+                    )}
+
                     {/* Cancellation notice banner */}
-                    {isCancelling && (
+                    {isCancelling && !isTrialing && (
                         <div
                             className="rounded-[4px] px-5 py-4 mb-5 flex items-start gap-3"
                             style={{
@@ -368,8 +517,32 @@ export default function BillingClient({
     }
 
     // ── FREE VIEW ─────────────────────────────────────────────────────────────
+    // True for any user who previously had Pro (trial or paid) — no second trial
+    const hadTrial = subscription !== null && subscription?.paddle_subscription_id !== null;
+
     return (
         <>
+            {/* Trial ended notice */}
+            {hadTrial && (
+                <div
+                    className="rounded-[4px] px-5 py-4 mb-6 flex items-start gap-3"
+                    style={{
+                        background: "rgba(232,80,10,0.06)",
+                        border: "1.5px solid rgba(232,80,10,0.25)",
+                    }}
+                >
+                    <Clock size={15} strokeWidth={2} style={{ color: "#e8500a", flexShrink: 0, marginTop: 2 }} />
+                    <div>
+                        <p className="text-sm font-semibold" style={{ color: "#1a1714" }}>
+                            Your Pro access has ended
+                        </p>
+                        <p className="text-sm mt-0.5" style={{ color: "#8a8070" }}>
+                            You&apos;re back on Free. Any extra services or pages are still saved — upgrade to restore full access.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start pb-24 lg:pb-0">
                 {/* Left — current plan (2/5 width) */}
                 <div
@@ -449,43 +622,75 @@ export default function BillingClient({
                 >
                     {/* Header */}
                     <div
-                        className="px-6 py-5 flex items-center justify-between"
+                        className="px-6 pt-5 pb-4"
                         style={{ background: "#1a1714" }}
                     >
-                        <div>
-                            <p
-                                className="text-xs font-bold uppercase tracking-wider mb-0.5"
-                                style={{ color: "#8a8070" }}
-                            >
-                                Upgrade to
-                            </p>
-                            <p
+                        {/* Billing toggle */}
+                        <div className="flex items-center gap-1.5 mb-4 p-1 rounded-[4px] w-fit" style={{ background: "rgba(255,255,255,0.08)" }}>
+                            <button
+                                onClick={() => setBillingInterval("monthly")}
+                                className="px-3 py-1 rounded-[3px] text-xs font-bold transition-all cursor-pointer"
                                 style={{
-                                    fontFamily: "var(--font-head)",
-                                    fontWeight: 900,
-                                    fontSize: "1.4rem",
-                                    letterSpacing: "-0.03em",
-                                    color: "#f5f2eb",
+                                    background: billingInterval === "monthly" ? "#f5f2eb" : "transparent",
+                                    color: billingInterval === "monthly" ? "#1a1714" : "#8a8070",
                                 }}
                             >
-                                Statsy Pro
-                            </p>
+                                Monthly
+                            </button>
+                            <button
+                                onClick={() => setBillingInterval("annual")}
+                                className="flex items-center gap-1.5 px-3 py-1 rounded-[3px] text-xs font-bold transition-all cursor-pointer"
+                                style={{
+                                    background: billingInterval === "annual" ? "#f5f2eb" : "transparent",
+                                    color: billingInterval === "annual" ? "#1a1714" : "#8a8070",
+                                }}
+                            >
+                                Annual
+                                <span
+                                    className="text-[10px] font-bold px-1.5 py-0.5 rounded-[2px]"
+                                    style={{ background: "#e8500a", color: "white" }}
+                                >
+                                    Save 20%
+                                </span>
+                            </button>
                         </div>
-                        <div className="text-right">
-                            <p
-                                style={{
-                                    fontFamily: "var(--font-head)",
-                                    fontWeight: 900,
-                                    fontSize: "1.8rem",
-                                    letterSpacing: "-0.03em",
-                                    color: "#f5f2eb",
-                                }}
-                            >
-                                $15
-                            </p>
-                            <p className="text-xs" style={{ color: "#8a8070" }}>
-                                per month
-                            </p>
+
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <p
+                                    className="text-xs font-bold uppercase tracking-wider mb-0.5"
+                                    style={{ color: "#8a8070" }}
+                                >
+                                    Upgrade to
+                                </p>
+                                <p
+                                    style={{
+                                        fontFamily: "var(--font-head)",
+                                        fontWeight: 900,
+                                        fontSize: "1.4rem",
+                                        letterSpacing: "-0.03em",
+                                        color: "#f5f2eb",
+                                    }}
+                                >
+                                    Statsy Pro
+                                </p>
+                            </div>
+                            <div className="text-right">
+                                <p
+                                    style={{
+                                        fontFamily: "var(--font-head)",
+                                        fontWeight: 900,
+                                        fontSize: "1.8rem",
+                                        letterSpacing: "-0.03em",
+                                        color: "#f5f2eb",
+                                    }}
+                                >
+                                    {billingInterval === "monthly" ? "$15" : "$12"}
+                                </p>
+                                <p className="text-xs" style={{ color: "#8a8070" }}>
+                                    {billingInterval === "monthly" ? "per month" : "per month, billed $144/yr"}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -535,7 +740,7 @@ export default function BillingClient({
                         <button
                             ref={inlineCTARef}
                             onClick={handleUpgrade}
-                            disabled={!paddleReady}
+                            disabled={!paddleReady || checkoutOpen}
                             className="w-full flex items-center justify-center gap-2 rounded-[4px] px-6 py-3.5 text-sm font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{
                                 background: "#e8500a",
@@ -545,14 +750,20 @@ export default function BillingClient({
                             }}
                         >
                             <Zap size={15} strokeWidth={2.5} />
-                            Upgrade to Pro - $15/mo
+                            {hadTrial ? "Upgrade to Pro" : "Start 14-day free trial"}
                             <ArrowRight size={15} strokeWidth={2.5} />
                         </button>
                         <p
                             className="text-xs text-center mt-3"
                             style={{ color: "#8a8070" }}
                         >
-                            Cancel anytime. No contracts.
+                            {hadTrial
+                                ? billingInterval === "monthly"
+                                    ? "$15/mo · cancel anytime · no contracts"
+                                    : "$144/yr · cancel anytime · no contracts"
+                                : billingInterval === "monthly"
+                                    ? "14-day free trial · then $15/mo · cancel anytime"
+                                    : "14-day free trial · then $144/yr · cancel anytime"}
                         </p>
                     </div>
                 </div>
@@ -569,7 +780,7 @@ export default function BillingClient({
             >
                 <button
                     onClick={handleUpgrade}
-                    disabled={!paddleReady}
+                    disabled={!paddleReady || checkoutOpen}
                     className="w-full flex items-center justify-center gap-2 rounded-[4px] px-6 py-3.5 text-sm font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                         background: "#e8500a",
@@ -579,7 +790,7 @@ export default function BillingClient({
                     }}
                 >
                     <Zap size={15} strokeWidth={2.5} />
-                    Upgrade to Pro - $15/mo
+                    {hadTrial ? "Upgrade to Pro" : "Start 14-day free trial"}
                     <ArrowRight size={15} strokeWidth={2.5} />
                 </button>
             </div>

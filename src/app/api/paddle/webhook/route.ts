@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { revalidateTag } from "next/cache";
 import { timingSafeEqual } from "node:crypto";
+import { sendTrialStartedEmail, sendRefundAccessRevokedEmail } from "@/lib/email";
 
 function getServiceClient() {
     return createClient(
@@ -108,6 +109,26 @@ export async function POST(req: NextRequest) {
         > | null;
         const isCancelScheduled = scheduledChange?.action === "cancel";
 
+        // Idempotency guard: skip stale out-of-order events.
+        // If DB already has "active" and this event says "trialing", it's an older event arriving late.
+        const STATUS_RANK: Record<string, number> = { trialing: 0, active: 1, past_due: 2, paused: 3, cancelled: 4 };
+        const incomingRank = STATUS_RANK[isCancelScheduled ? "cancelled" : mappedStatus] ?? -1;
+        if (incomingRank >= 0) {
+            const { data: existingSub } = await supabase
+                .from("subscriptions")
+                .select("status")
+                .eq("user_id", userId)
+                .single();
+            const existingRank = STATUS_RANK[existingSub?.status ?? ""] ?? -1;
+            // Only skip if existing is "active" and incoming is "trialing" (clear regression)
+            // Allow other transitions (e.g. cancelled → trialing on resubscribe)
+            if (existingSub && existingSub.status === "active" && mappedStatus === "trialing" && !isCancelScheduled) {
+                console.warn("Paddle webhook: skipping stale trialing event for active subscription", userId);
+                return NextResponse.json({ received: true });
+            }
+            void existingRank; // suppress unused warning
+        }
+
         const { error } = await supabase.from("subscriptions").upsert(
             {
                 user_id: userId,
@@ -145,6 +166,45 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "DB error" }, { status: 500 });
         }
         revalidateTag(`user-plan-${userId}`, "seconds");
+
+        // Send trial started email on first subscription with trialing status
+        if (eventType === "subscription.created" && mapStatus(statusRaw) === "trialing") {
+            const { data: userData } = await supabase.auth.admin.getUserById(userId);
+            const userEmail = userData?.user?.email;
+            if (userEmail) {
+                sendTrialStartedEmail({ to: userEmail }).catch((e) =>
+                    console.error("Failed to send trial started email:", e),
+                );
+            }
+        }
+    }
+
+    // Refund: revoke Pro access immediately + notify user
+    if (eventType === "transaction.refunded") {
+        const transactionSubId = data?.subscription_id as string | null;
+        if (transactionSubId) {
+            const { data: sub } = await supabase
+                .from("subscriptions")
+                .select("user_id")
+                .eq("paddle_subscription_id", transactionSubId)
+                .single();
+
+            if (sub?.user_id) {
+                await supabase
+                    .from("subscriptions")
+                    .update({ plan: "free", status: "cancelled" })
+                    .eq("user_id", sub.user_id);
+                revalidateTag(`user-plan-${sub.user_id}`, "seconds");
+
+                const { data: userData } = await supabase.auth.admin.getUserById(sub.user_id);
+                const userEmail = userData?.user?.email;
+                if (userEmail) {
+                    sendRefundAccessRevokedEmail({ to: userEmail }).catch((e) =>
+                        console.error("Failed to send refund email:", e),
+                    );
+                }
+            }
+        }
     }
 
     return NextResponse.json({ received: true });
