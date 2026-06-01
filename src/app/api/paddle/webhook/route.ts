@@ -146,6 +146,17 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "DB error" }, { status: 500 });
         }
         revalidateTag(`user-plan-${userId}`, "seconds");
+
+        // Send trial started email
+        if (eventType === "subscription.created" && mapStatus(statusRaw) === "trialing") {
+            const { data: userData } = await supabase.auth.admin.getUserById(userId);
+            const userEmail = userData?.user?.email;
+            if (userEmail) {
+                sendTrialStartedEmail({ to: userEmail }).catch((e) =>
+                    console.error("Failed to send trial started email:", e),
+                );
+            }
+        }
     }
 
     if (eventType === "subscription.cancelled") {
@@ -166,17 +177,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "DB error" }, { status: 500 });
         }
         revalidateTag(`user-plan-${userId}`, "seconds");
-
-        // Send trial started email on first subscription with trialing status
-        if (eventType === "subscription.created" && mapStatus(statusRaw) === "trialing") {
-            const { data: userData } = await supabase.auth.admin.getUserById(userId);
-            const userEmail = userData?.user?.email;
-            if (userEmail) {
-                sendTrialStartedEmail({ to: userEmail }).catch((e) =>
-                    console.error("Failed to send trial started email:", e),
-                );
-            }
-        }
     }
 
     // Refund: revoke Pro access immediately + notify user
