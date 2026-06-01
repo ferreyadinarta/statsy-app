@@ -10,8 +10,8 @@ export const PLAN_LIMITS = {
   free: {
     pages: 1,
     services: 3,
-    subscribers: 30,
-    historyDays: 30,
+    subscribers: 10,
+    historyDays: 7,
     activeMaintenance: 1 as number | null,
   },
   pro: {

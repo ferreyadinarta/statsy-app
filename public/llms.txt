@@ -17,7 +17,7 @@ Each user's status page lives at `{slug}.statsy.page` (e.g. `acme.statsy.page`) 
 
 ## Pricing
 
-- **Free** ($0): 1 page, 3 services, 30 subscribers, 7-day incident history, 5-min monitoring, Statsy subdomain
+- **Free** ($0): 1 page, 3 services, 10 subscribers, 7-day incident history, 5-min monitoring, Statsy subdomain
 - **Pro** ($15/mo): 3 pages, 10 services, 500 subscribers, 90-day history, 1-min + custom monitoring intervals, custom domain, embeddable badge
 - **Business** ($39/mo, coming soon): Unlimited everything, Slack/webhook alerts, priority support
 
