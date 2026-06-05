@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://www.statsy.page"),
     title: "Statsy - Status Pages for Everyone",
     description:
         "Simple, affordable status pages for developers and small teams.",
