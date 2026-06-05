@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-let resend: any = null;
+let resend: Resend | null = null;
 
 function getResend() {
     if (resend) return resend;
@@ -710,6 +710,84 @@ export async function sendTrialEndingEmail({ to, daysLeft }: { to: string; daysL
           </tr>
         </table>
         <p style="margin:20px 0 0;font-size:0.8rem;color:#8a8070;line-height:1.6;">Questions? Reply to this email anytime.</p>
+      </td></tr>
+      <tr><td style="border-top:1px solid #e8e2d9;padding:14px 32px;">
+        <p style="margin:0;font-size:0.75rem;color:#8a8070;">
+          <a href="https://statsy.page" style="color:#e8500a;text-decoration:none;font-weight:600;">Statsy</a> · Status pages for everyone
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`,
+    });
+}
+
+type DigestPage = {
+    name: string;
+    slug: string;
+    services: { name: string; status: "operational" | "degraded" | "outage" }[];
+    incidentCount: number;
+};
+
+export async function sendWeeklyDigestEmail({ to, pages }: { to: string; pages: DigestPage[] }) {
+    const allOperational = pages.every((p) =>
+        p.services.every((s) => s.status === "operational") && p.incidentCount === 0,
+    );
+    const totalIncidents = pages.reduce((n, p) => n + p.incidentCount, 0);
+
+    const subject = allOperational
+        ? "Your weekly Statsy report — all systems operational"
+        : `Your weekly Statsy report — ${totalIncidents} incident${totalIncidents === 1 ? "" : "s"} this week`;
+
+    const statusDot = (status: string) => {
+        const color = status === "operational" ? "#1a7a4a" : status === "degraded" ? "#e8500a" : "#d32f2f";
+        return `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};vertical-align:middle;margin-right:5px;"></span>`;
+    };
+
+    const pagesHtml = pages.map((page) => {
+        const pageUrl = `https://${page.slug}.statsy.page`;
+        const servicesHtml = page.services.map((s) =>
+            `<tr><td style="padding:6px 0;font-size:0.85rem;color:#3d3530;">${statusDot(s.status)}${s.name}</td>
+             <td style="padding:6px 0;font-size:0.85rem;text-align:right;color:${s.status === "operational" ? "#1a7a4a" : s.status === "degraded" ? "#e8500a" : "#d32f2f"};font-weight:600;text-transform:capitalize;">${s.status}</td></tr>`,
+        ).join("");
+
+        return `
+        <div style="margin-bottom:24px;border:1.5px solid #e4dfd4;border-radius:4px;overflow:hidden;">
+          <div style="background:#f5f2eb;padding:12px 20px;border-bottom:1px solid #e4dfd4;display:flex;justify-content:space-between;align-items:center;">
+            <a href="${pageUrl}" style="font-size:0.95rem;font-weight:900;color:#1a1714;text-decoration:none;letter-spacing:-0.03em;">${page.name}</a>
+            <span style="font-size:0.75rem;color:#8a8070;">${page.incidentCount === 0 ? "No incidents" : `${page.incidentCount} incident${page.incidentCount === 1 ? "" : "s"}`}</span>
+          </div>
+          <div style="padding:8px 20px 12px;background:white;">
+            <table width="100%" cellpadding="0" cellspacing="0">${servicesHtml}</table>
+          </div>
+        </div>`;
+    }).join("");
+
+    return getResend().emails.send({
+        from: "Statsy <noreply@statsy.page>",
+        to,
+        subject,
+        html: `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background:#f5f2eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f2eb;padding:40px 20px;">
+  <tr><td align="center">
+    <table width="520" cellpadding="0" cellspacing="0" style="background:white;border:1.5px solid #1a1714;border-radius:4px;overflow:hidden;max-width:520px;">
+      <tr><td style="background:#1a1714;padding:20px 32px;">
+        <a href="https://statsy.page" style="text-decoration:none;">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e8500a;vertical-align:middle;margin-right:7px;"></span>
+          <span style="color:#f5f2eb;font-size:1rem;font-weight:900;letter-spacing:-0.04em;vertical-align:middle;">Statsy</span>
+        </a>
+      </td></tr>
+      <tr><td style="padding:28px 32px 8px;">
+        <p style="margin:0 0 4px;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8a8070;">Weekly report</p>
+        <h1 style="margin:0 0 8px;font-size:1.4rem;color:#1a1714;font-weight:900;letter-spacing:-0.04em;line-height:1.2;">
+          ${allOperational ? "All systems operational" : `${totalIncidents} incident${totalIncidents === 1 ? "" : "s"} this week`}
+        </h1>
+        <p style="margin:0 0 24px;font-size:0.85rem;color:#8a8070;">Here's your past 7 days across all status pages.</p>
+        ${pagesHtml}
+        <a href="https://statsy.page/dashboard" style="display:inline-block;background:#1a1714;color:#f5f2eb;padding:11px 22px;border-radius:4px;font-size:0.875rem;text-decoration:none;font-weight:600;margin-bottom:8px;">View dashboard →</a>
       </td></tr>
       <tr><td style="border-top:1px solid #e8e2d9;padding:14px 32px;">
         <p style="margin:0;font-size:0.75rem;color:#8a8070;">
