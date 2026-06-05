@@ -6,6 +6,9 @@ import { getAllPosts, getPost } from "@/lib/blog";
 import QuickAnswer from "@/components/blog/QuickAnswer";
 import Callout from "@/components/blog/Callout";
 import CtaButton from "@/components/blog/CtaButton";
+import ScrollToTop from "@/components/blog/ScrollToTop";
+import ReadingProgress from "@/components/blog/ReadingProgress";
+import ShareButtons from "@/components/blog/ShareButtons";
 import type { Metadata } from "next";
 
 type PageProps = {
@@ -76,8 +79,12 @@ export default async function BlogPost({ params }: PageProps) {
     url,
   };
 
+  const allPosts = await getAllPosts();
+  const related = allPosts.filter((p) => p.slug !== slug).slice(0, 2);
+
   return (
     <>
+      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -138,18 +145,46 @@ export default async function BlogPost({ params }: PageProps) {
         <main className="max-w-3xl mx-auto px-6 sm:px-12 pt-16 pb-24">
           <Link
             href="/blog"
-            className="text-xs no-underline mb-8 inline-block"
-            style={{ color: "#8a8070" }}
+            className="blog-back-btn no-underline mb-10 inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-3 py-1.5"
           >
-            ← All posts
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M8 6H4M4 6l2.5-2.5M4 6l2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            All posts
           </Link>
 
-          <div className="text-xs mb-3" style={{ color: "#8a8070" }}>
-            {new Date(post.date).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <span className="text-xs" style={{ color: "#8a8070" }}>
+              {new Date(post.date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+            <span className="text-xs" style={{ color: "#c4bdb0" }}>·</span>
+            <span className="text-xs" style={{ color: "#8a8070" }}>
+              {Math.ceil(post.content.split(/\s+/).length / 200)} min read
+            </span>
+            {post.tags && post.tags.length > 0 && (
+              <>
+                <span className="text-xs" style={{ color: "#c4bdb0" }}>·</span>
+                <div className="flex items-center gap-1.5">
+                  {post.tags.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] px-2 py-0.5 rounded-full font-medium"
+                      style={{
+                        background: "#f0ebe1",
+                        color: "#6b5f4f",
+                        letterSpacing: "0.01em",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           <h1
@@ -165,12 +200,14 @@ export default async function BlogPost({ params }: PageProps) {
           </h1>
           <p
             className="text-lg mb-2"
-            style={{ color: "#3d3830", lineHeight: 1.5 }}
+            style={{ color: "#5a5248", lineHeight: 1.6 }}
           >
             {post.description}
           </p>
 
-          <article className="blog-article mt-10" style={{ color: "#1a1714" }}>
+          <ShareButtons url={url} title={post.title} />
+
+          <article className="blog-article mt-2" style={{ color: "#1a1714" }}>
             <MDXRemote
               source={post.content}
               components={components}
@@ -179,7 +216,7 @@ export default async function BlogPost({ params }: PageProps) {
           </article>
 
           <div
-            className="mt-16 pt-8"
+            className="mt-4 pt-8"
             style={{ borderTop: "1.5px solid #e4dfd4" }}
           >
             <div
@@ -211,8 +248,47 @@ export default async function BlogPost({ params }: PageProps) {
               </Link>
             </div>
           </div>
+
+          {related.length > 0 && (
+            <div className="mt-16">
+              <h3
+                className="text-sm font-semibold mb-6 uppercase tracking-wider"
+                style={{ color: "#8a8070" }}
+              >
+                More articles
+              </h3>
+              <ul className="list-none p-0 divide-y" style={{ borderColor: "#e4dfd4" }}>
+                {related.map((p) => (
+                  <li key={p.slug} className="py-5 first:pt-0">
+                    <Link href={`/blog/${p.slug}`} className="block no-underline group">
+                      <div className="text-xs mb-1.5" style={{ color: "#8a8070" }}>
+                        {new Date(p.date).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </div>
+                      <p
+                        className="text-base font-bold group-hover:underline"
+                        style={{
+                          color: "#1a1714",
+                          fontFamily: "var(--font-head)",
+                          letterSpacing: "-0.02em",
+                          textDecorationColor: "#e8500a",
+                          textUnderlineOffset: "3px",
+                        }}
+                      >
+                        {p.title}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </main>
       </div>
+      <ScrollToTop />
     </>
   );
 }

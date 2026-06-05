@@ -105,41 +105,74 @@ export default async function BlogIndex() {
           {posts.length === 0 ? (
             <p style={{ color: "#8a8070" }}>No posts yet. Check back soon.</p>
           ) : (
-            <ul className="space-y-8 list-none p-0">
+            <ul className="list-none p-0 divide-y" style={{ borderColor: "#e4dfd4" }}>
               {posts.map((post) => (
-                <li key={post.slug}>
+                <li key={post.slug} className="py-8 first:pt-0">
                   <Link
                     href={`/blog/${post.slug}`}
                     className="block no-underline group"
                   >
-                    <div
-                      className="text-xs mb-2"
-                      style={{ color: "#8a8070" }}
-                    >
-                      {new Date(post.date).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                    <div className="flex items-center gap-3 mb-3">
+                      <span
+                        className="text-xs"
+                        style={{ color: "#8a8070" }}
+                      >
+                        {new Date(post.date).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex items-center gap-1.5">
+                          {post.tags.slice(0, 2).map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-[11px] px-2 py-0.5 rounded-full font-medium"
+                              style={{
+                                background: "#f0ebe1",
+                                color: "#6b5f4f",
+                                letterSpacing: "0.01em",
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <h2
-                      className="text-2xl font-black mb-2 group-hover:underline"
+                      className="text-2xl font-black mb-2"
                       style={{
                         color: "#1a1714",
                         fontFamily: "var(--font-head)",
                         letterSpacing: "-0.025em",
-                        textDecorationColor: "#e8500a",
-                        textUnderlineOffset: "4px",
+                        lineHeight: 1.25,
                       }}
                     >
-                      {post.title}
+                      <span
+                        className="group-hover:underline"
+                        style={{
+                          textDecorationColor: "#e8500a",
+                          textUnderlineOffset: "4px",
+                        }}
+                      >
+                        {post.title}
+                      </span>
                     </h2>
                     <p
-                      className="text-[15px] leading-relaxed"
-                      style={{ color: "#3d3830" }}
+                      className="text-[15px] leading-relaxed mb-3"
+                      style={{ color: "#5a5248" }}
                     >
                       {post.description}
                     </p>
+                    <span
+                      className="text-xs font-semibold inline-flex items-center gap-1 transition-gap duration-150"
+                      style={{ color: "#e8500a" }}
+                    >
+                      Read article
+                      <span className="group-hover:translate-x-0.5 transition-transform duration-150 inline-block">→</span>
+                    </span>
                   </Link>
                 </li>
               ))}
