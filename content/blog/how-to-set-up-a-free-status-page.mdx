@@ -17,7 +17,7 @@ If you've been putting off setting up a status page because it seemed like a who
 
 Two things:
 
-1. The URLs of the services you want to monitor (your API, your app, your website — whatever you want tracked)
+1. The URLs of the services you want to monitor (your API, your app, your website, whatever you want tracked)
 2. An email address to sign up with
 
 That's it. No credit card, no DNS changes required upfront, no server to configure.
@@ -30,8 +30,8 @@ Go to [statsy.page/signup](https://statsy.page/signup) and sign up. Email and pa
 
 Click **New status page**. You'll be asked for:
 
-- **Name** — what your page is called. "Acme Status" or just "Status" works fine.
-- **Slug** — the URL your page will live at. If you enter `acme`, your page is at `acme.statsy.page`. Pick something that matches your product name.
+- **Name**: what your page is called. "Acme Status" or just "Status" works fine.
+- **Slug**: the URL your page will live at. If you enter `acme`, your page is at `acme.statsy.page`. Pick something that matches your product name.
 
 Hit save. Your status page exists now. It's already public at that URL.
 
@@ -39,8 +39,8 @@ Hit save. Your status page exists now. It's already public at that URL.
 
 This is where you add the things you want monitored. Click **Add service** and enter:
 
-- **Service name** — what you call it. "API", "Dashboard", "Database", "Website" — whatever makes sense to your users.
-- **URL** — the endpoint to monitor. Statsy will ping this every 5 minutes and flip the status based on the response.
+- **Service name**: what you call it. "API", "Dashboard", "Database", "Website", whatever makes sense to your users.
+- **URL**: the endpoint to monitor. Statsy will ping this every 5 minutes and flip the status based on the response.
 
 Add one service at a time. Most products have 2-4: the main website, the API, maybe a docs site or a third-party integration that's customer-facing.
 
@@ -65,7 +65,7 @@ Your status page is already live. Add the link somewhere visible:
 The goal is that when something breaks, your users know to check it without having to ask you. If they can't find the link, the status page isn't doing its job.
 
 <Callout variant="tip">
-The URL format is `yourslug.statsy.page`. If you want `status.yourcompany.com` instead, that's a custom domain — available on the Pro plan. You can add it later without changing anything else.
+The URL format is `yourslug.statsy.page`. If you want `status.yourcompany.com` instead, that's a custom domain, available on the Pro plan. You can add it later without changing anything else.
 </Callout>
 
 ## What happens when a service goes down?
@@ -95,6 +95,6 @@ No. Your status page at `yourslug.statsy.page` is live immediately with no DNS c
 
 ## Can I set up a status page without automated monitoring?
 
-Yes — you can add services without a URL and flip their status manually. But automated monitoring is the reason the free plan is useful. Manual status pages only work if someone is awake and watching when things break.
+Yes, you can add services without a URL and flip their status manually. But automated monitoring is the reason the free plan is useful. Manual status pages only work if someone is awake and watching when things break.
 
 <CtaButton href="https://statsy.page/signup">Set up your free status page now →</CtaButton>
