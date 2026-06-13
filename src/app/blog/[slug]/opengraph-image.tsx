@@ -4,29 +4,14 @@ import { getPost } from "@/lib/blog";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// Cabinet Grotesk (brand headings) from Fontshare. Satori needs woff/ttf, not woff2.
-async function loadCabinet(weight: number): Promise<ArrayBuffer | null> {
-  try {
-    const css = await fetch(
-      `https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@${weight}&display=swap`,
-      { headers: { "User-Agent": "Mozilla/5.0" } }
-    ).then((r) => r.text());
-    const match = css.match(/url\((https:\/\/[^)]+?\.woff)\)\s*format\(['"]woff['"]\)/);
-    if (!match) return null;
-    return await fetch(match[1]).then((r) => r.arrayBuffer());
-  } catch {
-    return null;
-  }
-}
-
-// Instrument Sans (brand body) from Google Fonts. Old UA forces TTF instead of woff2.
+// Load a Google Font as TTF (old UA forces ttf, not woff2 which satori can't parse).
 async function loadGoogle(family: string, weight: number): Promise<ArrayBuffer | null> {
   try {
     const css = await fetch(
       `https://fonts.googleapis.com/css2?family=${family}:wght@${weight}`,
       { headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:10.0) Gecko/20100101 Firefox/10.0" } }
     ).then((r) => r.text());
-    const match = css.match(/src:\s*url\((https:\/\/[^)]+?)\)\s*format\(['"](?:truetype|opentype)['"]\)/);
+    const match = css.match(/src:\s*url\((https:\/\/[^)]+?)\)\s*format\(['"](?:truetype|opentype|woff)['"]\)/);
     if (!match) return null;
     return await fetch(match[1]).then((r) => r.arrayBuffer());
   } catch {
@@ -37,22 +22,22 @@ async function loadGoogle(family: string, weight: number): Promise<ArrayBuffer |
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = await getPost(slug);
-  const title = post?.title ?? "Statsy Blog";
+  const title = (post?.title ?? "Statsy Blog").replace(/\s+/g, " ").trim();
   const description = post?.description ?? "Status pages and uptime monitoring for developers.";
   const tag = post?.tags?.[0] ?? "blog";
 
-  const [cab900, cab700, inst400] = await Promise.all([
-    loadCabinet(900),
-    loadCabinet(700),
+  // Schibsted Grotesk (heavy, close to brand's Cabinet Grotesk) for headings,
+  // Instrument Sans (brand body) for everything else.
+  const [head800, inst400] = await Promise.all([
+    loadGoogle("Schibsted+Grotesk", 800),
     loadGoogle("Instrument+Sans", 400),
   ]);
 
-  const fonts: { name: string; data: ArrayBuffer; weight: 400 | 700 | 900; style: "normal" }[] = [];
-  if (cab900) fonts.push({ name: "Cabinet", data: cab900, weight: 900, style: "normal" });
-  if (cab700) fonts.push({ name: "Cabinet", data: cab700, weight: 700, style: "normal" });
+  const fonts: { name: string; data: ArrayBuffer; weight: 400 | 800; style: "normal" }[] = [];
+  if (head800) fonts.push({ name: "Head", data: head800, weight: 800, style: "normal" });
   if (inst400) fonts.push({ name: "Instrument", data: inst400, weight: 400, style: "normal" });
 
-  const head = cab900 ? "Cabinet" : "sans-serif";
+  const head = head800 ? "Head" : "sans-serif";
   const body = inst400 ? "Instrument" : "sans-serif";
 
   const services = [
