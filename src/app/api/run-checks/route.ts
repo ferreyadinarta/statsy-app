@@ -120,6 +120,11 @@ type StateUpdate = {
   consecutive_slow_responses: number;
 };
 
+type ScheduleOnlyUpdate = {
+  service_id: string;
+  next_check_at: string;
+};
+
 function resolvePlan(sub: SubscriptionRow | undefined): "free" | "pro" {
   if (!sub) return "free";
   if (sub.plan === "pro" && (sub.status === "active" || sub.status === "trialing")) return "pro";
@@ -213,6 +218,7 @@ export async function GET(req: NextRequest) {
   // Collect status changes during checks — status_pages fetched lazily below only if needed
   const notificationTasks: NotificationTask[] = [];
   const stateUpdates: StateUpdate[] = [];
+  const scheduleOnlyUpdates: ScheduleOnlyUpdate[] = [];
 
   await runWithConcurrency(dueServices as ServiceRow[], CHECK_CONCURRENCY, async (service) => {
     const plan = planMap.get(service.user_id) ?? "free";
@@ -301,13 +307,23 @@ export async function GET(req: NextRequest) {
 
     const statusChanged = newStatus !== service.status;
 
-    stateUpdates.push({
-      service_id: service.id,
-      next_check_at: nextCheckAt,
-      last_status_code: statusCode,
-      consecutive_failures: newConsecutiveFailures,
-      consecutive_slow_responses: newConsecutiveSlowResponses,
-    });
+    // Only write full state when something actually changed — reduces write IO.
+    // For healthy-and-staying-healthy services, only update next_check_at.
+    const countersChanged =
+      newConsecutiveFailures !== (service.consecutive_failures ?? 0) ||
+      newConsecutiveSlowResponses !== (service.consecutive_slow_responses ?? 0);
+
+    if (countersChanged || statusChanged || service.next_check_at === null) {
+      stateUpdates.push({
+        service_id: service.id,
+        next_check_at: nextCheckAt,
+        last_status_code: statusCode,
+        consecutive_failures: newConsecutiveFailures,
+        consecutive_slow_responses: newConsecutiveSlowResponses,
+      });
+    } else {
+      scheduleOnlyUpdates.push({ service_id: service.id, next_check_at: nextCheckAt });
+    }
 
     // Write to LOGGED services table only when necessary
     if (statusChanged) {
@@ -334,9 +350,13 @@ export async function GET(req: NextRequest) {
     }
   });
 
-  // Batch upsert all volatile state in one DB round-trip
+  // Full state upsert for services with changed counters / status / first check
   if (stateUpdates.length > 0) {
     await supabase.from("service_monitor_state").upsert(stateUpdates, { onConflict: "service_id" });
+  }
+  // Minimal schedule-only upsert for healthy steady-state services — fewer columns written
+  if (scheduleOnlyUpdates.length > 0) {
+    await supabase.from("service_monitor_state").upsert(scheduleOnlyUpdates, { onConflict: "service_id" });
   }
 
   const emailPromises: Promise<unknown>[] = [];
