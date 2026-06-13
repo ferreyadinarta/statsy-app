@@ -85,7 +85,7 @@ export default async function BlogIndex() {
           </nav>
         </header>
 
-        <main className="max-w-3xl mx-auto px-6 sm:px-12 pt-16 pb-24">
+        <main className="max-w-3xl mx-auto px-5 sm:px-12 pt-10 sm:pt-16 pb-16 sm:pb-24">
           <h1
             className="text-5xl sm:text-6xl font-black mb-3"
             style={{

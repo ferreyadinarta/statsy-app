@@ -142,7 +142,7 @@ export default async function BlogPost({ params }: PageProps) {
           </nav>
         </header>
 
-        <main className="max-w-3xl mx-auto px-6 sm:px-12 pt-16 pb-24">
+        <main className="max-w-3xl mx-auto px-5 sm:px-12 pt-10 sm:pt-16 pb-16 sm:pb-24">
           <Link
             href="/blog"
             className="blog-back-btn no-underline mb-10 inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-3 py-1.5"

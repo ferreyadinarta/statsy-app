@@ -16,7 +16,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
 
   return (
     <div
-      className="flex items-center gap-3 py-4 my-6"
+      className="flex flex-wrap items-center gap-2 py-4 my-6"
       style={{ borderBottom: "1.5px solid #e4dfd4" }}
     >
       <span className="text-xs font-semibold mr-1" style={{ color: "#8a8070" }}>
