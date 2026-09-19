@@ -2,6 +2,7 @@
 
 A simple, affordable status page tool for developers and small teams.
 Live at [statsy.page](https://statsy.page)
+![Statsy](docs/statsy-og-image.png)
 
 Built and run solo from design through deployment, including payments
 and uptime monitoring.
