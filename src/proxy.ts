@@ -28,6 +28,9 @@ const CORS_HEADERS = {
 
 const PUBLIC_API_ROUTES = ["/api/subscribe", "/api/public-status/"];
 
+// Pages that live on the static landing site but are linked relatively from it.
+const LANDING_PATHS = ["/terms", "/demo", "/demo.html"];
+
 export async function proxy(request: NextRequest) {
     const host = request.headers.get("host") ?? "";
     const { pathname } = request.nextUrl;
@@ -67,6 +70,12 @@ export async function proxy(request: NextRequest) {
         }
 
         return new NextResponse("Not found", { status: 404 });
+    }
+
+    // ── Landing subpages, served from the landing site ────────────────────────
+    const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL;
+    if (landingUrl && LANDING_PATHS.includes(pathname)) {
+        return NextResponse.rewrite(new URL(pathname.replace(/\.html$/, ""), landingUrl));
     }
 
     // ── Normal Statsy routing — auth check + header injection ─────────────────
@@ -115,9 +124,11 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
+    // Serve the landing page at statsy.page itself (rewrite, not redirect) so
+    // search engines index the root domain the landing's canonical points to.
     if (!user && pathname === "/") {
         const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL;
-        if (landingUrl) return NextResponse.redirect(landingUrl);
+        if (landingUrl) return NextResponse.rewrite(new URL("/", landingUrl));
         const url = request.nextUrl.clone();
         url.pathname = "/login";
         return NextResponse.redirect(url);

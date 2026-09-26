@@ -126,7 +126,7 @@ export default async function BlogPost({ params }: PageProps) {
               Blog
             </Link>
             <Link
-              href="https://landing.statsy.page/#pricing"
+              href="/#pricing"
               className="no-underline"
               style={{ color: "#3d3830" }}
             >

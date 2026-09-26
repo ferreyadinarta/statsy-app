@@ -387,7 +387,7 @@ export default function SignupPage() {
               <span className="text-sm leading-snug" style={{ color: "#3d3830" }}>
                 I agree to the{" "}
                 <a
-                  href="https://landing.statsy.page/terms"
+                  href="/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-semibold underline underline-offset-2"

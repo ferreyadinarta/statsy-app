@@ -1,18 +1,11 @@
 import type { MetadataRoute } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { getAllPosts } from "@/lib/blog";
 
-export const dynamic = "force-dynamic";
-
+// Customer status pages are deliberately left out: they live on other hosts
+// (subdomains / custom domains), which this sitemap can't vouch for, and many
+// are test pages that would dilute the site's quality signals.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = await createClient();
-  const [{ data: pages }, posts] = await Promise.all([
-    supabase
-      .from("status_pages")
-      .select("slug, created_at")
-      .order("created_at", { ascending: false }),
-    getAllPosts(),
-  ]);
+  const posts = await getAllPosts();
 
   return [
     {
@@ -27,17 +20,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.9,
     },
+    {
+      url: "https://statsy.page/demo",
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    },
     ...posts.map((post) => ({
       url: `https://statsy.page/blog/${post.slug}`,
       lastModified: new Date(post.date),
       changeFrequency: "monthly" as const,
       priority: 0.7,
-    })),
-    ...(pages ?? []).map((page) => ({
-      url: `https://${page.slug}.statsy.page`,
-      lastModified: new Date(page.created_at),
-      changeFrequency: "hourly" as const,
-      priority: 0.8,
     })),
   ];
 }
