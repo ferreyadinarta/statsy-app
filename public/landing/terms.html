@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8100WSM6YH"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-8100WSM6YH');</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms of Service, Privacy &amp; Refund Policy — Statsy</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1714'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23e8500a'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23e8500a' stroke-width='3' opacity='0.5'/%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%23e8500a' stroke-width='2' opacity='0.25'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #f5f2eb;
+        --bg2: #ede9e0;
+        --bg3: #e4dfd4;
+        --ink: #1a1714;
+        --ink2: #3d3830;
+        --muted: #8a8070;
+        --accent: #e8500a;
+        --green: #1a7a4a;
+        --green-bg: #e8f5ee;
+        --nav-h: 65px;
+        --font-head: "Cabinet Grotesk", sans-serif;
+        --font-body: "Instrument Sans", sans-serif;
+        --radius: 4px;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* ── NAV ── */
+      nav {
+        height: var(--nav-h);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 48px;
+        border-bottom: 1.5px solid var(--ink);
+        position: sticky;
+        top: 0;
+        background: rgba(245, 242, 235, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 200;
+      }
+      .logo {
+        font-family: var(--font-head);
+        font-weight: 900;
+        font-size: 1.3rem;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .logo-pip {
+        width: 9px;
+        height: 9px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: blink 2.4s ease-in-out infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .nav-back {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .nav-back:hover {
+        color: var(--ink);
+      }
+
+      /* ── PAGE HEADER ── */
+      .page-header {
+        border-bottom: 1.5px solid var(--ink);
+        padding: 52px 48px 44px;
+        background: var(--bg2);
+      }
+      .page-eyebrow {
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+      .page-title {
+        font-family: var(--font-head);
+        font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 20px;
+      }
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--bg3);
+        border: 1.5px solid rgba(26, 23, 20, 0.25);
+        border-radius: 2px;
+        padding: 4px 11px;
+        font-size: 0.76rem;
+        color: var(--ink2);
+        font-weight: 500;
+      }
+      .meta-chip .dot {
+        width: 6px;
+        height: 6px;
+        background: var(--green);
+        border-radius: 50%;
+      }
+
+      /* ── LAYOUT ── */
+      /*
+        Key fix: the outer wrapper is a flex row.
+        The sidebar uses position:sticky inside a flex column,
+        which works reliably — unlike inside CSS grid where
+        the implicit row height can prevent sticky from firing.
+      */
+      .layout {
+        display: flex;
+        align-items: flex-start;
+        border-bottom: 1.5px solid var(--ink);
+      }
+
+      /* ── SIDEBAR ── */
+      .sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        border-right: 1.5px solid var(--ink);
+        position: sticky;
+        top: var(--nav-h); /* sticks just below the nav */
+        max-height: calc(100vh - var(--nav-h));
+        overflow-y: auto;
+        padding: 32px 0 40px;
+        background: var(--bg);
+      }
+      /* subtle scrollbar */
+      .sidebar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .sidebar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background: var(--bg3);
+        border-radius: 2px;
+      }
+
+      .sidebar-group {
+        margin-bottom: 8px;
+      }
+      .sidebar-group-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 700;
+        color: var(--accent);
+        padding: 10px 24px 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .sidebar-group-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(232, 80, 10, 0.2);
+      }
+      .sidebar a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 24px;
+        font-size: 0.83rem;
+        color: var(--muted);
+        text-decoration: none;
+        transition: all 0.15s;
+        border-left: 2px solid transparent;
+        line-height: 1.35;
+      }
+      .sidebar a:hover {
+        color: var(--ink);
+        background: var(--bg2);
+        border-left-color: var(--bg3);
+      }
+      .sidebar a.active {
+        color: var(--ink);
+        font-weight: 500;
+        background: var(--bg2);
+        border-left-color: var(--accent);
+      }
+      .sidebar .sec-num {
+        font-size: 0.62rem;
+        font-weight: 800;
+        color: var(--accent);
+        opacity: 0.7;
+        font-family: var(--font-head);
+        flex-shrink: 0;
+        width: 16px;
+      }
+      .sidebar a.active .sec-num {
+        opacity: 1;
+      }
+
+      /* ── MAIN CONTENT ── */
+      .main {
+        flex: 1;
+        min-width: 0;
+        padding: 0 64px 80px;
+        max-width: 740px;
+      }
+
+      /* Policy dividers */
+      .policy-block {
+        padding-top: 48px;
+      }
+      .policy-title {
+        font-family: var(--font-head);
+        font-size: 1.6rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        margin-bottom: 4px;
+        padding-bottom: 20px;
+        border-bottom: 1.5px solid var(--ink);
+        scroll-margin-top: calc(var(--nav-h) + 20px);
+      }
+      .policy-title span {
+        display: inline-block;
+        background: var(--ink);
+        color: var(--bg);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 3px 9px;
+        border-radius: 2px;
+        vertical-align: middle;
+        margin-right: 10px;
+        font-weight: 700;
+        position: relative;
+        top: -3px;
+      }
+
+      /* Sections */
+      .content-section {
+        padding: 36px 0;
+        border-bottom: 1px solid var(--bg3);
+        scroll-margin-top: calc(var(--nav-h) + 16px);
+      }
+      .content-section:last-child {
+        border-bottom: none;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .section-num {
+        font-size: 0.66rem;
+        font-weight: 800;
+        color: var(--accent);
+        background: rgba(232, 80, 10, 0.08);
+        border: 1.5px solid rgba(232, 80, 10, 0.18);
+        padding: 2px 8px;
+        border-radius: 2px;
+        letter-spacing: 0.06em;
+        flex-shrink: 0;
+        font-family: var(--font-head);
+      }
+      .content-section h3 {
+        font-family: var(--font-head);
+        font-size: 1.08rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .main p {
+        color: var(--ink2);
+        font-size: 0.93rem;
+        margin-bottom: 12px;
+        line-height: 1.78;
+      }
+      .main p:last-child {
+        margin-bottom: 0;
+      }
+      .main ul {
+        margin: 12px 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .main ul li {
+        font-size: 0.91rem;
+        color: var(--ink2);
+        padding: 9px 14px 9px 34px;
+        position: relative;
+        line-height: 1.6;
+        background: var(--bg2);
+        border-radius: 3px;
+      }
+      .main ul li::before {
+        content: "→";
+        position: absolute;
+        left: 13px;
+        top: 10px;
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 0.78rem;
+      }
+      .main a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .main a:hover {
+        text-decoration: underline;
+      }
+
+      .callout {
+        background: var(--bg2);
+        border: 1.5px solid var(--bg3);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 4px 4px 0;
+        padding: 14px 18px;
+        margin-top: 14px;
+        font-size: 0.88rem;
+        color: var(--ink2);
+        line-height: 1.7;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        border-top: 1.5px solid var(--ink);
+        padding: 28px 48px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .footer-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .footer-links a {
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .footer-links a:hover {
+        color: var(--ink);
+      }
+      .footer-links a.active {
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      /* ── MOBILE ── */
+      @media (max-width: 860px) {
+        :root {
+          --nav-h: 58px;
+        }
+
+        nav {
+          padding: 0 20px;
+          height: 58px;
+        }
+
+        .page-header {
+          padding: 28px 20px 24px;
+        }
+        .page-title {
+          font-size: clamp(1.8rem, 6vw, 2.4rem);
+        }
+        .meta-row {
+          gap: 6px;
+        }
+        .meta-chip {
+          font-size: 0.7rem;
+          padding: 3px 8px;
+        }
+
+        .layout {
+          flex-direction: column;
+        }
+
+        /* Sidebar becomes a horizontal scroll tab bar */
+        .sidebar {
+          width: 100%;
+          position: static;
+          max-height: none;
+          border-right: none;
+          border-bottom: 1.5px solid var(--ink);
+          padding: 0;
+          overflow-x: auto;
+          overflow-y: visible;
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 0;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .sidebar::-webkit-scrollbar {
+          display: none;
+        }
+        .sidebar-group {
+          margin-bottom: 0;
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+        .sidebar-group-label {
+          display: none;
+        }
+        .sidebar a {
+          white-space: nowrap;
+          border-left: none;
+          border-bottom: 2px solid transparent;
+          padding: 12px 14px;
+          font-size: 0.8rem;
+        }
+        .sidebar a:hover,
+        .sidebar a.active {
+          border-left-color: transparent;
+          border-bottom-color: var(--accent);
+          background: var(--bg2);
+        }
+        .sidebar .sec-num {
+          display: none;
+        }
+
+        .main {
+          padding: 0 20px 48px;
+        }
+
+        .policy-block {
+          padding-top: 32px;
+        }
+        .policy-title {
+          font-size: 1.3rem;
+        }
+        .content-section {
+          padding: 24px 0;
+        }
+        .content-section h3 {
+          font-size: 1rem;
+        }
+
+        footer {
+          flex-direction: column;
+          gap: 12px;
+          text-align: center;
+          padding: 20px;
+        }
+        .footer-links {
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        nav {
+          padding: 0 16px;
+        }
+        .page-header {
+          padding: 24px 16px 20px;
+        }
+        .main {
+          padding: 0 16px 40px;
+        }
+        .sidebar a {
+          padding: 12px 10px;
+          font-size: 0.75rem;
+        }
+        .main p,
+        .main ul li {
+          font-size: 0.88rem;
+        }
+        .callout {
+          padding: 12px 14px;
+          font-size: 0.84rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="logo">
+        <div class="logo-pip"></div>
+        Statsy
+      </a>
+      <a href="/" class="nav-back">← Back to home</a>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-eyebrow">Legal</div>
+      <h1 class="page-title">Legal Policies</h1>
+      <div class="meta-row">
+        <div class="meta-chip">
+          <span class="dot"></span> Currently in effect
+        </div>
+        <div class="meta-chip">Last updated: January 2026</div>
+        <div class="meta-chip">Covers: Terms · Privacy · Refunds</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">Terms of Service</div>
+          <a href="#acceptance"><span class="sec-num">01</span> Acceptance</a>
+          <a href="#service"><span class="sec-num">02</span> The Service</a>
+          <a href="#account"><span class="sec-num">03</span> Your Account</a>
+          <a href="#plans"
+            ><span class="sec-num">04</span> Plans &amp; Billing</a
+          >
+          <a href="#use"><span class="sec-num">05</span> Acceptable Use</a>
+          <a href="#content"><span class="sec-num">06</span> Your Content</a>
+          <a href="#availability"
+            ><span class="sec-num">07</span> Availability</a
+          >
+          <a href="#liability"><span class="sec-num">08</span> Liability</a>
+          <a href="#termination"><span class="sec-num">09</span> Termination</a>
+          <a href="#tos-changes"><span class="sec-num">10</span> Changes</a>
+        </div>
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">Privacy Policy</div>
+          <a href="#data-collect"
+            ><span class="sec-num">01</span> What We Collect</a
+          >
+          <a href="#data-use"><span class="sec-num">02</span> How We Use It</a>
+          <a href="#data-share"><span class="sec-num">03</span> Sharing</a>
+          <a href="#data-retain"><span class="sec-num">04</span> Retention</a>
+          <a href="#data-rights"><span class="sec-num">05</span> Your Rights</a>
+          <a href="#data-cookies"><span class="sec-num">06</span> Cookies</a>
+        </div>
+        <div class="sidebar-group">
+          <div class="sidebar-group-label">Refund Policy</div>
+          <a href="#refund-general"
+            ><span class="sec-num">01</span> General Policy</a
+          >
+          <a href="#refund-cancel"
+            ><span class="sec-num">02</span> Cancellations</a
+          >
+          <a href="#refund-contact"><span class="sec-num">03</span> Contact</a>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <!-- ═══════════════════════════════════════
+             TERMS OF SERVICE
+        ═══════════════════════════════════════ -->
+        <div class="policy-block">
+          <h2 class="policy-title" id="terms"><span>Terms of Service</span></h2>
+
+          <div class="content-section" id="acceptance">
+            <div class="section-header">
+              <span class="section-num">01</span>
+              <h3>Acceptance of Terms</h3>
+            </div>
+            <p>
+              By accessing or using Statsy, you confirm that you are at least 16
+              years old, have read and understood these Terms of Service, and
+              agree to be bound by them. If you are using Statsy on behalf of a
+              company or organisation, you represent that you have authority to
+              bind that entity to these terms.
+            </p>
+            <p>If you do not agree to these terms, do not use Statsy.</p>
+          </div>
+
+          <div class="content-section" id="service">
+            <div class="section-header">
+              <span class="section-num">02</span>
+              <h3>The Service</h3>
+            </div>
+            <p>
+              Statsy provides a platform that lets you create and manage
+              public-facing status pages to communicate the operational status
+              of your services to your users. Features include:
+            </p>
+            <ul>
+              <li>Status page creation and management</li>
+              <li>Service and incident tracking</li>
+              <li>Email subscriber notifications</li>
+              <li>Custom domain support (paid plans)</li>
+              <li>Embeddable status badges (paid plans)</li>
+            </ul>
+            <p>
+              We reserve the right to modify, suspend, or discontinue any part
+              of the service at any time with reasonable notice.
+            </p>
+          </div>
+
+          <div class="content-section" id="account">
+            <div class="section-header">
+              <span class="section-num">03</span>
+              <h3>Your Account</h3>
+            </div>
+            <p>
+              You are responsible for maintaining the security of your account
+              credentials. Notify us immediately at
+              <a href="mailto:hello@statsy.page">hello@statsy.page</a> if you
+              suspect unauthorised access. You are responsible for all activity
+              that occurs under your account.
+            </p>
+          </div>
+
+          <div class="content-section" id="plans">
+            <div class="section-header">
+              <span class="section-num">04</span>
+              <h3>Plans &amp; Billing</h3>
+            </div>
+            <p>
+              Statsy offers a Free plan and paid subscription plans. Paid plans
+              are billed monthly through Paddle.
+            </p>
+            <ul>
+              <li>
+                Subscriptions renew automatically unless cancelled before the
+                renewal date
+              </li>
+              <li>You can cancel at any time from your billing settings</li>
+              <li>
+                Cancellations take effect at the end of the current billing
+                period
+              </li>
+              <li>Plan limits are enforced as described on our pricing page</li>
+            </ul>
+            <p>
+              Prices are listed in USD. Local taxes may apply and are handled
+              automatically by Paddle.
+            </p>
+          </div>
+
+          <div class="content-section" id="use">
+            <div class="section-header">
+              <span class="section-num">05</span>
+              <h3>Acceptable Use</h3>
+            </div>
+            <p>You agree not to use Statsy to:</p>
+            <ul>
+              <li>Violate any applicable laws or regulations</li>
+              <li>Post false, misleading, or deceptive status information</li>
+              <li>Send unsolicited bulk emails to subscribers</li>
+              <li>
+                Attempt to gain unauthorised access to our systems or other
+                accounts
+              </li>
+              <li>
+                Resell or sublicense access to Statsy without written consent
+              </li>
+              <li>
+                Use the service in a way that could damage or impair our
+                infrastructure
+              </li>
+            </ul>
+          </div>
+
+          <div class="content-section" id="content">
+            <div class="section-header">
+              <span class="section-num">06</span>
+              <h3>Your Content</h3>
+            </div>
+            <p>
+              You retain ownership of all content you create on Statsy. By using
+              Statsy, you grant us a limited licence to store and display that
+              content solely for the purpose of operating the service. You are
+              solely responsible for the accuracy and legality of the content
+              you publish.
+            </p>
+          </div>
+
+          <div class="content-section" id="availability">
+            <div class="section-header">
+              <span class="section-num">07</span>
+              <h3>Availability &amp; Uptime</h3>
+            </div>
+            <p>
+              We aim to keep Statsy available at all times but do not guarantee
+              uninterrupted access. The service is provided "as is" without
+              warranty of any kind. We are not liable for any downtime, data
+              loss, or service interruptions.
+            </p>
+          </div>
+
+          <div class="content-section" id="liability">
+            <div class="section-header">
+              <span class="section-num">08</span>
+              <h3>Limitation of Liability</h3>
+            </div>
+            <p>
+              To the maximum extent permitted by applicable law, Statsy and its
+              operators shall not be liable for any indirect, incidental,
+              special, or consequential damages arising from your use of the
+              service. Our total liability shall not exceed the amount you paid
+              us in the 12 months preceding the claim, or $100, whichever is
+              greater.
+            </p>
+          </div>
+
+          <div class="content-section" id="termination">
+            <div class="section-header">
+              <span class="section-num">09</span>
+              <h3>Termination</h3>
+            </div>
+            <p>
+              You may close your account at any time from your account settings.
+              We may suspend or terminate your account for breach of these
+              terms. Upon termination, your status pages will be taken offline
+              and your data deleted within 30 days, except where required by
+              law.
+            </p>
+          </div>
+
+          <div class="content-section" id="tos-changes">
+            <div class="section-header">
+              <span class="section-num">10</span>
+              <h3>Changes to These Terms</h3>
+            </div>
+            <p>
+              We may update these terms from time to time. We will notify you by
+              email when material changes are made. Continued use of Statsy
+              after changes take effect constitutes your acceptance of the
+              updated terms.
+            </p>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             PRIVACY POLICY
+        ═══════════════════════════════════════ -->
+        <div class="policy-block">
+          <h2 class="policy-title" id="privacy"><span>Privacy Policy</span></h2>
+
+          <div class="content-section" id="data-collect">
+            <div class="section-header">
+              <span class="section-num">01</span>
+              <h3>What We Collect</h3>
+            </div>
+            <p>We collect only what we need to operate Statsy:</p>
+            <ul>
+              <li>
+                <strong>Account data:</strong> your email address and password
+                (hashed) when you sign up
+              </li>
+              <li>
+                <strong>Usage data:</strong> status pages, services, and
+                incidents you create
+              </li>
+              <li>
+                <strong>Subscriber emails:</strong> emails collected on your
+                public status page (these belong to you)
+              </li>
+              <li>
+                <strong>Billing data:</strong> handled entirely by Paddle — we
+                never store your payment details
+              </li>
+              <li>
+                <strong>Log data:</strong> IP addresses, browser type, and pages
+                visited for security and debugging
+              </li>
+            </ul>
+          </div>
+
+          <div class="content-section" id="data-use">
+            <div class="section-header">
+              <span class="section-num">02</span>
+              <h3>How We Use It</h3>
+            </div>
+            <p>We use your data to:</p>
+            <ul>
+              <li>Operate and improve the Statsy platform</li>
+              <li>
+                Send transactional emails (account verification, incident
+                notifications)
+              </li>
+              <li>Process payments via Paddle</li>
+              <li>Respond to support requests</li>
+              <li>Detect and prevent abuse or fraud</li>
+            </ul>
+            <p>
+              We do not sell your data. We do not use your data for advertising.
+            </p>
+          </div>
+
+          <div class="content-section" id="data-share">
+            <div class="section-header">
+              <span class="section-num">03</span>
+              <h3>Sharing Your Data</h3>
+            </div>
+            <p>
+              We share your data only with the third-party services required to
+              run Statsy:
+            </p>
+            <ul>
+              <li>
+                <strong>Supabase</strong> — database and authentication hosting
+              </li>
+              <li>
+                <strong>Paddle</strong> — payment processing and subscription
+                management
+              </li>
+              <li><strong>Resend</strong> — transactional email delivery</li>
+              <li>
+                <strong>Vercel</strong> — application hosting and infrastructure
+              </li>
+            </ul>
+            <p>
+              We will disclose your data if required by law or to protect the
+              rights and safety of Statsy and its users.
+            </p>
+          </div>
+
+          <div class="content-section" id="data-retain">
+            <div class="section-header">
+              <span class="section-num">04</span>
+              <h3>Data Retention</h3>
+            </div>
+            <p>
+              We retain your data for as long as your account is active. If you
+              delete your account, your data is permanently deleted within 30
+              days. Anonymised usage statistics may be retained indefinitely.
+            </p>
+          </div>
+
+          <div class="content-section" id="data-rights">
+            <div class="section-header">
+              <span class="section-num">05</span>
+              <h3>Your Rights</h3>
+            </div>
+            <p>
+              You have the right to access, correct, export, or delete your
+              personal data at any time. To exercise these rights, email us at
+              <a href="mailto:hello@statsy.page">hello@statsy.page</a>. We'll
+              respond within 5 business days.
+            </p>
+          </div>
+
+          <div class="content-section" id="data-cookies">
+            <div class="section-header">
+              <span class="section-num">06</span>
+              <h3>Cookies</h3>
+            </div>
+            <p>
+              Statsy uses cookies only for authentication — to keep you logged
+              in. We do not use tracking or advertising cookies. You can clear
+              cookies in your browser at any time, which will log you out of
+              your account.
+            </p>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+     REFUND POLICY
+═══════════════════════════════════════ -->
+        <div class="policy-block">
+          <h2 class="policy-title" id="refunds"><span>Refund Policy</span></h2>
+
+          <div class="content-section" id="refund-general">
+            <div class="section-header">
+              <span class="section-num">01</span>
+              <h3>General Policy</h3>
+            </div>
+            <p>
+              All purchases are processed by Paddle, our reseller and Merchant
+              of Record. Refunds are handled in accordance with
+              <a
+                href="https://www.paddle.com/legal/refund-policy"
+                target="_blank"
+                rel="noopener"
+                >Paddle's refund policy</a
+              >. To request a refund, email us at
+              <a href="mailto:hello@statsy.page">hello@statsy.page</a> or
+              contact Paddle directly.
+            </p>
+          </div>
+
+          <div class="content-section" id="refund-cancel">
+            <div class="section-header">
+              <span class="section-num">02</span>
+              <h3>Cancellations</h3>
+            </div>
+            <p>
+              You can cancel your subscription at any time from the Billing
+              section of your dashboard. Cancellations take effect at the end of
+              the current billing period — you keep full access until then. Your
+              account automatically downgrades to the Free plan after
+              cancellation.
+            </p>
+          </div>
+
+          <div class="content-section" id="refund-contact">
+            <div class="section-header">
+              <span class="section-num">03</span>
+              <h3>How to Request a Refund</h3>
+            </div>
+            <p>
+              To request a refund, email us with your account email and a brief
+              description of the issue:
+            </p>
+            <div class="callout">
+              📬
+              <a href="mailto:hello@statsy.page">hello@statsy.page</a> — include
+              "Refund Request" in the subject line. We'll respond within 2
+              business days.
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer>
+      <a href="/" class="logo" style="text-decoration: none; color: var(--ink)">
+        <div class="logo-pip"></div>
+        Statsy
+      </a>
+      <span>© 2026 Statsy · Status pages for everyone who needs one.</span>
+      <div class="footer-links">
+        <a href="/terms" class="active">Legal Policies</a>
+        <span>statsy.page</span>
+      </div>
+    </footer>
+
+    <script>
+      // Highlight active sidebar link on scroll
+      var links = document.querySelectorAll(".sidebar a");
+      var sections = [];
+      links.forEach(function (a) {
+        var id = a.getAttribute("href").replace("#", "");
+        var el = document.getElementById(id);
+        if (el) sections.push({ id: id, el: el, a: a });
+      });
+
+      var navH =
+        parseInt(
+          getComputedStyle(document.documentElement).getPropertyValue(
+            "--nav-h",
+          ),
+        ) || 65;
+
+      function onScroll() {
+        var scrollY = window.scrollY + navH + 32;
+        var active = sections[0];
+        for (var i = 0; i < sections.length; i++) {
+          if (sections[i].el.offsetTop <= scrollY) {
+            active = sections[i];
+          }
+        }
+        links.forEach(function (a) {
+          a.classList.remove("active");
+        });
+        if (active) active.a.classList.add("active");
+      }
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      // Smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          var target = document.querySelector(a.getAttribute("href"));
+          if (!target) return;
+          e.preventDefault();
+          target.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+    </script>
+  </body>
+</html>

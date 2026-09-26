@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8100WSM6YH"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-8100WSM6YH');</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mochi & Biscuit — Official Website</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><ellipse cx='22' cy='32' rx='10' ry='13' fill='%23ff8c42' transform='rotate(-20 22 32)'/><ellipse cx='40' cy='20' rx='10' ry='13' fill='%23ff8c42' transform='rotate(-8 40 20)'/><ellipse cx='60' cy='20' rx='10' ry='13' fill='%23ff8c42' transform='rotate(8 60 20)'/><ellipse cx='78' cy='32' rx='10' ry='13' fill='%23ff8c42' transform='rotate(20 78 32)'/><ellipse cx='50' cy='66' rx='26' ry='21' fill='%23ff8c42'/></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --cream: #fff8ee;
+        --cream2: #fff0d6;
+        --orange: #ff8c42;
+        --pink: #ffb3c6;
+        --lavender: #c7b8ea;
+        --mint: #a8e6cf;
+        --yellow: #ffe066;
+        --dark: #2d2013;
+        --border: 3px solid #2d2013;
+        --shadow: 5px 5px 0 #2d2013;
+        --shadow-lg: 8px 8px 0 #2d2013;
+        --radius: 20px;
+        --font-head: "Caveat", cursive;
+        --font-body: "Quicksand", sans-serif;
+      }
+
+      html {
+        background: var(--cream);
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--cream);
+        color: var(--dark);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* ── DEMO BANNER ── */
+      .demo-banner {
+        background: var(--dark);
+        color: rgba(255, 255, 255, 0.85);
+        padding: 10px 24px;
+        text-align: center;
+        font-size: 0.82rem;
+        font-family: var(--font-body);
+        font-weight: 500;
+      }
+      .demo-banner a {
+        color: var(--yellow);
+        font-weight: 700;
+        text-decoration: none;
+        border-bottom: 1.5px solid rgba(255, 224, 102, 0.4);
+        transition: border-color 0.2s;
+      }
+      .demo-banner a:hover {
+        border-color: var(--yellow);
+      }
+
+      /* ── NAV ── */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+        height: 68px;
+        border-bottom: var(--border);
+        background: var(--cream);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        gap: 20px;
+      }
+      .nav-logo {
+        font-family: var(--font-head);
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--dark);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav-logo-paw {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+      }
+      .nav-links a {
+        font-family: var(--font-head);
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--dark);
+        text-decoration: none;
+        padding: 4px 12px;
+        border-radius: 100px;
+        transition: background 0.15s;
+        cursor: pointer;
+      }
+      .nav-links a:hover {
+        background: var(--cream2);
+      }
+
+      .nav-badge {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .nav-badge iframe {
+        border: none;
+        width: 300px;
+        height: 36px;
+        display: block;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: var(--border);
+        height: calc(100vh - 68px - 37px);
+      }
+      .hero-left {
+        padding: 40px 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
+        border-right: var(--border);
+        overflow: hidden;
+      }
+      .hero-tag {
+        display: inline-block;
+        background: var(--yellow);
+        border: var(--border);
+        border-radius: 100px;
+        padding: 4px 16px;
+        font-family: var(--font-head);
+        font-size: 1rem;
+        font-weight: 600;
+        width: fit-content;
+      }
+      .hero h1 {
+        font-family: var(--font-head);
+        font-size: clamp(2.8rem, 5vw, 4.2rem);
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+      }
+      .hero h1 .orange {
+        color: var(--orange);
+      }
+      .hero-sub {
+        font-size: 1rem;
+        color: #6b5a3e;
+        line-height: 1.75;
+        max-width: 380px;
+      }
+      .hero-sub strong {
+        color: var(--dark);
+      }
+      .hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        font-family: var(--font-head);
+        font-size: 1.15rem;
+        font-weight: 600;
+        padding: 10px 24px;
+        border-radius: 100px;
+        border: var(--border);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: var(--shadow);
+      }
+      .btn:active {
+        transform: translate(0, 0);
+        box-shadow: none;
+      }
+      .btn-orange {
+        background: var(--orange);
+        color: white;
+      }
+      .btn-outline {
+        background: white;
+        color: var(--dark);
+      }
+
+      .hero-right {
+        position: relative;
+        overflow: hidden;
+        background: var(--pink);
+      }
+      .hero-right img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .hero-right-label {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background: white;
+        border: var(--border);
+        border-radius: var(--radius);
+        padding: 8px 16px;
+        font-family: var(--font-head);
+        font-size: 1rem;
+        font-weight: 600;
+        box-shadow: var(--shadow);
+      }
+
+      /* ── SECTION HEADER ── */
+      .section-header {
+        padding: 48px 48px 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .section-header h2 {
+        font-family: var(--font-head);
+        font-size: clamp(2rem, 3.5vw, 3rem);
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .section-header p {
+        color: #6b5a3e;
+        font-size: 0.9rem;
+        max-width: 280px;
+        text-align: right;
+      }
+
+      /* ── BENTO GRID ── */
+      .bento {
+        padding: 32px 48px 48px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: auto auto;
+        gap: 16px;
+      }
+      .bento-card {
+        background: white;
+        border: var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        cursor: default;
+      }
+      .bento-card:hover {
+        transform: translate(-3px, -3px);
+        box-shadow: var(--shadow-lg);
+      }
+      .bento-card.wide {
+        grid-column: span 2;
+      }
+      .bento-card.tall {
+        grid-row: span 2;
+      }
+      .bento-card img {
+        width: 100%;
+        height: 260px;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        border-bottom: var(--border);
+      }
+      .bento-card.tall img {
+        height: 440px;
+        object-position: center center;
+      }
+      .bento-card.wide img {
+        height: 280px;
+        object-position: center 40%;
+      }
+      .bento-caption {
+        padding: 14px 18px;
+        font-family: var(--font-head);
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.4;
+      }
+      .bento-caption .mood {
+        display: inline-block;
+        font-family: var(--font-body);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b5a3e;
+        margin-bottom: 4px;
+      }
+      /* text-only bento card */
+      .bento-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 28px 24px;
+      }
+      .bento-text .big-num {
+        font-family: var(--font-head);
+        font-size: 4rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .bento-text p {
+        font-size: 0.88rem;
+        color: #6b5a3e;
+        line-height: 1.6;
+      }
+
+      /* ── CAT PROFILES ── */
+      .profiles {
+        border-top: var(--border);
+        border-bottom: var(--border);
+        padding: 0;
+      }
+      .profiles-header {
+        padding: 48px 48px 32px;
+        border-bottom: var(--border);
+      }
+      .profiles-header h2 {
+        font-family: var(--font-head);
+        font-size: 2.6rem;
+        font-weight: 700;
+      }
+      .profiles-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .profile-card {
+        padding: 36px 32px;
+        border-right: var(--border);
+        transition: background 0.2s;
+      }
+      .profile-card:last-child {
+        border-right: none;
+      }
+      .profile-card:hover {
+        background: var(--cream2);
+      }
+      .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: var(--border);
+        object-fit: cover;
+        margin-bottom: 16px;
+        box-shadow: 3px 3px 0 var(--dark);
+      }
+      .profile-name {
+        font-family: var(--font-head);
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .profile-title {
+        display: inline-block;
+        background: var(--lavender);
+        border: 2px solid var(--dark);
+        border-radius: 100px;
+        padding: 2px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 16px;
+      }
+      .profile-bio {
+        font-size: 0.88rem;
+        color: #5a4a32;
+        line-height: 1.75;
+      }
+      .profile-stat {
+        margin-top: 16px;
+        font-family: var(--font-head);
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--dark);
+      }
+      .profile-stat span {
+        display: inline-block;
+        background: var(--mint);
+        border: 2px solid var(--dark);
+        border-radius: 6px;
+        padding: 1px 8px;
+        font-size: 0.78rem;
+        font-family: var(--font-body);
+        font-weight: 700;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+
+      /* ── CALLOUT (Statsy embed section) ── */
+      .callout {
+        border-bottom: var(--border);
+        background: var(--dark);
+        color: #fff8ee;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .callout-left {
+        padding: 60px 48px;
+        border-right: 3px solid rgba(255, 255, 255, 0.15);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+      }
+      .callout-eyebrow {
+        font-family: var(--font-head);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--yellow);
+      }
+      .callout-left h2 {
+        font-family: var(--font-head);
+        font-size: clamp(2rem, 3vw, 2.8rem);
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .callout-left p {
+        color: rgba(255, 248, 238, 0.65);
+        font-size: 0.92rem;
+        line-height: 1.75;
+      }
+      .callout-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--orange);
+        border: 2px solid var(--orange);
+        border-radius: 100px;
+        padding: 10px 22px;
+        color: white;
+        font-family: var(--font-head);
+        font-size: 1.05rem;
+        font-weight: 600;
+        text-decoration: none;
+        width: fit-content;
+        transition: opacity 0.15s;
+        cursor: pointer;
+      }
+      .callout-link:hover {
+        opacity: 0.85;
+      }
+
+      .callout-right {
+        padding: 60px 48px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        justify-content: center;
+      }
+      .code-block {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1.5px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .code-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .code-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .code-filename {
+        font-size: 0.72rem;
+        color: rgba(255, 255, 255, 0.35);
+        margin-left: 4px;
+        font-family: monospace;
+      }
+      .code-body {
+        padding: 24px;
+        font-family: "Menlo", "Monaco", "Courier New", monospace;
+        font-size: 0.8rem;
+        line-height: 1.85;
+        overflow-x: auto;
+      }
+      .c-comment {
+        color: rgba(255, 255, 255, 0.25);
+      }
+      .c-tag {
+        color: #f9a8d4;
+      }
+      .c-attr {
+        color: #a5b4fc;
+      }
+      .c-val {
+        color: #86efac;
+      }
+
+      .preview-wrap {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+      }
+      .preview-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: rgba(255, 255, 255, 0.35);
+        white-space: nowrap;
+      }
+      .preview-wrap iframe {
+        border: none;
+        height: 36px;
+        width: 260px;
+        display: block;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        border-top: var(--border);
+        padding: 32px 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .footer-logo {
+        font-family: var(--font-head);
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .footer-copy {
+        font-size: 0.8rem;
+        color: #8a7055;
+      }
+      .footer-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+      }
+      .footer-right .label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #8a7055;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .footer-right iframe {
+        border: none;
+        width: 300px;
+        height: 36px;
+        display: block;
+      }
+
+      /* ── RESPONSIVE ── */
+
+      /* Tablet ≤ 960px */
+      @media (max-width: 960px) {
+        nav {
+          padding: 0 24px;
+          gap: 12px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .nav-badge iframe {
+          width: 300px;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+        .hero-left {
+          padding: 48px 32px;
+          border-right: none;
+          border-bottom: var(--border);
+        }
+        .hero-right {
+          height: 400px;
+        }
+        .section-header {
+          padding: 40px 32px 0;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 6px;
+        }
+        .section-header p {
+          text-align: left;
+          max-width: 100%;
+        }
+        .bento {
+          padding: 24px 32px 40px;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .bento-card.tall {
+          grid-row: span 1;
+        }
+        .bento-card.tall img {
+          height: 260px;
+        }
+        .bento-card.wide {
+          grid-column: span 2;
+        }
+        .profiles-header {
+          padding: 40px 32px 28px;
+        }
+        .profiles-grid {
+          grid-template-columns: 1fr;
+        }
+        .profile-card {
+          border-right: none;
+          border-bottom: var(--border);
+          padding: 32px;
+        }
+        .profile-card:last-child {
+          border-bottom: none;
+        }
+        .callout {
+          grid-template-columns: 1fr;
+        }
+        .callout-left {
+          padding: 48px 32px;
+          border-right: none;
+          border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+        }
+        .callout-right {
+          padding: 40px 32px;
+        }
+        footer {
+          padding: 28px 32px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+        }
+        .footer-right {
+          align-items: flex-start;
+        }
+      }
+
+      /* Mobile ≤ 600px */
+      @media (max-width: 600px) {
+        .demo-banner {
+          font-size: 0.76rem;
+          padding: 8px 16px;
+        }
+        nav {
+          padding: 0 16px;
+          height: 60px;
+          flex-wrap: nowrap;
+        }
+        .nav-logo {
+          font-size: 1.1rem;
+          flex-shrink: 1;
+          min-width: 0;
+        }
+        .nav-badge {
+          display: flex;
+          flex-shrink: 0;
+          width: 225px;
+          height: 27px;
+          overflow: hidden;
+          align-items: center;
+        }
+        .nav-badge iframe {
+          width: 300px;
+          height: 36px;
+          transform: scale(0.75);
+          transform-origin: left center;
+          flex-shrink: 0;
+        }
+        .hero-left {
+          padding: 36px 20px;
+          gap: 14px;
+        }
+        .hero h1 {
+          font-size: 2.4rem;
+        }
+        .hero-right {
+          height: 280px;
+        }
+        .section-header {
+          padding: 32px 20px 0;
+        }
+        .bento {
+          padding: 16px 20px 32px;
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .bento-card.wide,
+        .bento-card.tall {
+          grid-column: span 1;
+          grid-row: span 1;
+        }
+        .bento-card img,
+        .bento-card.tall img,
+        .bento-card.wide img {
+          height: 220px;
+        }
+        .profiles-header {
+          padding: 32px 20px 24px;
+        }
+        .profile-card {
+          padding: 28px 20px;
+        }
+        .callout-left {
+          padding: 40px 20px;
+        }
+        .callout-right {
+          padding: 32px 20px;
+        }
+        .code-body {
+          font-size: 0.72rem;
+          padding: 16px;
+        }
+        .preview-wrap {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .preview-wrap iframe {
+          width: 260px;
+        }
+        footer {
+          padding: 24px 20px;
+        }
+      }
+
+      /* Very small ≤ 380px */
+      @media (max-width: 380px) {
+        .nav-logo {
+          font-size: 1.1rem;
+        }
+        .hero h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- demo notice -->
+    <div class="demo-banner">
+      The status badge in the nav is powered by
+      <strong style="color: white">Statsy</strong> - Status Pages For Everyone &nbsp;·&nbsp;
+      <a href="https://statsy.page" target="_blank" rel="noopener"
+        >Get yours at statsy.page →</a
+      >
+    </div>
+
+    <!-- NAV -->
+    <nav>
+      <div class="nav-logo">
+        <div class="nav-logo-paw">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+            <ellipse cx="22" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(-20 22 32)"/>
+            <ellipse cx="40" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(-8 40 20)"/>
+            <ellipse cx="60" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(8 60 20)"/>
+            <ellipse cx="78" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(20 78 32)"/>
+            <ellipse cx="50" cy="66" rx="26" ry="21" fill="#ff8c42"/>
+          </svg>
+        </div>
+        Mochi & Biscuit
+      </div>
+      <div class="nav-links">
+        <a href="#gallery">Gallery</a>
+        <a href="#profiles">Meet Them</a>
+        <a href="#badge">The Badge</a>
+      </div>
+      <div class="nav-badge">
+        <iframe
+          src="https://statsy.page/badge/mochi-biscuits"
+          scrolling="no"
+          title="Cat system status"
+        ></iframe>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-left">
+        <div class="hero-tag">Est. whenever they showed up uninvited</div>
+        <h1>
+          This is<br /><span class="orange">Mochi & Biscuit.</span><br />They
+          run this house.
+        </h1>
+        <p class="hero-sub">
+          I just pay the rent and open the cans. This is their official website
+          because they <strong>deserve one</strong>
+          and also I had a free afternoon.
+        </p>
+        <div class="hero-actions">
+          <a href="#gallery" class="btn btn-orange">See the photos</a>
+          <a href="#badge" class="btn btn-outline"
+            >Why is there a status badge?</a
+          >
+        </div>
+      </div>
+      <div class="hero-right">
+        <img
+          src="https://images.unsplash.com/photo-1615497001839-b0a0eac3274c?w=900&q=80"
+          alt=""
+        />
+        <div class="hero-right-label">Senior Nap Director</div>
+      </div>
+    </section>
+
+    <!-- BENTO GALLERY -->
+    <div class="section-header" id="gallery">
+      <h2>The Official<br />Photo Archive</h2>
+      <p>
+        Professionally shot by me, on my phone, while trying not to wake them
+        up.
+      </p>
+    </div>
+    <div class="bento">
+      <div class="bento-card tall">
+        <img
+          src="https://images.unsplash.com/photo-1598935888738-cd2622bcd437?w=600&q=80"
+          alt=""
+        />
+        <div class="bento-caption">
+          <div class="mood">Monday energy</div>
+          "Do NOT talk to me until I've had my second nap."
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <img
+          src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=800&q=80"
+          alt=""
+        />
+        <div class="bento-caption">
+          <div class="mood">Caught in 4K</div>
+          Absolutely not knocking that cup off the table. Studying it.
+        </div>
+      </div>
+
+      <div class="bento-card">
+        <img
+          src="https://images.unsplash.com/photo-1611267254323-4db7b39c732c?w=800&q=80"
+          alt="Fluffy white cat in a cozy position"
+        />
+        <div class="bento-caption">
+          <div class="mood">Work from home</div>
+          Sitting on my keyboard again. The PR is fine.
+        </div>
+      </div>
+
+      <div class="bento-card wide">
+        <img
+          src="https://images.unsplash.com/photo-1566847438217-76e82d383f84?w=1000&q=80"
+          alt="Cat looking up curiously"
+        />
+        <div class="bento-caption">
+          <div class="mood">3:47 AM</div>
+          Heard a sound. Investigated. Was nothing. Will continue to scream
+          about it.
+        </div>
+      </div>
+
+      <!-- text card -->
+      <div class="bento-card bento-text" style="background: var(--yellow)">
+        <div class="big-num">99.9%</div>
+        <p>uptime on napping.<br />Verified by Statsy.</p>
+      </div>
+
+      <div class="bento-card">
+        <img
+          src="https://images.unsplash.com/photo-1561389248-231c46a75a97?w=800&q=80"
+          alt="Tabby cat resting peacefully"
+        />
+        <div class="bento-caption">
+          <div class="mood">All systems operational</div>
+          Fully recharged. Preparing to cause chaos.
+        </div>
+      </div>
+
+      <!-- text card -->
+      <div class="bento-card bento-text" style="background: var(--pink)">
+        <div class="big-num">12hrs</div>
+        <p>average daily sleep.<br />We do not take questions.</p>
+      </div>
+
+      <div class="bento-card">
+        <img
+          src="https://images.unsplash.com/photo-1583083527882-4bee9aba2eea?w=800&q=80"
+          alt="Black cat being mysterious"
+        />
+        <div class="bento-caption">
+          <div class="mood">Vibes only</div>
+          Not plotting anything. This is just their resting face.
+        </div>
+      </div>
+    </div>
+
+    <!-- CAT PROFILES -->
+    <section class="profiles" id="profiles">
+      <div class="profiles-header">
+        <h2>Meet the team.</h2>
+      </div>
+      <div class="profiles-grid">
+        <div class="profile-card">
+          <img
+            class="profile-avatar"
+            src="https://images.unsplash.com/photo-1615497001839-b0a0eac3274c?w=200&q=80"
+            alt="Mochi the cat"
+          />
+          <div class="profile-name">Mochi</div>
+          <div
+            class="profile-title"
+            style="background: var(--orange); color: white"
+          >
+            Chief Napping Officer
+          </div>
+          <p class="profile-bio">
+            Mochi joined the household in 2021 uninvited, via an open window on
+            the third floor. Has since established herself as the primary
+            decision-maker, financial advisor, and sole reviewer of all food
+            choices.
+          </p>
+          <div class="profile-stat">
+            <span>Operational</span> Currently sleeping on the router.
+          </div>
+        </div>
+        <div class="profile-card">
+          <img
+            class="profile-avatar"
+            src="https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=200&q=80"
+            alt="Biscuit the cat"
+          />
+          <div class="profile-name">Biscuit</div>
+          <div class="profile-title" style="background: var(--lavender)">
+            VP of Knocking Things Off Tables
+          </div>
+          <p class="profile-bio">
+            Biscuit arrived six months later, also uninvited, also via a window.
+            He has strong opinions about 3 AM, loud opinions about breakfast
+            time, and no opinions whatsoever about my deadlines.
+          </p>
+          <div class="profile-stat">
+            <span>Degraded</span> Zoomies imminent. ETA unknown.
+          </div>
+        </div>
+        <div class="profile-card">
+          <img
+            class="profile-avatar"
+            src="https://images.unsplash.com/photo-1566847438217-76e82d383f84?w=200&q=80"
+            alt="Their combined energy"
+          />
+          <div class="profile-name">Together</div>
+          <div class="profile-title" style="background: var(--mint)">
+            The Full Chaos Stack
+          </div>
+          <p class="profile-bio">
+            Combined forces since Day 1. Primary activities include synchronized
+            staring, coordinated 4 AM operations, and sitting on any surface
+            that is currently being used for something important.
+          </p>
+          <div class="profile-stat">=\
+            <span>Outage</span> My keyboard. Under both of them.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALLOUT — the Statsy pitch -->
+    <section id="badge">
+      <div class="callout">
+        <div class="callout-left">
+          <div class="callout-eyebrow">Wait, why is there a status badge?</div>
+          <h2>Every serious website needs one.<br />Even cat ones.</h2>
+          <p>
+            See that little badge in the nav? It's a live status indicator from
+            <strong style="color: white">Statsy</strong> — a free tool that
+            gives you a real status page for your services (or your cats'
+            napping infrastructure). It auto-refreshes every new incidents or updates and
+            links to the full public status page.
+          </p>
+          <p>
+            Drop it anywhere (nav, footer, docs), with a single
+            <code
+              style="
+                background: rgba(255, 255, 255, 0.1);
+                padding: 2px 8px;
+                border-radius: 6px;
+                font-size: 0.85em;
+              "
+              >&lt;iframe&gt;</code
+            >. No npm install. No config files. Just paste the
+            tag and ship.
+          </p>
+          <a
+            href="https://statsy.page"
+            target="_blank"
+            rel="noopener"
+            class="callout-link"
+          >
+            Get your own at statsy.page →
+          </a>
+        </div>
+        <div class="callout-right">
+          <div class="code-block">
+            <div class="code-bar">
+              <div class="code-dot"></div>
+              <div class="code-dot"></div>
+              <div class="code-dot"></div>
+              <span class="code-filename">index.html</span>
+            </div>
+            <div class="code-body">
+              <span class="c-comment">&lt;!-- Anywhere on your site --&gt;</span
+              ><br />
+              <span class="c-tag">&lt;iframe</span><br />
+              &nbsp;&nbsp;<span class="c-attr">src</span>=<span class="c-val"
+                >"https://statsy.page/badge/your-slug"</span
+              ><br />
+              &nbsp;&nbsp;<span class="c-attr">style</span>=<span class="c-val"
+                >"border:none;width:230px;height:36px"</span
+              ><br />
+              &nbsp;&nbsp;<span class="c-attr">scrolling</span>=<span
+                class="c-val"
+                >"no"</span
+              ><br />
+              &nbsp;&nbsp;<span class="c-attr">title</span>=<span class="c-val"
+                >"System status"</span
+              ><br />
+              <span class="c-tag">&gt;&lt;/iframe&gt;</span>
+            </div>
+          </div>
+          <div class="preview-wrap">
+            <span class="preview-label">Live</span>
+            <iframe
+              src="https://statsy.page/badge/mochi-biscuits"
+              scrolling="no"
+              title="System status preview"
+            ></iframe>
+          </div>
+          <p
+            style="
+              font-size: 0.78rem;
+              color: rgba(255, 248, 238, 0.35);
+              line-height: 1.6;
+            "
+          >
+            The badge above is live. Statsy's own status page powers it. Updates
+            automatically every 60 seconds — no refresh needed.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- JS BADGE SECTION -->
+    <section class="js-badge-grid" style="border-bottom: var(--border);">
+      <div style="padding: 60px 48px; border-right: var(--border); display: flex; flex-direction: column; justify-content: center; gap: 20px;">
+        <div style="font-family: var(--font-head); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange);">Or go full custom</div>
+        <h2 style="font-family: var(--font-head); font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 700; line-height: 1.1;">Build your own badge with the API.</h2>
+        <p style="color: #6b5a3e; font-size: 0.92rem; line-height: 1.75;">
+          Don't like the default look? Use the JSON API to fetch live status and render it however you want. Use any color, any font, any framework. One <code style="background: var(--cream2); padding: 2px 8px; border-radius: 6px; font-size: 0.85em; border: 1.5px solid #d4cfc4;">fetch()</code> call.
+        </p>
+        <div style="background: var(--dark); border-radius: 16px; overflow: hidden;">
+          <div style="display: flex; align-items: center; gap: 8px; padding: 12px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);">
+            <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.12)"></div>
+            <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.12)"></div>
+            <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.12)"></div>
+            <span style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin-left:4px;font-family:monospace;">badge.js</span>
+          </div>
+          <div style="padding: 20px 24px; font-family: 'Menlo','Monaco','Courier New',monospace; font-size: 0.78rem; line-height: 1.9; overflow-x: auto; color: rgba(255,248,238,0.85);">
+            <span style="color:rgba(255,255,255,0.25)">// fetch live status as JSON</span><br/>
+            <span style="color:#a5b4fc">fetch</span>(<span style="color:#86efac">'https://statsy.page/api/badge/<span style="color:#fde68a">your-slug</span>'</span>)<br/>
+            &nbsp;&nbsp;.then(r <span style="color:#f9a8d4">=></span> r.<span style="color:#a5b4fc">json</span>())<br/>
+            &nbsp;&nbsp;.then(({ <span style="color:#fde68a">name, status, label</span> }) <span style="color:#f9a8d4">=></span> {<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgba(255,255,255,0.25)">// status: 'operational' | 'degraded' | 'outage'</span><br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgba(255,255,255,0.25)">// build any UI you want</span><br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;myBadge.<span style="color:#a5b4fc">textContent</span> = label;<br/>
+            &nbsp;&nbsp;});
+          </div>
+        </div>
+      </div>
+      <div style="padding: 60px 48px; display: flex; flex-direction: column; justify-content: center; gap: 24px;">
+        <p style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #8a7055;">Live example — styled for this site</p>
+        <div id="custom-badge-wrap" style="display:flex;flex-direction:column;gap:0;background:white;border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);overflow:hidden;width:100%;">
+          <!-- card header -->
+          <div style="display:flex;align-items:center;gap:8px;padding:14px 20px;border-bottom:var(--border);background:var(--cream2);">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="18" height="18" style="flex-shrink:0;">
+              <ellipse cx="22" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(-20 22 32)"/>
+              <ellipse cx="40" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(-8 40 20)"/>
+              <ellipse cx="60" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(8 60 20)"/>
+              <ellipse cx="78" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(20 78 32)"/>
+              <ellipse cx="50" cy="66" rx="26" ry="21" fill="#ff8c42"/>
+            </svg>
+            <span style="font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--dark);letter-spacing:-0.01em;">Mochi &amp; Biscuit</span>
+            <span style="font-family:var(--font-body);font-size:0.7rem;font-weight:600;color:#8a7055;text-transform:uppercase;letter-spacing:0.06em;margin-left:auto;">Status</span>
+          </div>
+          <!-- card body — injected by JS -->
+          <div id="custom-badge-inner" style="padding:22px 24px;display:flex;align-items:center;gap:12px;">
+            <div style="width:9px;height:9px;border-radius:50%;background:#d4cfc4;animation:pulse 1.5s ease-in-out infinite;flex-shrink:0;"></div>
+            <span style="font-family:var(--font-body);font-size:0.85rem;color:#8a7055;">Checking status…</span>
+          </div>
+        </div>
+        <p style="font-size: 0.82rem; color: #8a7055; line-height: 1.6;">
+          Same live data as the iframe above — totally different look. Card design, site fonts, paw icon. Built with one <code style="background:var(--cream2);padding:1px 6px;border-radius:5px;font-size:0.8em;">fetch()</code> call.
+        </p>
+      </div>
+    </section>
+
+    <style>
+      @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+      .js-badge-grid { display: grid; grid-template-columns: 1fr 1fr; }
+      @media (max-width: 960px) {
+        .js-badge-grid { grid-template-columns: 1fr; }
+        .js-badge-grid > div:first-child { border-right: none !important; border-bottom: var(--border); }
+      }
+      @media (max-width: 600px) {
+        .js-badge-grid > div { padding: 40px 20px !important; }
+      }
+    </style>
+    <script>
+      (function() {
+        fetch('https://statsy.page/api/badge/mochi-biscuits')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            var colorMap = {
+              operational: { dot: '#1a7a4a', text: '#1a7a4a', bg: '#e8f5ee', border: '#1a7a4a' },
+              degraded:    { dot: '#e8500a', text: '#e8500a', bg: 'rgba(232,80,10,0.08)', border: '#e8500a' },
+              outage:      { dot: '#d32f2f', text: '#d32f2f', bg: '#fdeae8', border: '#d32f2f' },
+            };
+            var c = colorMap[data.status] || colorMap.operational;
+            var inner = document.getElementById('custom-badge-inner');
+            if (!inner) return;
+            inner.innerHTML =
+              '<span style="width:9px;height:9px;border-radius:50%;background:' + c.dot + ';flex-shrink:0;animation:pulse 2.4s ease-in-out infinite;"></span>' +
+              '<span style="font-family:var(--font-body);font-size:0.92rem;font-weight:700;color:' + c.text + ';">' + data.label + '</span>';
+          })
+          .catch(function() {
+            var inner = document.getElementById('custom-badge-inner');
+            if (!inner) return;
+            inner.innerHTML =
+              '<span style="width:9px;height:9px;border-radius:50%;background:#d32f2f;flex-shrink:0;animation:pulse 2.4s ease-in-out infinite;"></span>' +
+              '<span style="font-family:var(--font-body);font-size:0.92rem;font-weight:700;color:#d32f2f;">Service outage</span>';
+          });
+      })();
+    </script>
+
+    <!-- FOOTER -->
+    <footer>
+      <div>
+        <div class="footer-logo">Mochi & Biscuit</div>
+        <div class="footer-copy" style="margin-top: 4px">
+          © 2026 · Their website. They just let me maintain it.
+        </div>
+        <div class="footer-copy" style="margin-top: 4px">
+          <a
+            href="https://statsy.page"
+            target="_blank"
+            rel="noopener"
+            style="
+              color: var(--orange);
+              text-decoration: none;
+              font-weight: 600;
+              font-size: 0.78rem;
+            "
+          >
+            Status page by Statsy ↗
+          </a>
+        </div>
+      </div>
+      <div class="footer-right">
+        <div class="label">Cat System Status</div>
+        <iframe
+          src="https://statsy.page/badge/mochi-biscuits"
+          scrolling="no"
+          title="System status"
+        ></iframe>
+      </div>
+    </footer>
+  </body>
+</html>

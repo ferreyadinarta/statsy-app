@@ -1,0 +1,4387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-8100WSM6YH"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-8100WSM6YH");
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Simple, affordable status pages for developers and small teams. Create your status page in minutes — no credit card needed."
+    />
+    <link rel="canonical" href="https://statsy.page" />
+    <title>Statsy - Status Pages That Don't Cost a Fortune</title>
+    <meta
+      property="og:title"
+      content="Statsy - Status pages for everyone who needs one"
+    />
+    <meta
+      property="og:description"
+      content="Simple, affordable status pages..."
+    />
+    <meta
+      property="og:image"
+      content="https://statsy.page/statsy-og-image.png"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://statsy.page" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Statsy - Status pages for everyone who needs one"
+    />
+    <meta
+      name="twitter:description"
+      content="Simple, affordable status pages..."
+    />
+    <meta
+      name="twitter:image"
+      content="https://statsy.page/statsy-og-image.png"
+    />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/statsy-logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #f5f2eb;
+        --bg2: #ede9e0;
+        --bg3: #e4dfd4;
+        --ink: #1a1714;
+        --ink2: #3d3830;
+        --muted: #8a8070;
+        --accent: #e8500a;
+        --accent-dim: rgba(232, 80, 10, 0.1);
+        --green: #1a7a4a;
+        --green-bg: #e8f5ee;
+        --font-head: "Cabinet Grotesk", sans-serif;
+        --font-body: "Instrument Sans", sans-serif;
+        --radius: 4px;
+      }
+      html {
+        scroll-behavior: smooth;
+        background: var(--bg);
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.6;
+        overflow-x: hidden;
+        max-width: 1600px;
+        margin: 0 auto;
+        border-left: 1.5px solid var(--ink);
+        border-right: 1.5px solid var(--ink);
+      }
+
+      /* NAV */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 48px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        border-radius: 0;
+        background: transparent;
+        border: 1px solid rgba(26,23,20,0.08);
+        box-shadow: none;
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+        z-index: 100;
+        transition:
+          top    0.55s cubic-bezier(0.4, 0, 0.2, 1),
+          left   0.55s cubic-bezier(0.4, 0, 0.2, 1),
+          right  0.55s cubic-bezier(0.4, 0, 0.2, 1),
+          border-radius 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+          background    0.4s ease,
+          border-color  0.4s ease,
+          box-shadow    0.45s ease;
+      }
+
+      nav.nav-scrolled {
+        top: 14px;
+        left: 32px;
+        right: 32px;
+        border-radius: 12px;
+        background: rgba(245, 242, 235, 0.92);
+        border-color: rgba(26,23,20,0.12);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 4px 24px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.8) inset;
+      }
+
+      .logo {
+        font-family: var(--font-head);
+        font-weight: 900;
+        font-size: 1.3rem;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: color 0.35s ease;
+      }
+
+      .logo-not-scrolled {
+        font-family: var(--font-head);
+        font-weight: 900;
+        font-size: 1.3rem;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: color 0.35s ease;
+      }
+
+      nav.nav-scrolled .logo {
+        color: var(--ink);
+      }
+
+      .logo-pip {
+        width: 9px;
+        height: 9px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: blink 2.4s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .nav-link {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 6px 10px;
+        transition: color 0.2s;
+      }
+
+      .nav-link:hover {
+        color: var(--ink);
+      }
+
+      nav.nav-scrolled .nav-link {
+        color: var(--muted);
+      }
+
+      nav.nav-scrolled .nav-link:hover {
+        color: var(--ink);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--ink2);
+        font-family: var(--font-body);
+        font-weight: 500;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+        border-radius: var(--radius);
+        border: 1px solid var(--bg3);
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          border-color 0.2s,
+          color 0.2s,
+          background 0.2s;
+        display: inline-block;
+        margin-left: 10px;
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--ink2);
+        color: var(--ink);
+      }
+
+      .btn-primary {
+        background: var(--ink);
+        color: var(--bg);
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 6px 16px;
+        border-radius: var(--radius);
+        border: 1.5px solid var(--ink);
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          background 0.2s,
+          border-color 0.2s,
+          color 0.2s;
+        display: inline-block;
+      }
+
+      .btn-primary:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      nav.nav-scrolled .btn-primary {
+        background: var(--ink);
+        color: var(--bg);
+        border-color: var(--ink);
+      }
+
+      nav.nav-scrolled .btn-primary:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* HERO */
+      .hero {
+        position: relative;
+        background: var(--bg);
+        overflow: hidden;
+        border-bottom: 1.5px solid var(--ink);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 120px 48px 0;
+        min-height: 100vh;
+      }
+
+      /* Dot grid pattern */
+      .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(26,23,20,0.18) 1px, transparent 1px);
+        background-size: 28px 28px;
+        -webkit-mask-image: radial-gradient(ellipse 95% 92% at 50% 46%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 52%, transparent 76%);
+        mask-image: radial-gradient(ellipse 95% 92% at 50% 46%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 52%, transparent 76%);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Grain — visible organic texture, the detail that reads as premium */
+      .hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+        background-size: 160px 160px;
+        opacity: 0.072;
+        pointer-events: none;
+        z-index: 1;
+        mix-blend-mode: overlay;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 800px;
+        width: 100%;
+        padding-bottom: 48px;
+      }
+
+      .hero-content::before { display: none; }
+
+      /* Animated mesh blobs */
+      .hero-blob {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+        will-change: transform;
+      }
+      /* Round blob — left center, amber-yellow */
+      .hero-blob-1 {
+        width: 480px; height: 480px;
+        background: rgba(255,185,50,0.22);
+        filter: blur(100px);
+        top: 10%; left: -100px;
+        animation: hblob1 30s ease-in-out infinite;
+      }
+      /* Round blob — bottom-left, orange */
+      .hero-blob-2 {
+        width: 420px; height: 420px;
+        background: rgba(232,80,10,0.20);
+        filter: blur(100px);
+        bottom: -60px; left: -40px;
+        animation: hblob2 36s ease-in-out infinite;
+      }
+      /* Elongated horizontal — right side, soft peach */
+      .hero-blob-3 {
+        width: 620px; height: 340px;
+        background: rgba(248,148,60,0.18);
+        filter: blur(110px);
+        top: 30%; right: -120px;
+        animation: hblob3 32s ease-in-out infinite;
+      }
+      /* Elongated vertical — bottom-right, warm amber */
+      .hero-blob-4 {
+        width: 360px; height: 560px;
+        background: rgba(255,195,75,0.16);
+        filter: blur(110px);
+        bottom: -120px; right: 5%;
+        animation: hblob4 28s ease-in-out infinite;
+      }
+
+      @keyframes hblob1 {
+        0%,100% { transform: translate(0,0); }
+        50%      { transform: translate(40px, 30px); }
+      }
+      @keyframes hblob2 {
+        0%,100% { transform: translate(0,0); }
+        50%      { transform: translate(36px,-28px); }
+      }
+      @keyframes hblob3 {
+        0%,100% { transform: translate(0,0); }
+        50%      { transform: translate(-44px, 24px); }
+      }
+      @keyframes hblob4 {
+        0%,100% { transform: translate(0,0); }
+        50%      { transform: translate(-32px,-36px); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero-blob { animation: none; }
+      }
+
+      @media (max-width: 900px) {
+        .hero-blob-1 { background: rgba(255,185,50,0.10); filter: blur(80px); }
+        .hero-blob-2 { background: rgba(232,80,10,0.09); filter: blur(80px); }
+        .hero-blob-3 { background: rgba(248,148,60,0.08); filter: blur(90px); }
+        .hero-blob-4 { background: rgba(255,195,75,0.07); filter: blur(90px); }
+      }
+
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 28px;
+        border: 1.5px solid var(--bg3);
+        padding: 5px 14px 5px 8px;
+        border-radius: 100px;
+        background: white;
+      }
+
+      .hero-tag span {
+        background: var(--accent);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 2px;
+        font-size: 0.68rem;
+      }
+
+      h1 {
+        font-family: var(--font-head);
+        font-size: clamp(3.2rem, 6vw, 5.8rem);
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        margin-bottom: 24px;
+        color: var(--ink);
+        opacity: 0;
+        transform: translateY(16px);
+        animation: fadeUp 0.6s ease forwards 0.1s;
+      }
+
+      h1 .accent {
+        color: var(--accent);
+      }
+
+
+      .hero-sub {
+        font-size: 1.05rem;
+        color: var(--muted);
+        max-width: 480px;
+        line-height: 1.7;
+        margin-bottom: 40px;
+        opacity: 0;
+        animation: fadeUp 0.6s ease forwards 0.25s;
+      }
+
+      .waitlist-wrap {
+        opacity: 0;
+        animation: fadeUp 0.6s ease forwards 0.4s;
+        width: 100%;
+        max-width: 460px;
+      }
+
+      .waitlist-form {
+        display: flex;
+        width: 100%;
+        background: white;
+        border: 1.5px solid var(--ink);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 3px 3px 0 var(--ink);
+      }
+
+      .waitlist-form input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 0.92rem;
+        padding: 13px 18px;
+        outline: none;
+      }
+
+      .waitlist-form input::placeholder {
+        color: var(--muted);
+      }
+
+      .waitlist-form button {
+        background: var(--ink);
+        color: var(--bg);
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 0.88rem;
+        padding: 13px 22px;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s;
+      }
+
+      .waitlist-form button:hover {
+        background: var(--accent);
+      }
+
+      .form-note {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 10px;
+      }
+
+      .hero-mobile-cta {
+        display: none;
+      }
+
+      .success-msg {
+        display: none;
+        background: var(--green-bg);
+        border: 1.5px solid var(--green);
+        color: var(--green);
+        padding: 14px 20px;
+        border-radius: var(--radius);
+        font-size: 0.9rem;
+        width: 100%;
+      }
+
+
+      /* PRODUCT PEEK */
+      .hero-visual {
+        position: relative;
+        z-index: 2;
+        width: calc(100% - 64px);
+        max-width: 1060px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.9s ease forwards 0.55s;
+        margin-top: 8px;
+        margin-bottom: -80px;
+        perspective: 1800px;
+      }
+
+      .hero-visual .mock-browser {
+        background: white !important;
+        border: 1.5px solid var(--ink) !important;
+        box-shadow:
+          0 40px 80px rgba(26,23,20,0.18),
+          0 12px 32px rgba(26,23,20,0.10),
+          6px 6px 0 var(--ink) !important;
+        border-radius: 14px !important;
+        overflow: hidden;
+        transform: rotateX(6deg);
+        transform-origin: center top;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .hero-visual:hover .mock-browser {
+        transform: rotateX(0deg);
+      }
+
+      .hero-visual .mock-bar {
+        background: var(--bg3);
+        border-bottom: 1.5px solid var(--ink);
+        padding: 12px 20px;
+      }
+
+      .mock-scroll-inner {
+        padding: 28px 28px 36px;
+        animation: mockScroll 22s ease-in-out infinite;
+      }
+
+      .hero-visual:hover .mock-scroll-inner {
+        animation-play-state: paused;
+      }
+
+      @keyframes mockScroll {
+        0%   { transform: translateY(0); }
+        10%  { transform: translateY(0); }
+        50%  { transform: translateY(-68%); }
+        60%  { transform: translateY(-68%); }
+        90%  { transform: translateY(0); }
+        100% { transform: translateY(0); }
+      }
+
+      .hero-sep { display: none; }
+
+      .hero-links {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .hero-links-divider {
+        width: 1px;
+        height: 14px;
+        background: var(--bg3);
+      }
+
+      .hero-link-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .hero-link-secondary:hover {
+        color: var(--ink);
+      }
+
+      .demo-link-dark {
+        display: none;
+      }
+
+      .mock-browser {
+        background: white;
+        border: 1.5px solid var(--ink);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 6px 6px 0 var(--ink);
+      }
+      .mock-bar {
+        background: var(--bg3);
+        padding: 10px 16px;
+        border-bottom: 1.5px solid var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .mock-dots {
+        display: flex;
+        gap: 5px;
+      }
+      .mock-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 1px solid rgba(0, 0, 0, 0.15);
+      }
+      .mock-url {
+        flex: 1;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        padding: 4px 12px;
+        font-size: 0.72rem;
+        color: var(--muted);
+        font-family: monospace;
+      }
+      .mock-body {
+        padding: 28px 24px;
+      }
+      .mock-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .mock-brand {
+        font-family: var(--font-head);
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: -0.03em;
+      }
+      .mock-status-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--green-bg);
+        color: var(--green);
+        font-size: 0.72rem;
+        font-weight: 500;
+        padding: 5px 12px;
+        border-radius: 100px;
+        border: 1px solid rgba(26, 122, 74, 0.3);
+      }
+      .mock-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: statusPulse 2.6s ease-in-out infinite;
+      }
+
+      @keyframes statusPulse {
+        0%   { box-shadow: 0 0 0 0 rgba(26,122,74,0.55); }
+        70%  { box-shadow: 0 0 0 5px rgba(26,122,74,0); }
+        100% { box-shadow: 0 0 0 0 rgba(26,122,74,0); }
+      }
+      .mock-services {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .mock-service {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: var(--bg);
+        border-radius: 3px;
+        font-size: 0.8rem;
+      }
+      .mock-service-name {
+        color: var(--ink2);
+        font-weight: 500;
+      }
+      .mock-op {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--green);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .mock-degraded {
+        color: #c07a00;
+      }
+      .mock-uptime {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid var(--bg3);
+      }
+      .mock-uptime-label {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .uptime-bar {
+        display: flex;
+        gap: 2px;
+        height: 24px;
+      }
+      .uptime-segment {
+        flex: 1;
+        background: var(--green);
+        border-radius: 2px;
+        opacity: 0.7;
+      }
+      .uptime-segment.incident {
+        background: var(--accent);
+        opacity: 0.8;
+      }
+
+      /* TICKER */
+      /* STAT STRIP */
+      .stat-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border-bottom: 1.5px solid var(--ink);
+      }
+
+      .stat-strip-item {
+        padding: 28px 36px;
+        border-right: 1.5px solid var(--ink);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .stat-strip-item:last-child {
+        border-right: none;
+      }
+
+      .stat-strip-num {
+        font-family: var(--font-head);
+        font-size: 2.4rem;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        color: var(--ink);
+        line-height: 1;
+      }
+
+      .stat-strip-num em {
+        color: var(--accent);
+        font-style: normal;
+      }
+
+      .stat-strip-label {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      @media (max-width: 900px) {
+        .stat-strip {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .stat-strip-item:nth-child(2) {
+          border-right: none;
+        }
+        .stat-strip-item:nth-child(n+3) {
+          border-top: 1.5px solid var(--ink);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .stat-strip {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stat-strip-item {
+          padding: 20px 20px;
+        }
+        .stat-strip-num {
+          font-size: 1.8rem;
+        }
+      }
+
+      /* FEATURES */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .feature-card {
+        padding: 36px 40px;
+        border-right: 1.5px solid var(--ink);
+        transition: background 0.25s;
+      }
+      .feature-card:nth-child(2n) {
+        border-right: none;
+      }
+      .feature-card:nth-child(n + 3) {
+        border-top: 1.5px solid var(--ink);
+      }
+      .feature-card:hover {
+        background: var(--bg2);
+      }
+      .feature-num {
+        font-family: var(--font-head);
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--bg3);
+        filter: brightness(0.5);
+        letter-spacing: -0.06em;
+        line-height: 1;
+        margin-bottom: 24px;
+      }
+      .feature-icon-wrap {
+        width: 44px;
+        height: 44px;
+        background: var(--accent-dim);
+        border: 1.5px solid rgba(232, 80, 10, 0.2);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+      }
+      .feature-title {
+        font-family: var(--font-head);
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 10px;
+      }
+      .feature-desc {
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.7;
+      }
+
+      /* HOW IT WORKS */
+      .how-it-works {
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .hiw-intro {
+        padding: 52px 48px 48px;
+        border-bottom: 1.5px solid var(--ink);
+        text-align: center;
+      }
+      .hiw-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+      }
+      .hiw-col {
+        padding: 48px;
+      }
+      .hiw-divider {
+        width: 1.5px;
+        background: var(--ink);
+      }
+      .hiw-col-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin-bottom: 36px;
+      }
+      .hiw-col-pip {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .hiw-steps {
+        display: flex;
+        flex-direction: column;
+      }
+      .hiw-step {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+      }
+      .hiw-step-num {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent-dim);
+        border: 1.5px solid rgba(232, 80, 10, 0.2);
+        color: var(--accent);
+        font-family: var(--font-head);
+        font-weight: 900;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .hiw-step-body {
+        padding-bottom: 4px;
+      }
+      .hiw-step-title {
+        font-family: var(--font-head);
+        font-weight: 800;
+        font-size: 0.95rem;
+        letter-spacing: -0.02em;
+        margin-bottom: 4px;
+      }
+      .hiw-step-desc {
+        font-size: 0.86rem;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .hiw-code {
+        font-family: monospace;
+        font-size: 0.82rem;
+        background: var(--bg3);
+        padding: 1px 6px;
+        border-radius: 3px;
+        color: var(--ink2);
+      }
+      .hiw-connector {
+        width: 1.5px;
+        height: 28px;
+        background: var(--bg3);
+        margin: 8px 0 8px 15px;
+      }
+
+      @media (max-width: 900px) {
+        .hiw-intro {
+          padding: 40px 24px 36px;
+        }
+        .hiw-grid {
+          grid-template-columns: 1fr;
+        }
+        .hiw-divider {
+          width: 100%;
+          height: 1.5px;
+        }
+        .hiw-col {
+          padding: 36px 24px;
+        }
+      }
+
+      /* COMPARISON */
+      .comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .comparison-left {
+        padding: 52px 64px 52px 48px;
+        border-right: 1.5px solid var(--ink);
+      }
+      .comparison-right {
+        padding: 52px 48px;
+        background: var(--bg2);
+      }
+      .section-eyebrow {
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 500;
+        margin-bottom: 14px;
+      }
+      .section-title {
+        font-family: var(--font-head);
+        font-size: clamp(2rem, 3.5vw, 2.8rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 28px;
+      }
+      .section-body {
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        max-width: 400px;
+      }
+      .compare-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+      }
+      .compare-table th {
+        padding: 16px 20px;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        border-bottom: 1.5px solid var(--ink);
+        text-align: left;
+        background: var(--bg2);
+        color: var(--muted);
+      }
+      .compare-table th.us {
+        background: var(--accent);
+        color: white;
+        text-align: center;
+      }
+      .compare-table td {
+        padding: 15px 20px;
+        font-size: 0.88rem;
+        border-bottom: 1px solid var(--bg3);
+        color: var(--muted);
+        text-align: center;
+        background: white;
+      }
+      .compare-table tr:last-child td {
+        border-bottom: none;
+      }
+      .compare-table td.label {
+        font-weight: 600;
+        color: var(--ink);
+        text-align: left;
+      }
+      .compare-table td.us {
+        background: rgba(232, 80, 10, 0.05);
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 1rem;
+        text-align: center;
+      }
+      .compare-table .yes {
+        color: var(--green);
+        font-size: 1.1rem;
+      }
+      .compare-table .no {
+        color: var(--ink2);
+        font-size: 1.1rem;
+      }
+
+      /* PRICING */
+      .pricing {
+        padding: 52px 48px;
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .pricing-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 48px;
+      }
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border: 1.5px solid var(--ink);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .pricing-card {
+        padding: 40px 32px;
+        border-right: 1.5px solid var(--ink);
+        background: white;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .pricing-card:last-child {
+        border-right: none;
+      }
+      .pricing-card.featured {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      .plan-tag {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+      .plan-name {
+        font-family: var(--font-head);
+        font-size: 1.4rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        margin-bottom: 6px;
+      }
+      .plan-price {
+        font-family: var(--font-head);
+        font-size: 3.4rem;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      .plan-price sup {
+        font-size: 1.3rem;
+        vertical-align: top;
+        margin-top: 10px;
+        font-weight: 500;
+      }
+      .plan-per {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 32px;
+      }
+      .pricing-card.featured .plan-per {
+        color: rgba(245, 242, 235, 0.5);
+      }
+      .plan-divider {
+        height: 1.5px;
+        background: var(--bg3);
+        margin-bottom: 24px;
+      }
+      .pricing-card.featured .plan-divider {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .plan-features {
+        list-style: none;
+        margin-bottom: 36px;
+        flex: 1;
+      }
+      .plan-features li {
+        font-size: 0.86rem;
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink2);
+        border-bottom: 1px solid var(--bg2);
+      }
+      .pricing-card.featured .plan-features li {
+        color: rgba(245, 242, 235, 0.8);
+        border-bottom-color: rgba(255, 255, 255, 0.07);
+      }
+      .plan-features li::before {
+        content: "→";
+        color: var(--accent);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .btn-plan {
+        display: block;
+        text-align: center;
+        font-family: var(--font-body);
+        font-size: 0.88rem;
+        font-weight: 500;
+        padding: 13px 20px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        text-decoration: none;
+        width: 100%;
+        transition: all 0.2s;
+      }
+      .btn-plan-outline {
+        border: 1.5px solid var(--ink);
+        color: var(--ink);
+        background: none;
+      }
+      .btn-plan-outline:hover {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      .btn-plan-filled {
+        background: var(--accent);
+        border: 1.5px solid var(--accent);
+        color: white;
+      }
+      .btn-plan-filled:hover {
+        opacity: 0.88;
+      }
+      .pricing-card.coming-soon {
+        opacity: 0.72;
+        position: relative;
+      }
+      .coming-soon-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        background: var(--bg2);
+        border: 1px solid var(--bg3);
+        border-radius: 3px;
+        padding: 3px 8px;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+      .btn-plan-disabled {
+        border: 1.5px solid var(--bg3);
+        color: var(--muted);
+        background: var(--bg2);
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      /* FINAL CTA */
+      .final-cta {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      .final-left {
+        padding: 60px 64px 60px 48px;
+        border-right: 1.5px solid var(--ink);
+      }
+      .final-right {
+        padding: 60px 48px;
+        background: var(--ink);
+        color: var(--bg);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .final-right .section-eyebrow {
+        color: var(--accent);
+      }
+      .final-right h2 {
+        font-family: var(--font-head);
+        font-size: clamp(2.2rem, 4vw, 3.4rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 20px;
+      }
+      .final-right p {
+        color: rgba(245, 242, 235, 0.6);
+        font-size: 0.95rem;
+        margin-bottom: 40px;
+        line-height: 1.65;
+      }
+      .final-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .final-form input {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1.5px solid rgba(255, 255, 255, 0.15);
+        color: var(--bg);
+        font-family: var(--font-body);
+        font-size: 0.92rem;
+        padding: 14px 18px;
+        border-radius: var(--radius);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .final-form input:focus {
+        border-color: var(--accent);
+      }
+      .final-form input::placeholder {
+        color: rgba(245, 242, 235, 0.3);
+      }
+      .final-form button {
+        background: var(--accent);
+        color: white;
+        font-family: var(--font-body);
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 14px 24px;
+        border-radius: var(--radius);
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .final-form button:hover {
+        opacity: 0.88;
+      }
+      .stat-num {
+        font-family: var(--font-head);
+        font-size: 3.5rem;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        line-height: 1;
+      }
+      .stat-num em {
+        color: var(--accent);
+        font-style: normal;
+      }
+      .stat-label {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .stat-divider {
+        height: 1.5px;
+        background: var(--ink);
+        width: 48px;
+        margin: 28px 0;
+      }
+
+      /* DEMO LINK */
+      .demo-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--ink2);
+        text-decoration: none;
+        border: 1.5px solid var(--ink);
+        padding: 10px 18px;
+        border-radius: var(--radius);
+        position: relative;
+        z-index: 2;
+        background: var(--bg);
+        transition:
+          background 0.2s,
+          color 0.2s,
+          border-color 0.2s;
+      }
+      .demo-link:hover {
+        background: var(--ink);
+        color: var(--bg);
+      }
+
+      /* CAT EASTER EGG — tail curls around button bottom-right corner */
+      .demo-link-cat-wrap {
+        position: relative;
+        display: inline-block;
+      }
+      /* sitting cat at rest — half-hidden behind button right edge, runs away on hover */
+      .cat-rest {
+        position: absolute;
+        left: calc(100% - 17px);
+        top: 50%;
+        transform: translateY(-50%) scaleX(-1);
+        width: 34px;
+        height: 34px;
+        pointer-events: none;
+        z-index: 1;
+        transition:
+          opacity 0.18s ease,
+          transform 0.22s ease;
+      }
+      .demo-link-cat-wrap:hover .cat-rest {
+        opacity: 0;
+        transform: translateY(-50%) translateX(72px) scaleX(-1);
+        transition:
+          opacity 0.28s ease 0.1s,
+          transform 0.38s ease;
+      }
+
+      /* paws walk out on hover */
+      .cat-paws {
+        position: absolute;
+        left: calc(100% + 6px);
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        pointer-events: none;
+        z-index: 3;
+      }
+      .cat-paw {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        opacity: 0;
+        transform: translateX(-12px) rotate(90deg);
+        transition:
+          opacity 0.18s ease,
+          transform 0.22s ease;
+      }
+      .cat-paw-1 {
+        margin-top: -8px;
+      }
+      .cat-paw-2 {
+        margin-top: 8px;
+      }
+      .cat-paw-3 {
+        margin-top: -8px;
+      }
+      .demo-link-cat-wrap:hover .cat-paw-1 {
+        opacity: 1;
+        transform: translateX(0) rotate(90deg);
+        transition-delay: 0s;
+      }
+      .demo-link-cat-wrap:hover .cat-paw-2 {
+        opacity: 1;
+        transform: translateX(0) rotate(90deg);
+        transition-delay: 0.12s;
+      }
+      .demo-link-cat-wrap:hover .cat-paw-3 {
+        opacity: 1;
+        transform: translateX(0) rotate(90deg);
+        transition-delay: 0.24s;
+      }
+
+      /* SHOWCASE */
+      .showcase {
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .showcase-header {
+        padding: 52px 48px 48px;
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .showcase-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: 1.5px solid var(--ink);
+        min-height: 440px;
+      }
+      .showcase-row:last-child {
+        border-bottom: none;
+      }
+      .showcase-text {
+        padding: 52px 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+        border-right: 1.5px solid var(--ink);
+      }
+      .showcase-row.reverse .showcase-text {
+        border-right: none;
+        border-left: 1.5px solid var(--ink);
+        order: 2;
+      }
+      .showcase-row.reverse .showcase-visual {
+        order: 1;
+      }
+      .showcase-visual {
+        background: var(--bg2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 48px;
+      }
+      .showcase-tag {
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .showcase-title {
+        font-family: var(--font-head);
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+      }
+      .showcase-desc {
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.75;
+        max-width: 380px;
+      }
+      .showcase-bullets {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .showcase-bullets li {
+        font-size: 0.86rem;
+        color: var(--ink2);
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        line-height: 1.5;
+      }
+      .showcase-bullets li::before {
+        content: "→";
+        color: var(--accent);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      /* More features strip */
+      .showcase-more {
+        padding: 28px 48px;
+        border-top: 1.5px solid var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .showcase-more-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .showcase-more-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .showcase-more-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--ink2);
+        background: var(--bg2);
+        border: 1.5px solid var(--bg3);
+        border-radius: 100px;
+        padding: 5px 14px;
+      }
+      .showcase-more-chip-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        flex-shrink: 0;
+        opacity: 0.7;
+      }
+      @media (max-width: 900px) {
+        .showcase-more {
+          padding: 24px 20px;
+          gap: 14px;
+        }
+      }
+      /* status page mockup */
+      .sp-mock {
+        background: white;
+        border: 1.5px solid var(--ink);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 6px 6px 0 var(--ink);
+        width: 100%;
+        max-width: 400px;
+      }
+      .sp-mock-header {
+        padding: 18px 18px 14px;
+        border-bottom: 1px solid var(--bg3);
+      }
+      .sp-mock-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .sp-mock-brand {
+        font-family: var(--font-head);
+        font-weight: 900;
+        font-size: 0.95rem;
+        letter-spacing: -0.03em;
+      }
+      .sp-mock-domain {
+        font-size: 0.65rem;
+        color: var(--muted);
+        font-family: monospace;
+        background: var(--bg);
+        border: 1px solid var(--bg3);
+        padding: 2px 7px;
+        border-radius: 3px;
+      }
+      .sp-mock-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--green-bg);
+        color: var(--green);
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 100px;
+        border: 1px solid rgba(26, 122, 74, 0.25);
+      }
+      .sp-mock-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+      .sp-mock-services {
+        padding: 10px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .sp-mock-svc {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 7px 8px;
+        border-radius: 3px;
+        font-size: 0.76rem;
+      }
+      .sp-mock-svc:nth-child(odd) {
+        background: var(--bg);
+      }
+      .sp-mock-svc-name {
+        color: var(--ink2);
+        font-weight: 500;
+      }
+      .sp-mock-op {
+        color: var(--green);
+        font-size: 0.7rem;
+        font-weight: 500;
+      }
+      .sp-mock-deg {
+        color: #c07a00;
+        font-size: 0.7rem;
+        font-weight: 500;
+      }
+      .sp-mock-uptime-row {
+        padding: 10px 18px 14px;
+        border-top: 1px solid var(--bg3);
+      }
+      .sp-mock-uptime-label {
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .sp-mock-bar {
+        display: flex;
+        gap: 2px;
+        height: 16px;
+      }
+      .sp-mock-seg {
+        flex: 1;
+        background: var(--green);
+        border-radius: 2px;
+        opacity: 0.65;
+      }
+      .sp-mock-seg.inc {
+        background: var(--accent);
+        opacity: 0.8;
+      }
+      .sp-mock-sub {
+        margin: 0 18px 14px;
+        padding: 9px 12px;
+        background: var(--bg);
+        border: 1px solid var(--bg3);
+        border-radius: var(--radius);
+        font-size: 0.7rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .sp-mock-sub-btn {
+        background: var(--ink);
+        color: var(--bg);
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 3px;
+      }
+      /* incident mockup */
+      .inc-mock {
+        background: white;
+        border: 1.5px solid var(--ink);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 6px 6px 0 var(--ink);
+        width: 100%;
+        max-width: 420px;
+      }
+      .inc-mock-head {
+        background: var(--green-bg);
+        border-bottom: 1.5px solid var(--green);
+        padding: 14px 18px 12px;
+      }
+      .inc-mock-resolved-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--green);
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 3px 9px;
+        border-radius: 4px;
+        margin-bottom: 7px;
+      }
+      .inc-mock-resolved-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: white;
+      }
+      .inc-mock-title {
+        font-family: var(--font-head);
+        font-weight: 900;
+        font-size: 1rem;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+      }
+      .inc-mock-posted {
+        font-size: 0.68rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .inc-mock-desc {
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--bg3);
+        font-size: 0.78rem;
+        color: var(--ink2);
+        line-height: 1.6;
+      }
+      .inc-mock-updates {
+        padding: 14px 18px;
+      }
+      .inc-updates-hdr {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .inc-updates-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ink);
+      }
+      .inc-updates-count {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--bg3);
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--ink2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .inc-update {
+        display: flex;
+        gap: 12px;
+        padding-bottom: 14px;
+        position: relative;
+      }
+      .inc-update:last-child {
+        padding-bottom: 0;
+      }
+      .inc-update::before {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 18px;
+        bottom: 0;
+        width: 1.5px;
+        background: var(--bg3);
+      }
+      .inc-update:last-child::before {
+        display: none;
+      }
+      .inc-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 3px;
+        border: 2px solid var(--bg3);
+        background: white;
+      }
+      .inc-dot.active {
+        background: var(--green);
+        border-color: var(--green);
+      }
+      .inc-row-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+        flex-wrap: wrap;
+      }
+      .inc-badge {
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        padding: 2px 7px;
+        border-radius: 3px;
+        border: 1.5px solid;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .inc-badge-dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+      }
+      .inc-badge.resolved {
+        color: var(--green);
+        border-color: var(--green);
+        background: var(--green-bg);
+      }
+      .inc-badge.resolved .inc-badge-dot {
+        background: var(--green);
+      }
+      .inc-badge.monitoring {
+        color: #c07a00;
+        border-color: #c07a00;
+        background: #fff8e6;
+      }
+      .inc-badge.monitoring .inc-badge-dot {
+        background: #c07a00;
+      }
+      .inc-badge.identified {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: var(--accent-dim);
+      }
+      .inc-badge.identified .inc-badge-dot {
+        background: var(--accent);
+      }
+      .inc-row-date {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+      .inc-msg {
+        font-size: 0.78rem;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+      /* badge embed mockup */
+      .badge-site-mock {
+        background: white;
+        border: 1.5px solid var(--ink);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 6px 6px 0 var(--ink);
+        width: 100%;
+        max-width: 400px;
+      }
+      .badge-site-nav {
+        background: #0f172a;
+        padding: 11px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .badge-site-logo {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: white;
+        letter-spacing: -0.02em;
+      }
+      .badge-site-links {
+        display: flex;
+        gap: 14px;
+      }
+      .badge-site-link {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .badge-embed {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 11px;
+        border-radius: 999px;
+        background: rgba(26, 122, 74, 0.18);
+        border: 1px solid rgba(26, 122, 74, 0.35);
+        font-size: 0.67rem;
+        font-weight: 600;
+        color: #4ade80;
+        white-space: nowrap;
+      }
+      .badge-embed-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #4ade80;
+        animation: blink 2.4s ease-in-out infinite;
+      }
+      .badge-site-body {
+        padding: 22px 18px;
+        background: var(--bg);
+      }
+      .badge-site-hero-text {
+        font-family: var(--font-head);
+        font-size: 1.2rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 6px;
+        line-height: 1.15;
+      }
+      .badge-site-sub {
+        font-size: 0.76rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .badge-site-footer {
+        background: var(--bg2);
+        border-top: 1px solid var(--bg3);
+        padding: 11px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .badge-site-footer-text {
+        font-size: 0.68rem;
+        color: var(--muted);
+      }
+      .badge-embed-sm {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--green-bg);
+        border: 1px solid rgba(26, 122, 74, 0.2);
+        font-size: 0.64rem;
+        font-weight: 600;
+        color: var(--green);
+        white-space: nowrap;
+      }
+      .badge-embed-sm-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: blink 2.4s ease-in-out infinite;
+      }
+      /* email notification preview */
+      .notif-preview {
+        border: 1.5px solid var(--bg3);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: white;
+        font-size: 0.8rem;
+      }
+      .notif-preview-bar {
+        background: var(--bg2);
+        border-bottom: 1px solid var(--bg3);
+        padding: 8px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .notif-preview-from {
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-family: monospace;
+      }
+      .notif-preview-time {
+        font-size: 0.65rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .notif-preview-body {
+        padding: 12px 14px;
+      }
+      .notif-preview-subject {
+        font-family: var(--font-head);
+        font-weight: 800;
+        font-size: 0.82rem;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 5px;
+      }
+      .notif-preview-text {
+        font-size: 0.78rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .notif-preview-footer {
+        padding: 8px 14px;
+        border-top: 1px solid var(--bg3);
+        font-size: 0.68rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .notif-preview-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        flex-shrink: 0;
+      }
+
+      /* Monitoring showcase mock */
+      .mon-mock {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+      }
+      .mon-ping-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        border: 1.5px solid var(--bg3);
+        border-radius: var(--radius);
+        padding: 10px 14px;
+        font-size: 0.78rem;
+        position: relative;
+      }
+      .mon-ping-url {
+        font-family: monospace;
+        font-size: 0.72rem;
+        color: var(--muted);
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mon-ping-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 3px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .mon-ping-badge.op {
+        background: var(--green-bg);
+        color: var(--green);
+        border: 1px solid rgba(26, 122, 74, 0.25);
+      }
+      .mon-ping-badge.deg {
+        background: rgba(232, 80, 10, 0.08);
+        color: var(--accent);
+        border: 1px solid rgba(232, 80, 10, 0.25);
+      }
+      .mon-ping-badge.out {
+        background: #fdeae8;
+        color: #d32f2f;
+        border: 1px solid rgba(211, 47, 47, 0.25);
+      }
+      .mon-ping-meta {
+        font-size: 0.65rem;
+        color: var(--muted2);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .mon-arrow {
+        text-align: center;
+        font-size: 0.7rem;
+        color: var(--muted2);
+        letter-spacing: 0.05em;
+      }
+      .mon-alert-email {
+        border: 1.5px solid rgba(211, 47, 47, 0.3);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: white;
+        font-size: 0.78rem;
+      }
+      .mon-alert-bar {
+        background: #fdeae8;
+        border-bottom: 1px solid rgba(211, 47, 47, 0.15);
+        padding: 7px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .mon-alert-from {
+        font-size: 0.68rem;
+        color: #d32f2f;
+        font-family: monospace;
+      }
+      .mon-alert-time {
+        font-size: 0.65rem;
+        color: var(--muted);
+      }
+      .mon-alert-body {
+        padding: 10px 14px;
+      }
+      .mon-alert-subject {
+        font-family: var(--font-head);
+        font-weight: 800;
+        font-size: 0.8rem;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
+      .mon-alert-text {
+        font-size: 0.73rem;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+      .mon-recovered-email {
+        border: 1.5px solid rgba(26, 122, 74, 0.3);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: white;
+        font-size: 0.78rem;
+      }
+      .mon-recovered-bar {
+        background: var(--green-bg);
+        border-bottom: 1px solid rgba(26, 122, 74, 0.15);
+        padding: 7px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .mon-recovered-from {
+        font-size: 0.68rem;
+        color: var(--green);
+        font-family: monospace;
+      }
+
+      /* FAQ ACCORDION */
+      .faq {
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .faq-inner {
+        padding: 64px 48px;
+      }
+      .faq-heading {
+        text-align: center;
+        margin-bottom: 48px;
+      }
+      .accordion-item {
+        border-bottom: 1.5px solid var(--ink);
+      }
+      .accordion-item:first-of-type {
+        border-top: 1.5px solid var(--ink);
+      }
+      .accordion-trigger {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 22px 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+      }
+      .accordion-trigger:hover .accordion-q {
+        color: var(--accent);
+      }
+      .accordion-q {
+        font-family: var(--font-head);
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        transition: color 0.2s;
+      }
+      .accordion-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1.5px solid var(--bg3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition:
+          border-color 0.2s,
+          background 0.2s,
+          transform 0.3s;
+        color: var(--muted);
+      }
+      .accordion-item.open .accordion-icon {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+        transform: rotate(45deg);
+      }
+      .accordion-body {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s ease;
+      }
+      .accordion-item.open .accordion-body {
+        grid-template-rows: 1fr;
+      }
+      .accordion-body-inner {
+        overflow: hidden;
+      }
+      .accordion-a {
+        padding-bottom: 22px;
+        font-size: 0.92rem;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+      .faq-contact {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 0.88rem;
+        color: var(--muted);
+      }
+      .faq-contact a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .faq-contact a:hover {
+        text-decoration: underline;
+      }
+
+      footer {
+        border-top: 1.5px solid var(--ink);
+        padding: 28px 48px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      footer .logo {
+        font-size: 1rem;
+      }
+      @keyframes fadeUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      #features,
+      #showcase,
+      #pricing,
+      #how-it-works,
+      #faq {
+        scroll-margin-top: 72px;
+      }
+      #signup {
+        scroll-margin-top: 120px;
+      }
+
+      /* TRUST STRIP */
+      .trust-strip {
+        border-bottom: 1.5px solid var(--ink);
+        padding: 15px 48px;
+        background: var(--bg2);
+        overflow: hidden;
+      }
+
+      .trust-strip-inner {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        flex-wrap: wrap;
+        font-size: 0.82rem;
+        color: var(--ink2);
+        font-weight: 500;
+        justify-content: center;
+      }
+
+      .trust-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 22px;
+        white-space: nowrap;
+        position: relative;
+      }
+
+      .trust-item + .trust-item::before {
+        content: "·";
+        color: var(--muted);
+        position: absolute;
+        left: 0;
+        transform: translateX(-50%);
+      }
+
+      .trust-icon {
+        width: 13px;
+        height: 13px;
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+
+      /* SCROLL REVEAL */
+      [data-reveal] {
+        opacity: 0;
+        transform: translateY(22px);
+        transition:
+          opacity 0.65s ease,
+          transform 0.65s ease;
+      }
+
+      [data-reveal].revealed {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* HAMBURGER BUTTON */
+      .nav-hamburger {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 36px;
+        height: 36px;
+        background: none;
+        border: 1.5px solid var(--bg3);
+        border-radius: var(--radius);
+        cursor: pointer;
+        padding: 8px;
+        margin-left: 4px;
+        flex-shrink: 0;
+        transition: border-color 0.2s;
+      }
+      .nav-hamburger:hover {
+        border-color: var(--ink2);
+      }
+      .nav-hamburger span {
+        display: block;
+        width: 100%;
+        height: 1.5px;
+        background: var(--ink);
+        border-radius: 2px;
+        transform-origin: center;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+      }
+      .nav-hamburger[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(6.5px) rotate(45deg);
+      }
+      .nav-hamburger[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+      .nav-hamburger[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-6.5px) rotate(-45deg);
+      }
+
+      /* MOBILE NAV OVERLAY */
+      .mobile-nav {
+        position: fixed;
+        inset: 0;
+        z-index: 98;
+        background: var(--bg);
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.28s ease;
+        overflow-y: auto;
+      }
+      .mobile-nav.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .mobile-nav-inner {
+        display: flex;
+        flex-direction: column;
+        padding: 96px 32px 52px;
+        min-height: 100%;
+      }
+      .mobile-nav-links {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .mobile-nav-link {
+        font-family: var(--font-head);
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+        text-decoration: none;
+        padding: 18px 0;
+        border-bottom: 1.5px solid var(--bg3);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.3s ease, transform 0.3s ease, color 0.15s;
+      }
+      .mobile-nav.open .mobile-nav-link { opacity: 1; transform: none; }
+      .mobile-nav.open .mobile-nav-link:nth-child(1) { transition-delay: 0.04s; }
+      .mobile-nav.open .mobile-nav-link:nth-child(2) { transition-delay: 0.08s; }
+      .mobile-nav.open .mobile-nav-link:nth-child(3) { transition-delay: 0.12s; }
+      .mobile-nav.open .mobile-nav-link:nth-child(4) { transition-delay: 0.16s; }
+      .mobile-nav.open .mobile-nav-link:nth-child(5) { transition-delay: 0.20s; }
+      .mobile-nav-link:active { color: var(--accent); }
+      .mobile-nav-bottom {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .mobile-nav-cta {
+        display: block;
+        text-align: center;
+        background: var(--ink);
+        color: var(--bg);
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 16px 24px;
+        border-radius: var(--radius);
+        border: 1.5px solid var(--ink);
+        text-decoration: none;
+        box-shadow: 3px 3px 0 var(--ink);
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .mobile-nav-cta:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      .mobile-nav-note {
+        text-align: center;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      @media (min-width: 901px) {
+        .mobile-nav { display: none; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        [data-reveal] {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+        .mock-scroll-inner,
+        .mock-status-dot {
+          animation: none;
+        }
+      }
+
+      @media (min-width: 1200px) {
+        .hero-content {
+          max-width: 860px;
+        }
+        .hero-visual {
+          max-width: 1000px;
+        }
+        .comparison-left {
+          padding: 64px 80px 64px 72px;
+        }
+        .comparison-right {
+          padding: 64px 72px;
+        }
+        .pricing {
+          padding: 64px 72px;
+        }
+        .final-left {
+          padding: 72px 80px 72px 72px;
+        }
+        .final-right {
+          padding: 72px 72px;
+        }
+        .hiw-intro {
+          padding: 64px 72px 52px;
+        }
+        .hiw-col {
+          padding: 60px 72px;
+        }
+        .feature-card {
+          padding: 44px 52px;
+        }
+        .showcase-header {
+          padding: 64px 72px 52px;
+        }
+        .showcase-text {
+          padding: 64px 72px;
+        }
+        .showcase-visual {
+          padding: 52px 72px;
+        }
+        .faq-header {
+          padding: 64px 72px 48px;
+        }
+        .faq-item {
+          padding: 40px 72px;
+        }
+        footer {
+          padding: 32px 72px;
+        }
+      }
+
+      @media (max-width: 900px) {
+        /* body — remove decorative side borders on mobile */
+        body {
+          border-left: none;
+          border-right: none;
+        }
+
+        /* NAV — mobile: disable position animation to prevent iOS viewport glitch */
+        nav {
+          padding: 14px 20px;
+          /* Only animate visual props — no top/left/right/border-radius transition */
+          transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+        }
+        nav.nav-scrolled {
+          /* Keep pinned to edges — no floating pill on mobile */
+          top: 0;
+          left: 0;
+          right: 0;
+          border-radius: 0;
+          border-bottom: 1.5px solid rgba(26,23,20,0.12);
+        }
+        .nav-link {
+          display: none;
+        }
+        .nav-hamburger {
+          display: flex;
+        }
+        .btn-primary {
+          display: none;
+        }
+
+        /* HERO */
+        .hero {
+          min-height: auto;
+          padding: 80px 20px 0;
+        }
+        .hero-content {
+          padding-bottom: 36px;
+        }
+        .hero-visual {
+          padding: 0;
+          width: 100%;
+          max-width: 100%;
+          margin-bottom: -40px;
+        }
+        .hero-visual .mock-browser {
+          transform: none !important;
+          transition: none;
+          box-shadow: 3px 3px 0 var(--ink) !important;
+        }
+        .hero-sub {
+          font-size: 0.95rem;
+          margin-bottom: 28px;
+        }
+        .waitlist-form button {
+          padding: 14px 14px;
+          font-size: 0.82rem;
+        }
+        .trust-strip {
+          padding: 14px 20px;
+        }
+        .trust-strip-inner {
+          justify-content: flex-start;
+          gap: 0;
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .trust-strip-inner::-webkit-scrollbar { display: none; }
+
+        /* COMPARISON */
+        .comparison {
+          grid-template-columns: 1fr;
+        }
+        .comparison-left {
+          padding: 40px 20px;
+          border-right: none;
+          border-bottom: 1.5px solid var(--ink);
+        }
+        .comparison-right {
+          padding: 40px 20px;
+        }
+        .section-body {
+          max-width: 100%;
+        }
+
+        /* FEATURES */
+        .features {
+          grid-template-columns: 1fr;
+        }
+
+        /* SHOWCASE */
+        .showcase-header {
+          padding: 40px 20px 32px;
+        }
+        .showcase-row {
+          grid-template-columns: 1fr;
+          min-height: auto;
+        }
+        .showcase-text {
+          padding: 36px 20px;
+          border-right: none;
+          border-bottom: 1.5px solid var(--ink);
+        }
+        .showcase-row.reverse .showcase-text {
+          border-left: none;
+          border-bottom: 1.5px solid var(--ink);
+          order: 0;
+        }
+        .showcase-row.reverse .showcase-visual {
+          order: 1;
+        }
+        .showcase-visual {
+          padding: 28px 20px;
+          overflow: hidden;
+        }
+        .showcase-visual > * {
+          max-width: 100% !important;
+        }
+        .sp-mock, .inc-mock, .badge-site-mock {
+          max-width: 100% !important;
+          box-shadow: 3px 3px 0 var(--ink);
+        }
+        .showcase-desc {
+          max-width: 100%;
+        }
+        .feature-card {
+          padding: 28px 20px;
+          border-right: none;
+          border-bottom: 1.5px solid var(--ink);
+        }
+
+        /* HOW IT WORKS */
+        .hiw-intro {
+          padding: 36px 20px 32px;
+        }
+        .hiw-grid {
+          grid-template-columns: 1fr;
+        }
+        .hiw-divider {
+          width: 100%;
+          height: 1.5px;
+        }
+        .hiw-col {
+          padding: 28px 20px;
+        }
+
+        /* COMPARISON TABLE */
+        .compare-table {
+          overflow-x: auto;
+          display: block;
+          -webkit-overflow-scrolling: touch;
+        }
+        .compare-table th,
+        .compare-table td {
+          padding: 10px 12px;
+          font-size: 0.8rem;
+          white-space: nowrap;
+        }
+        .compare-table td.label {
+          white-space: normal;
+          min-width: 120px;
+        }
+
+        /* PRICING */
+        .pricing {
+          padding: 40px 20px;
+        }
+        .pricing-head {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .pricing-head p {
+          text-align: left !important;
+          max-width: 100% !important;
+        }
+        .pricing-grid {
+          grid-template-columns: 1fr;
+        }
+        .pricing-card {
+          padding: 28px 20px;
+          border-right: none;
+          border-bottom: 1.5px solid var(--ink);
+        }
+
+        /* FAQ */
+        .faq-inner {
+          padding: 48px 20px;
+        }
+
+        /* FINAL CTA */
+        .final-cta {
+          grid-template-columns: 1fr;
+        }
+        .final-left {
+          padding: 40px 20px;
+          border-right: none;
+          border-bottom: 1.5px solid var(--ink);
+        }
+        .final-right {
+          padding: 40px 20px;
+        }
+        .mon-mock {
+          max-width: 100%;
+          overflow: hidden;
+        }
+        .mon-ping-url {
+          max-width: 120px;
+        }
+
+        footer {
+          flex-direction: column;
+          gap: 10px;
+          text-align: center;
+          padding: 20px;
+        }
+        footer > div {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        /* NAV — hide login ghost button, keep only CTA */
+        .btn-ghost {
+          display: none;
+        }
+        .hero-links {
+          display: none;
+        }
+
+        h1 {
+          font-size: 2.4rem;
+          line-height: 1;
+        }
+        .hero {
+          padding: 72px 16px 0;
+        }
+        .hero-visual {
+          margin-bottom: -16px;
+        }
+        /* Reduce mock browser height so it doesn't dominate small screens */
+        .hero-visual .mock-body {
+          height: 260px !important;
+        }
+        .hero-tag {
+          font-size: 0.7rem;
+        }
+
+        /* HERO CTA — swap form for single button on mobile */
+        .waitlist-wrap form,
+        .waitlist-wrap .form-note {
+          display: none;
+        }
+        .hero-mobile-cta {
+          display: block;
+          width: 100%;
+          text-align: center;
+          background: var(--ink);
+          color: var(--bg);
+          font-family: var(--font-body);
+          font-weight: 600;
+          font-size: 1rem;
+          padding: 16px 24px;
+          border-radius: var(--radius);
+          border: 1.5px solid var(--ink);
+          text-decoration: none;
+          box-shadow: 3px 3px 0 var(--ink);
+          transition: background 0.2s, border-color 0.2s;
+        }
+        .hero-mobile-cta:hover {
+          background: var(--accent);
+          border-color: var(--accent);
+        }
+
+        .feature-card {
+          padding: 24px 16px;
+        }
+        .hiw-intro {
+          padding: 28px 16px 28px;
+        }
+        .hiw-col {
+          padding: 24px 16px;
+        }
+        .pricing {
+          padding: 32px 16px;
+        }
+        .pricing-card {
+          padding: 24px 16px;
+        }
+        .compare-table th,
+        .compare-table td {
+          padding: 8px 10px;
+          font-size: 0.75rem;
+        }
+        .faq-inner {
+          padding: 32px 16px;
+        }
+        .accordion-q {
+          font-size: 0.9rem;
+        }
+        .final-left {
+          padding: 32px 16px;
+        }
+        .final-right {
+          padding: 32px 16px;
+        }
+        .section-title {
+          font-size: 1.8rem;
+        }
+      }
+
+      @media (max-width: 360px) {
+        h1 {
+          font-size: 2.2rem;
+        }
+        .hero-tag {
+          font-size: 0.68rem;
+          padding: 4px 10px 4px 6px;
+        }
+        .plan-price {
+          font-size: 2.8rem;
+        }
+        .stat-strip-num {
+          font-size: 1.6rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">
+        <div class="logo-pip"></div>
+        Statsy
+      </div>
+      <div class="nav-right">
+        <a href="#showcase" class="nav-link">Features</a>
+        <a href="#how-it-works" class="nav-link">How it works</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="https://statsy.page/blog" class="nav-link">Blog</a>
+        <a href="https://statsy.page/login" class="btn-ghost">Log in</a>
+        <a href="https://statsy.page/signup" class="btn-primary"
+          >Get Started Free</a
+        >
+        <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile nav overlay -->
+    <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+      <div class="mobile-nav-inner">
+        <div class="mobile-nav-links">
+          <a href="#showcase" class="mobile-nav-link">Features</a>
+          <a href="#how-it-works" class="mobile-nav-link">How it works</a>
+          <a href="#pricing" class="mobile-nav-link">Pricing</a>
+          <a href="#faq" class="mobile-nav-link">FAQ</a>
+          <a href="https://statsy.page/blog" class="mobile-nav-link">Blog</a>
+        </div>
+        <div class="mobile-nav-bottom">
+          <a href="https://statsy.page/signup" class="mobile-nav-cta">Get Started Free →</a>
+          <p class="mobile-nav-note">No credit card. No spam.</p>
+        </div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-3" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-4" aria-hidden="true"></div>
+
+      <!-- Hero copy + CTA -->
+      <div class="hero-content">
+        <div class="hero-tag">
+          <span>Free</span> Built for transparency when it matters
+        </div>
+        <h1>
+          The status page<br />your users check<br /><span class="accent">when things break.</span>
+        </h1>
+        <p class="hero-sub">
+          Status page, uptime monitoring, and incident updates so your users always know you're on it. Free to start.
+        </p>
+        <div class="waitlist-wrap" id="signup">
+          <div
+            class="plan-indicator"
+            id="plan-indicator"
+            style="
+              display: none;
+              margin-bottom: 12px;
+              padding: 10px 16px;
+              background: rgba(232, 80, 10, 0.12);
+              border: 1.5px solid rgba(232, 80, 10, 0.25);
+              border-radius: var(--radius);
+              font-size: 0.85rem;
+              color: var(--accent);
+              font-weight: 500;
+            "
+          ></div>
+          <form
+            action="https://gmail.us11.list-manage.com/subscribe/post?u=43a20782ad0454c2341248571&amp;id=ac4afe3a35&amp;f_id=0030d4e3f0"
+            method="post"
+            id="hero-mc-form"
+            target="_blank"
+            novalidate
+          >
+            <div class="waitlist-form">
+              <input
+                type="email"
+                name="EMAIL"
+                id="hero-email"
+                placeholder="you@yoursite.com"
+                required
+              />
+              <button
+                type="button"
+                onclick="
+                  handleMcSubmit(
+                    'hero-email',
+                    'hero-success',
+                    document.getElementById('hero-mc-form'),
+                  )
+                "
+              >
+                Get Started Free
+              </button>
+            </div>
+            <input
+              type="hidden"
+              name="PLAN"
+              id="plan-interest"
+              value="Not selected"
+            />
+            <div aria-hidden="true" style="position: absolute; left: -5000px">
+              <input
+                type="text"
+                name="b_43a20782ad0454c2341248571_ac4afe3a35"
+                tabindex="-1"
+                value=""
+              />
+            </div>
+          </form>
+          <div class="success-msg" id="hero-success">
+            🎉 Redirecting you to sign up...
+          </div>
+          <p class="form-note">No credit card. No spam.</p>
+          <a href="https://statsy.page/signup" class="hero-mobile-cta">Get Started Free →</a>
+        </div>
+        <div class="hero-links">
+          <a href="https://status.statsy.page" target="_blank" rel="noopener" class="hero-link-secondary">
+            See a live example ↗
+          </a>
+          <div class="hero-links-divider"></div>
+          <div class="demo-link-cat-wrap">
+            <img class="cat-rest" src="https://cdn.jsdelivr.net/npm/openmoji@15.0.0/color/svg/1F408.svg" alt="" aria-hidden="true"/>
+            <div class="cat-paws" aria-hidden="true">
+              <svg class="cat-paw cat-paw-1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="22" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(-20 22 32)"/><ellipse cx="40" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(-8 40 20)"/><ellipse cx="60" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(8 60 20)"/><ellipse cx="78" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(20 78 32)"/><ellipse cx="50" cy="66" rx="26" ry="21" fill="#ff8c42"/></svg>
+              <svg class="cat-paw cat-paw-2" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="22" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(-20 22 32)"/><ellipse cx="40" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(-8 40 20)"/><ellipse cx="60" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(8 60 20)"/><ellipse cx="78" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(20 78 32)"/><ellipse cx="50" cy="66" rx="26" ry="21" fill="#ff8c42"/></svg>
+              <svg class="cat-paw cat-paw-3" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="22" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(-20 22 32)"/><ellipse cx="40" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(-8 40 20)"/><ellipse cx="60" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(8 60 20)"/><ellipse cx="78" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(20 78 32)"/><ellipse cx="50" cy="66" rx="26" ry="21" fill="#ff8c42"/></svg>
+            </div>
+            <a href="demo.html" target="_blank" rel="noopener" class="hero-link-secondary">
+              Try the demo ↗
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- /hero-content -->
+
+      <!-- Product visual -->
+      <div class="hero-visual">
+        <div class="hero-visual-glow"></div>
+        <div class="mock-browser">
+          <div class="mock-bar">
+            <div class="mock-dots">
+              <div class="mock-dot"></div>
+              <div class="mock-dot"></div>
+              <div class="mock-dot"></div>
+            </div>
+            <div class="mock-url">status.yoursite.com</div>
+          </div>
+          <div class="mock-body" style="overflow:hidden; padding:0; height:420px;">
+            <div class="mock-scroll-inner">
+              <!-- Header -->
+              <div class="mock-header">
+                <div class="mock-brand">YourSite</div>
+                <div class="mock-status-badge"><div class="mock-status-dot"></div>All systems operational</div>
+              </div>
+              <!-- Services -->
+              <div class="mock-services">
+                <div class="mock-service"><span class="mock-service-name">Website</span><span class="mock-op">● Operational</span></div>
+                <div class="mock-service"><span class="mock-service-name">API</span><span class="mock-op">● Operational</span></div>
+                <div class="mock-service"><span class="mock-service-name">Auth</span><span class="mock-op">● Operational</span></div>
+                <div class="mock-service"><span class="mock-service-name">Database</span><span class="mock-op mock-degraded">● Degraded</span></div>
+                <div class="mock-service"><span class="mock-service-name">Email Delivery</span><span class="mock-op">● Operational</span></div>
+                <div class="mock-service"><span class="mock-service-name">Dashboard</span><span class="mock-op">● Operational</span></div>
+              </div>
+              <!-- Uptime -->
+              <div class="mock-uptime">
+                <div class="mock-uptime-label">90-day uptime — 99.4% &nbsp;·&nbsp; <span style="color:var(--green);font-weight:600;">13 days without incident</span></div>
+                <div class="uptime-bar">
+                  <div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment incident"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment incident"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div><div class="uptime-segment"></div>
+                </div>
+              </div>
+              <!-- Past Incidents -->
+              <div style="padding-top:20px;border-top:1px solid var(--bg3);margin-top:4px;">
+                <div style="font-family:var(--font-head);font-weight:900;font-size:0.95rem;letter-spacing:-0.02em;color:var(--ink);margin-bottom:12px;">Past Incidents</div>
+                <div style="border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;margin-bottom:10px;">
+                  <div style="background:var(--green-bg);border-bottom:1px solid rgba(26,122,74,0.2);padding:10px 14px;">
+                    <div style="display:inline-flex;align-items:center;gap:5px;background:var(--green);color:white;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:2px 8px;border-radius:3px;margin-bottom:5px;">● Resolved</div>
+                    <div style="font-family:var(--font-head);font-weight:800;font-size:0.9rem;letter-spacing:-0.02em;">API Performance Issues</div>
+                    <div style="font-size:0.68rem;color:var(--muted);margin-top:2px;">Posted May 17</div>
+                  </div>
+                  <div style="padding:10px 14px;font-size:0.78rem;color:var(--muted);">Elevated response times on /v1 endpoints. Resolved after scaling connection limits.</div>
+                </div>
+                <div style="border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;margin-bottom:20px;">
+                  <div style="background:var(--green-bg);border-bottom:1px solid rgba(26,122,74,0.2);padding:10px 14px;">
+                    <div style="display:inline-flex;align-items:center;gap:5px;background:var(--green);color:white;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:2px 8px;border-radius:3px;margin-bottom:5px;">● Resolved</div>
+                    <div style="font-family:var(--font-head);font-weight:800;font-size:0.9rem;letter-spacing:-0.02em;">Database Latency Spike</div>
+                    <div style="font-size:0.68rem;color:var(--muted);margin-top:2px;">Posted May 3</div>
+                  </div>
+                  <div style="padding:10px 14px;font-size:0.78rem;color:var(--muted);">Intermittent slow queries on read replicas. Fixed with index optimization.</div>
+                </div>
+              </div>
+              <!-- Past Maintenance -->
+              <div style="padding-top:20px;border-top:1px solid var(--bg3);">
+                <div style="font-family:var(--font-head);font-weight:900;font-size:0.95rem;letter-spacing:-0.02em;color:var(--ink);margin-bottom:12px;">Past Maintenance</div>
+                <div style="border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;margin-bottom:10px;">
+                  <div style="background:#e8f5ee;border-bottom:1px solid rgba(26,122,74,0.2);padding:10px 14px;">
+                    <div style="display:inline-flex;align-items:center;gap:5px;background:var(--green);color:white;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:2px 8px;border-radius:3px;margin-bottom:5px;">✓ Completed</div>
+                    <div style="font-family:var(--font-head);font-weight:800;font-size:0.9rem;letter-spacing:-0.02em;">Migration + Infrastructure Upgrade</div>
+                    <div style="font-size:0.68rem;color:var(--muted);margin-top:2px;">May 30, 2026 · 1:00 AM – 2:00 AM</div>
+                  </div>
+                  <div style="padding:10px 14px;font-size:0.78rem;color:var(--muted);">We'll be migrating and upgrading our database infrastructure. Some delays may occur during this window.</div>
+                  <div style="padding:4px 14px 10px;font-size:0.72rem;color:var(--muted);">Affected: <span style="color:var(--ink2);font-weight:500;">Website, API, Auto Monitoring</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /hero-visual -->
+
+      <!-- Demo links -->
+    </section>
+    <div class="hero-sep"></div>
+
+    <!-- TRUST STRIP -->
+    <div class="trust-strip">
+      <div class="trust-strip-inner">
+        <span class="trust-item">
+          <svg
+            class="trust-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          Under 5-min setup
+        </span>
+        <span class="trust-item">
+          <svg
+            class="trust-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          Free forever plan
+        </span>
+        <span class="trust-item">
+          <svg
+            class="trust-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          Automated monitoring
+        </span>
+        <span class="trust-item">
+          <svg
+            class="trust-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+          Email subscriber alerts
+        </span>
+        <span class="trust-item">
+          <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+          Scheduled maintenance
+        </span>
+      </div>
+    </div>
+
+    <!-- STAT STRIP -->
+    <div class="stat-strip">
+      <div class="stat-strip-item">
+        <div class="stat-strip-num"><em>$0</em></div>
+        <div class="stat-strip-label">to get started on free plan, forever</div>
+      </div>
+      <div class="stat-strip-item">
+        <div class="stat-strip-num">5 <em>min</em></div>
+        <div class="stat-strip-label">average setup time from signup to live</div>
+      </div>
+      <div class="stat-strip-item">
+        <div class="stat-strip-num">1 <em>min</em></div>
+        <div class="stat-strip-label">monitoring check interval on Pro</div>
+      </div>
+      <div class="stat-strip-item">
+        <div class="stat-strip-num"><em>0</em> fluff</div>
+        <div class="stat-strip-label">no onboarding calls, no complexity</div>
+      </div>
+    </div>
+
+    <!-- FEATURES GRID — commented out (fully covered by showcase section below)
+    <section class="features" id="features">
+      <div class="feature-card">
+        <div class="feature-icon-wrap">⚡</div>
+        <div class="feature-num">01</div>
+        <div class="feature-title">Up in minutes, not days</div>
+        <p class="feature-desc">
+          Create your status page, add your services, and share your link. No
+          onboarding calls, no documentation rabbit holes. Just working
+          software.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrap">🔔</div>
+        <div class="feature-num">02</div>
+        <div class="feature-title">Keep users in the loop</div>
+        <p class="feature-desc">
+          Post incidents and updates in seconds. Subscribers get notified by
+          email automatically, focus on fixing the problem not answering support
+          tickets.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrap">📡</div>
+        <div class="feature-num">03</div>
+        <div class="feature-title">Automatic uptime monitoring</div>
+        <p class="feature-desc">
+          Point Statsy at any URL and it checks it automatically, no manual updates needed. Slow response? Statsy marks it degraded. Down? Outage. Your status page stays accurate without you lifting a finger.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrap">💸</div>
+        <div class="feature-num">04</div>
+        <div class="feature-title">Start free, upgrade when ready</div>
+        <p class="feature-desc">
+          Start completely free, no credit card needed. Upgrade to Pro at $15/mo
+          when you need a custom domain, more subscribers, or to remove Statsy
+          branding.
+        </p>
+      </div>
+    </section>
+    END FEATURES GRID COMMENT -->
+
+    <!-- SHOWCASE — What you get -->
+    <section class="showcase" id="showcase" data-reveal>
+      <!-- showcase header removed — rows have their own tags -->
+
+      <!-- 01 Status page -->
+      <div class="showcase-row">
+        <div class="showcase-text">
+          <span class="showcase-tag">01 — Status page</span>
+          <h3 class="showcase-title">A clean page your users actually trust</h3>
+          <p class="showcase-desc">
+            Public status page at your own domain. Real-time service health,
+            uptime history, and a one-click subscribe, no account needed for
+            visitors.
+          </p>
+          <ul class="showcase-bullets">
+            <li>Custom domain on paid plans (status.yoursite.com)</li>
+            <li>Per-service status: Operational, Degraded, or Outage</li>
+            <li>90-day uptime history, tracked automatically</li>
+            <li>Visitors subscribe for email alerts in one click</li>
+          </ul>
+        </div>
+        <div class="showcase-visual">
+          <div class="sp-mock">
+            <div class="sp-mock-header">
+              <div class="sp-mock-top">
+                <span class="sp-mock-brand">YourSite</span>
+                <span class="sp-mock-domain">status.yoursite.com</span>
+              </div>
+              <div class="sp-mock-pill">
+                <div class="sp-mock-dot"></div>
+                All systems operational
+              </div>
+            </div>
+            <div class="sp-mock-services">
+              <div class="sp-mock-svc">
+                <span class="sp-mock-svc-name">Website</span
+                ><span class="sp-mock-op">● Operational</span>
+              </div>
+              <div class="sp-mock-svc">
+                <span class="sp-mock-svc-name">API</span
+                ><span class="sp-mock-op">● Operational</span>
+              </div>
+              <div class="sp-mock-svc">
+                <span class="sp-mock-svc-name">Database</span
+                ><span class="sp-mock-deg">● Degraded</span>
+              </div>
+              <div class="sp-mock-svc">
+                <span class="sp-mock-svc-name">Email</span
+                ><span class="sp-mock-op">● Operational</span>
+              </div>
+            </div>
+            <div class="sp-mock-uptime-row">
+              <div class="sp-mock-uptime-label">90-day uptime — 99.4%</div>
+              <div class="sp-mock-bar">
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg inc"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg inc"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+                <div class="sp-mock-seg"></div>
+              </div>
+            </div>
+            <div class="sp-mock-sub">
+              <span>Get notified by email</span>
+              <span class="sp-mock-sub-btn">Subscribe</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 Incident management — commented out (covered by how-it-works + status page row)
+      <div class="showcase-row reverse">
+        <div class="showcase-visual">
+          <div class="inc-mock">
+            <div class="inc-mock-head">
+              <div class="inc-mock-resolved-pill"><div class="inc-mock-resolved-dot"></div> Resolved</div>
+              <div class="inc-mock-title">API Latency Spike</div>
+              <div class="inc-mock-posted">Posted Apr 27</div>
+            </div>
+            <div class="inc-mock-desc">
+              Elevated response times on /v1 endpoints due to a database connection pool exhaustion. Resolved after scaling connection limits.
+            </div>
+            <div class="inc-mock-updates">
+              <div class="inc-updates-hdr">
+                <span class="inc-updates-label">Updates</span>
+                <span class="inc-updates-count">3</span>
+              </div>
+              <div class="inc-update">
+                <div class="inc-dot active"></div>
+                <div class="inc-body">
+                  <div class="inc-row-top">
+                    <span class="inc-badge resolved"><span class="inc-badge-dot"></span>Resolved</span>
+                    <span class="inc-row-date">Apr 27</span>
+                  </div>
+                  <div class="inc-msg">Issue resolved, API response time back to normal.</div>
+                </div>
+              </div>
+              <div class="inc-update">
+                <div class="inc-dot"></div>
+                <div class="inc-body">
+                  <div class="inc-row-top">
+                    <span class="inc-badge monitoring"><span class="inc-badge-dot"></span>Monitoring</span>
+                    <span class="inc-row-date">Apr 27</span>
+                  </div>
+                  <div class="inc-msg">Delivery rates back to normal. Watching for recurrence over the next 30 minutes.</div>
+                </div>
+              </div>
+              <div class="inc-update">
+                <div class="inc-dot"></div>
+                <div class="inc-body">
+                  <div class="inc-row-top">
+                    <span class="inc-badge identified"><span class="inc-badge-dot"></span>Identified</span>
+                    <span class="inc-row-date">Apr 27</span>
+                  </div>
+                  <div class="inc-msg">Issue identified, bug will be fixed as soon as possible.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="showcase-text">
+          <span class="showcase-tag">02 — Incident management</span>
+          <h3 class="showcase-title">
+            Post updates in seconds,<br />not minutes
+          </h3>
+          <p class="showcase-desc">
+            When something breaks, post an incident in a click. Subscribers get
+            notified by email automatically — no support tickets flooding in
+            while you're still fixing it.
+          </p>
+          <ul class="showcase-bullets">
+            <li>One-click incident creation from your dashboard</li>
+            <li>Full timeline: Investigating → Update → Resolved</li>
+            <li>Automatic email notifications to all subscribers</li>
+            <li>Incident history stays on your page permanently</li>
+          </ul>
+          <div class="notif-preview">
+            <div class="notif-preview-bar">
+              <span class="notif-preview-from">notifications@statsy.page</span>
+              <span class="notif-preview-time">just now</span>
+            </div>
+            <div class="notif-preview-body">
+              <div class="notif-preview-subject">
+                [Resolved] Database latency spike
+              </div>
+              <div class="notif-preview-text">
+                The incident has been resolved. All services are back to normal.
+                Thank you for your patience.
+              </div>
+            </div>
+            <div class="notif-preview-footer">
+              <div class="notif-preview-dot"></div>
+              Sent automatically to 24 subscribers
+            </div>
+          </div>
+        </div>
+      </div>
+      END INCIDENT COMMENT -->
+
+      <!-- 03 Embeddable badge — commented out (nice-to-have, not a primary hook)
+
+      <div class="showcase-row">
+        <div class="showcase-text">
+          <span class="showcase-tag">03 — Embeddable badge</span>
+          <h3 class="showcase-title">
+            One line of code,<br />everywhere you need it
+          </h3>
+          <p class="showcase-desc">
+            Paste a single
+            <code
+              style="
+                font-family: monospace;
+                font-size: 0.85em;
+                background: var(--bg3);
+                padding: 1px 5px;
+                border-radius: 3px;
+              "
+              >&lt;iframe&gt;</code
+            >
+            anywhere on your website, docs, or app. It shows live status and
+            auto-refreshes. Zero JavaScript required.
+          </p>
+          <ul class="showcase-bullets">
+            <li>Works anywhere iframes work</li>
+            <li>Auto-refreshes every new incidents/update</li>
+            <li>Green / orange / red reflects live service health</li>
+            <li>Links users to your full status page on click</li>
+          </ul>
+          <div class="demo-link-cat-wrap" style="align-self: flex-start; margin-top: 4px;">
+            <img class="cat-rest" src="https://cdn.jsdelivr.net/npm/openmoji@15.0.0/color/svg/1F408.svg" alt="" aria-hidden="true"/>
+            <div class="cat-paws" aria-hidden="true">
+              <svg class="cat-paw cat-paw-1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="22" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(-20 22 32)"/>
+                <ellipse cx="40" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(-8 40 20)"/>
+                <ellipse cx="60" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(8 60 20)"/>
+                <ellipse cx="78" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(20 78 32)"/>
+                <ellipse cx="50" cy="66" rx="26" ry="21" fill="#ff8c42"/>
+              </svg>
+              <svg class="cat-paw cat-paw-2" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="22" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(-20 22 32)"/>
+                <ellipse cx="40" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(-8 40 20)"/>
+                <ellipse cx="60" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(8 60 20)"/>
+                <ellipse cx="78" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(20 78 32)"/>
+                <ellipse cx="50" cy="66" rx="26" ry="21" fill="#ff8c42"/>
+              </svg>
+              <svg class="cat-paw cat-paw-3" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="22" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(-20 22 32)"/>
+                <ellipse cx="40" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(-8 40 20)"/>
+                <ellipse cx="60" cy="20" rx="10" ry="13" fill="#ff8c42" transform="rotate(8 60 20)"/>
+                <ellipse cx="78" cy="32" rx="10" ry="13" fill="#ff8c42" transform="rotate(20 78 32)"/>
+                <ellipse cx="50" cy="66" rx="26" ry="21" fill="#ff8c42"/>
+              </svg>
+            </div>
+            <a
+              href="./demo.html"
+              target="_blank"
+              rel="noopener"
+              class="demo-link"
+              style="margin-top: 0"
+              >See it live on a demo site ↗</a
+            >
+          </div>
+        </div>
+        <div class="showcase-visual">
+          <div class="badge-site-mock">
+            <div class="badge-site-nav">
+              <span class="badge-site-logo">YourApp</span>
+              <div style="display: flex; align-items: center; gap: 14px">
+                <div class="badge-site-links">
+                  <span class="badge-site-link">Docs</span>
+                  <span class="badge-site-link">Blog</span>
+                </div>
+                <div class="badge-embed">
+                  <div class="badge-embed-dot"></div>
+                  YourApp · All systems operational
+                </div>
+              </div>
+            </div>
+            <div class="badge-site-body">
+              <div class="badge-site-hero-text">
+                Ship faster.<br />Break less.
+              </div>
+              <div class="badge-site-sub">
+                The development platform built for teams who move fast.
+              </div>
+            </div>
+            <div class="badge-site-footer">
+              <span class="badge-site-footer-text">© 2026 YourApp</span>
+              <div class="badge-embed-sm">
+                <div class="badge-embed-sm-dot"></div>
+                YourApp · All systems operational
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      END BADGE COMMENT -->
+
+      <!-- 04 Automated monitoring -->
+      <div class="showcase-row reverse">
+        <div class="showcase-visual">
+          <div class="mon-mock">
+            <!-- Ping rows -->
+            <div class="mon-ping-row">
+              <span class="mon-ping-url">https://api.yourapp.com/health</span>
+              <span class="mon-ping-meta">142ms</span>
+              <span class="mon-ping-badge op">Operational</span>
+            </div>
+            <div class="mon-ping-row">
+              <span class="mon-ping-url">https://yourapp.com</span>
+              <span class="mon-ping-meta">2.4s</span>
+              <span class="mon-ping-badge deg">Degraded</span>
+            </div>
+            <div class="mon-ping-row">
+              <span class="mon-ping-url">https://dashboard.yourapp.com</span>
+              <span class="mon-ping-meta">timeout</span>
+              <span class="mon-ping-badge out">Outage</span>
+            </div>
+            <div class="mon-arrow">↓ status changed · alerts fired</div>
+            <!-- Alert email -->
+            <div class="mon-alert-email">
+              <div class="mon-alert-bar">
+                <span class="mon-alert-from">noreply@statsy.page</span>
+                <span class="mon-alert-time">just now</span>
+              </div>
+              <div class="mon-alert-body">
+                <div class="mon-alert-subject">
+                  ⚠ Outage: dashboard.yourapp.com — YourApp
+                </div>
+                <div class="mon-alert-text">
+                  Statsy detected that dashboard is down. Your status page has
+                  been updated automatically.
+                </div>
+              </div>
+            </div>
+            <!-- Recovery email -->
+            <div class="mon-recovered-email">
+              <div class="mon-recovered-bar">
+                <span class="mon-recovered-from">noreply@statsy.page</span>
+                <span class="mon-alert-time">4 min later</span>
+              </div>
+              <div class="mon-alert-body">
+                <div class="mon-alert-subject" style="color: #1a7a4a">
+                  ✓ Recovered: dashboard is back up
+                </div>
+                <div class="mon-alert-text">
+                  dashboard.yourapp.com is back to Operational. Response time:
+                  198ms.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="showcase-text">
+          <span class="showcase-tag">02 — Automated monitoring</span>
+          <h3 class="showcase-title">Know before<br />your users do</h3>
+          <p class="showcase-desc">
+            Point Statsy at any URL. Every minute it checks: slow response, bad
+            status code, or timeout. Status updates automatically and you get an
+            email the moment something changes.
+          </p>
+          <ul class="showcase-bullets">
+            <li>
+              Checks every customizable interval on Pro (starting from 1 min),
+              every 5 min on Free
+            </li>
+            <li>Slow response (&gt;2s) auto-marked as Degraded</li>
+            <li>
+              2 consecutive failures required before Outage, no false alarms
+            </li>
+            <li>Email you and your subscribers the moment status changes</li>
+            <li>Custom check interval per service on Pro</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- More features strip -->
+      <div class="showcase-more">
+        <span class="showcase-more-label">Also included</span>
+        <div class="showcase-more-chips">
+          <span class="showcase-more-chip"><span class="showcase-more-chip-dot"></span>Incident management</span>
+          <span class="showcase-more-chip"><span class="showcase-more-chip-dot"></span>Email subscriber alerts</span>
+          <span class="showcase-more-chip"><span class="showcase-more-chip-dot"></span>Embeddable status badge</span>
+          <span class="showcase-more-chip"><span class="showcase-more-chip-dot"></span>Scheduled maintenance</span>
+          <span class="showcase-more-chip"><span class="showcase-more-chip-dot"></span>Custom domain</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works" data-reveal>
+      <div class="hiw-intro">
+        <p class="section-eyebrow">How it works</p>
+        <h2 class="section-title" style="margin-bottom: 0">
+          Simple for you.<br />Clear for your users.
+        </h2>
+      </div>
+      <div class="hiw-grid">
+        <!-- OWNER SIDE -->
+        <div class="hiw-col">
+          <div class="hiw-col-label">
+            <div class="hiw-col-pip" style="background: var(--accent)"></div>
+            For you, the owner
+          </div>
+          <div class="hiw-steps">
+            <div class="hiw-step">
+              <div class="hiw-step-num">1</div>
+              <div class="hiw-step-body">
+                <div class="hiw-step-title">Create your status page</div>
+                <p class="hiw-step-desc">
+                  Sign up, pick a name and a slug. Your page is live at
+                  <span class="hiw-code">yoursite.statsy.page</span> in seconds.
+                </p>
+              </div>
+            </div>
+            <div class="hiw-connector"></div>
+            <div class="hiw-step">
+              <div class="hiw-step-num">2</div>
+              <div class="hiw-step-body">
+                <div class="hiw-step-title">Add your services</div>
+                <p class="hiw-step-desc">
+                  List the parts of your product: API, website, database,
+                  payments. Set each one to Operational, Degraded, or Outage.
+                </p>
+              </div>
+            </div>
+            <div class="hiw-connector"></div>
+            <div class="hiw-step">
+              <div class="hiw-step-num">3</div>
+              <div class="hiw-step-body">
+                <div class="hiw-step-title">
+                  Post incidents when things break
+                </div>
+                <p class="hiw-step-desc">
+                  Write a quick update, change the status, and hit post. All
+                  subscribers get notified by email automatically.
+                </p>
+              </div>
+            </div>
+            <div class="hiw-connector"></div>
+            <div class="hiw-step">
+              <div class="hiw-step-num">4</div>
+              <div class="hiw-step-body">
+                <div class="hiw-step-title">Resolve and close</div>
+                <p class="hiw-step-desc">
+                  Once the incident is fixed, mark it resolved. Your subscribers
+                  get a final update and trust is restored.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hiw-divider"></div>
+
+        <!-- USER SIDE -->
+        <div class="hiw-col">
+          <div class="hiw-col-label">
+            <div class="hiw-col-pip" style="background: var(--green)"></div>
+            For your users, the visitors
+          </div>
+          <div class="hiw-steps">
+            <div class="hiw-step">
+              <div
+                class="hiw-step-num"
+                style="
+                  background: var(--green-bg);
+                  color: var(--green);
+                  border-color: rgba(26, 122, 74, 0.2);
+                "
+              >
+                1
+              </div>
+              <div class="hiw-step-body">
+                <div class="hiw-step-title">Visit your status page</div>
+                <p class="hiw-step-desc">
+                  They open your status link and instantly see which services
+                  are up, degraded, or down. No login needed.
+                </p>
+              </div>
+            </div>
+            <div class="hiw-connector"></div>
+            <div class="hiw-step">
+              <div
+                class="hiw-step-num"
+                style="
+                  background: var(--green-bg);
+                  color: var(--green);
+                  border-color: rgba(26, 122, 74, 0.2);
+                "
+              >
+                2
+              </div>
+              <div class="hiw-step-body">
+                <div class="hiw-step-title">Subscribe for updates</div>
+                <p class="hiw-step-desc">
+                  They enter their email once and subscribe. No account, no
+                  password. One click to stay informed.
+                </p>
+              </div>
+            </div>
+            <div class="hiw-connector"></div>
+            <div class="hiw-step">
+              <div
+                class="hiw-step-num"
+                style="
+                  background: var(--green-bg);
+                  color: var(--green);
+                  border-color: rgba(26, 122, 74, 0.2);
+                "
+              >
+                3
+              </div>
+              <div class="hiw-step-body">
+                <div class="hiw-step-title">Get notified by email</div>
+                <p class="hiw-step-desc">
+                  When you post an incident, they get an email immediately. No
+                  more angry tweets asking "is your site down?"
+                </p>
+              </div>
+            </div>
+            <div class="hiw-connector"></div>
+            <div class="hiw-step">
+              <div
+                class="hiw-step-num"
+                style="
+                  background: var(--green-bg);
+                  color: var(--green);
+                  border-color: rgba(26, 122, 74, 0.2);
+                "
+              >
+                4
+              </div>
+              <div class="hiw-step-body">
+                <div class="hiw-step-title">Know when it's resolved</div>
+                <p class="hiw-step-desc">
+                  They receive a resolution email when the incident is closed.
+                  They feel heard, informed, and trust you more.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARISON SECTION — folded into pricing below
+    <section class="comparison">
+      <div class="comparison-left">
+        <p class="section-eyebrow">Built different</p>
+        <h2 class="section-title">Simple by design.<br />Not by accident.</h2>
+        <p class="section-body">
+          Most status page tools were built for large engineering teams. Statsy
+          is built for anyone running a website, app, or online service.
+          Whether you're a solo developer, a small team, or an agency managing
+          clients.
+        </p>
+      </div>
+      <div class="comparison-right">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>What you get</th>
+              <th>Most tools</th>
+              <th class="us">Statsy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="label">Starting price</td>
+              <td>$20+ / mo</td>
+              <td class="us">Free</td>
+            </tr>
+            <tr>
+              <td class="label">Custom domain</td>
+              <td>Higher tiers only</td>
+              <td class="us">Paid plans</td>
+            </tr>
+            <tr>
+              <td class="label">Setup time</td>
+              <td>Hours</td>
+              <td class="us">Minutes</td>
+            </tr>
+            <tr>
+              <td class="label">Email notifications</td>
+              <td class="yes">✓</td>
+              <td class="us">✓</td>
+            </tr>
+             <tr>
+              <td class="label">Automated monitoring</td>
+              <td class="no">✗</td>
+              <td class="us">✓</td>
+            </tr>
+            <tr>
+              <td class="label">Made for small teams</td>
+              <td class="no">✗</td>
+              <td class="us">✓</td>
+            </tr>
+            <tr>
+              <td class="label">
+                Embeddable badge
+                <a
+                  href="./demo.html"
+                  target="_blank"
+                  rel="noopener"
+                  style="
+                    display: block;
+                    font-size: 0.72rem;
+                    font-weight: 500;
+                    color: var(--accent);
+                    text-decoration: none;
+                    margin-top: 2px;
+                  "
+                  >See it live ↗</a
+                >
+              </td>
+              <td class="no">✗</td>
+              <td class="us">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    END COMPARISON COMMENT -->
+
+    <section class="pricing" id="pricing" data-reveal>
+      <div class="pricing-head">
+        <div>
+          <p class="section-eyebrow">Pricing</p>
+          <h2 class="section-title">Start free.<br />Grow when ready.</h2>
+        </div>
+      </div>
+      <!-- comparison table -->
+      <table
+        class="compare-table"
+        style="
+          table-layout: fixed;
+          border: 1.5px solid var(--ink);
+          border-radius: var(--radius);
+          overflow: hidden;
+          margin-bottom: 48px;
+        "
+      >
+        <colgroup>
+          <col style="width: 50%" />
+          <col style="width: 25%" />
+          <col style="width: 25%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th style="text-align: center">Most tools</th>
+            <th class="us">Statsy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label">Starting price</td>
+            <td style="text-align: center; color: var(--muted)">$20+ / mo</td>
+            <td class="us">Free</td>
+          </tr>
+          <tr>
+            <td class="label">Setup time</td>
+            <td style="text-align: center; color: var(--muted)">Hours</td>
+            <td class="us">Minutes</td>
+          </tr>
+          <tr>
+            <td class="label">Automated monitoring</td>
+            <td class="no">✗</td>
+            <td class="us yes">✓</td>
+          </tr>
+          <tr>
+            <td class="label">Made for small teams</td>
+            <td class="no">✗</td>
+            <td class="us yes">✓</td>
+          </tr>
+          <tr>
+            <td class="label">Embeddable badge</td>
+            <td class="no">✗</td>
+            <td class="us yes">✓</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="plan-tag">Always Free</div>
+          <div class="plan-name">Free</div>
+          <div class="plan-price">$0</div>
+          <div class="plan-per">forever</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li>1 status page</li>
+            <li>3 services per page</li>
+            <li>50 email subscribers</li>
+            <li>7-day incident history</li>
+            <li>Automated monitoring (5-min checks)</li>
+            <li>Statsy subdomain only</li>
+            <li>Statsy branding on page</li>
+          </ul>
+          <a
+            class="btn-plan btn-plan-outline"
+            onclick="selectPlan('Free')"
+            style="cursor: pointer"
+            >Get Started Free</a
+          >
+        </div>
+        <div class="pricing-card featured">
+          <div class="plan-tag">Pro Package</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price"><sup>$</sup>15</div>
+          <div class="plan-per">per month</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li>3 status pages</li>
+            <li>10 services per page</li>
+            <li>500 email subscribers</li>
+            <li>90-day incident history</li>
+            <li>1-min monitoring checks + custom intervals</li>
+            <li>Custom domain</li>
+            <li>Embeddable badge</li>
+            <li>Remove Statsy branding</li>
+          </ul>
+          <a
+            class="btn-plan btn-plan-filled"
+            onclick="selectPlan('Pro 15/mo')"
+            style="cursor: pointer"
+            >Get Started Free</a
+          >
+        </div>
+        <div class="pricing-card coming-soon">
+          <div class="coming-soon-badge">⏳ Coming in v2</div>
+          <div class="plan-tag">Best Plan</div>
+          <div class="plan-name">Business</div>
+          <div class="plan-price"><sup>$</sup>39</div>
+          <div class="plan-per">per month</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li>Unlimited status pages</li>
+            <li>Unlimited services</li>
+            <li>Unlimited subscribers</li>
+            <li>1-year incident history</li>
+            <li>Slack & webhook alerts</li>
+            <li>Custom domain</li>
+            <li>Priority support</li>
+          </ul>
+          <a class="btn-plan btn-plan-disabled">Coming Soon</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="faq" data-reveal>
+      <div class="faq-inner">
+        <div class="faq-heading">
+          <p class="section-eyebrow">FAQ</p>
+          <h2 class="section-title">Common questions</h2>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this)">
+            <span class="accordion-q"
+              >How is this different from StatusPage.io or Betterstack?</span
+            >
+            <span class="accordion-icon"
+              ><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path
+                  d="M6 1v10M1 6h10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                /></svg
+            ></span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              <p class="accordion-a">
+                Those tools are built for enterprise teams and priced like it.
+                You're looking at $100+/mo before you get useful features.
+                Statsy is built for developers and small teams who need a clean,
+                professional status page without the complexity or the bill.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this)">
+            <span class="accordion-q"
+              >What happens when I hit the free plan limits?</span
+            >
+            <span class="accordion-icon"
+              ><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path
+                  d="M6 1v10M1 6h10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                /></svg
+            ></span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              <p class="accordion-a">
+                Your status page stays live and publicly accessible. You just
+                won't be able to add more services or subscribers until you
+                upgrade. No sudden lockouts, no surprises.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this)">
+            <span class="accordion-q">Can I use a custom domain?</span>
+            <span class="accordion-icon"
+              ><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path
+                  d="M6 1v10M1 6h10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                /></svg
+            ></span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              <p class="accordion-a">
+                Yes. Custom domains (e.g. status.yoursite.com) are available on
+                paid plans. Setup takes about 2 minutes, point a CNAME record
+                and you're done.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this)">
+            <span class="accordion-q"
+              >How do subscriber notifications work?</span
+            >
+            <span class="accordion-icon"
+              ><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path
+                  d="M6 1v10M1 6h10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                /></svg
+            ></span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              <p class="accordion-a">
+                Visitors subscribe to your status page with just their email, no
+                account needed. When you post an incident or resolve one, they
+                get notified automatically.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this)">
+            <span class="accordion-q"
+              >Is there a setup fee or long-term contract?</span
+            >
+            <span class="accordion-icon"
+              ><svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path
+                  d="M6 1v10M1 6h10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                /></svg
+            ></span>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-body-inner">
+              <p class="accordion-a">
+                No setup fee, no contracts. Free plan is free forever. Paid
+                plans are month-to-month, cancel any time from your account
+                settings.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p class="faq-contact">
+          Still have questions?
+          <a href="mailto:hello@statsy.page">hello@statsy.page</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="final-cta" data-reveal>
+      <!-- STATS — commented out (hero already says $0 / minutes / simple)
+      <div class="final-left">
+        <p class="section-eyebrow">By the numbers</p>
+        <div class="stat-num"><em>$0</em></div>
+        <div class="stat-label">to get started. No credit card, no trial expiry</div>
+        <div class="stat-divider"></div>
+        <div class="stat-num">5 <em>min</em></div>
+        <div class="stat-label">average setup time from signup to live page</div>
+        <div class="stat-divider"></div>
+        <div class="stat-num"><em>1</em> thing</div>
+        <div class="stat-label">Statsy does one thing well: status pages</div>
+      </div>
+      END STATS COMMENT -->
+      <div class="final-right" style="border-left: none">
+        <p class="section-eyebrow">Get Started</p>
+        <h2>Your users<br />deserve to know.</h2>
+        <p>
+          When something breaks, your users shouldn't find out from a support
+          ticket. Give them a status page. Free, no credit card needed.
+        </p>
+        <form
+          action="https://gmail.us11.list-manage.com/subscribe/post?u=43a20782ad0454c2341248571&amp;id=ac4afe3a35&amp;f_id=0030d4e3f0"
+          method="post"
+          id="final-mc-form"
+          target="_blank"
+          novalidate
+        >
+          <div class="final-form">
+            <input
+              type="email"
+              name="EMAIL"
+              id="final-email"
+              placeholder="you@yoursite.com"
+              required
+            />
+            <input
+              type="hidden"
+              name="PLAN"
+              id="plan-interest-final"
+              value="Not selected"
+            />
+            <button
+              type="button"
+              onclick="
+                handleMcSubmit(
+                  'final-email',
+                  'final-success',
+                  document.getElementById('final-mc-form'),
+                )
+              "
+            >
+              Get Started Free
+            </button>
+            <div aria-hidden="true" style="position: absolute; left: -5000px">
+              <input
+                type="text"
+                name="b_43a20782ad0454c2341248571_ac4afe3a35"
+                tabindex="-1"
+                value=""
+              />
+            </div>
+          </div>
+        </form>
+        <div
+          class="success-msg"
+          id="final-success"
+          style="
+            background: rgba(26, 122, 74, 0.15);
+            border-color: rgba(26, 122, 74, 0.4);
+            color: #6dd99a;
+            margin-top: 12px;
+          "
+        >
+          🎉 Redirecting you to sign up...
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="logo-not-scrolled">
+        <div class="logo-pip"></div>
+        Statsy
+      </div>
+      <span>© 2026 Statsy · Status pages for everyone who needs one.</span>
+      <div style="display: flex; gap: 20px; align-items: center">
+        <a
+          href="mailto:statsypage@gmail.com"
+          style="
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+          "
+          onmouseover="this.style.color = 'var(--ink)'"
+          onmouseout="this.style.color = 'var(--muted)'"
+          >Contact</a
+        >
+        <a
+          href="/terms"
+          style="
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s;
+          "
+          onmouseover="this.style.color = 'var(--ink)'"
+          onmouseout="this.style.color = 'var(--muted)'"
+          >Legal Policies</a
+        >
+        <span>statsy.page</span>
+      </div>
+    </footer>
+
+    <script>
+      // Register Mailchimp merge fields — matches their embed code exactly
+      // fnames[0]=EMAIL, fnames[7]=PLAN
+      window.fnames = new Array();
+      window.ftypes = new Array();
+      window.fnames[0] = "EMAIL";
+      window.ftypes[0] = "email";
+      window.fnames[7] = "PLAN";
+      window.ftypes[7] = "text";
+
+      var signedUp = false;
+      var selectedPlan = ""; // stored directly when plan button is clicked
+
+      function syncPlan(val) {
+        selectedPlan = val; // store in JS variable — no DOM dependency
+        var f1 = document.getElementById("plan-interest");
+        var f2 = document.getElementById("plan-interest-final");
+        if (f1) f1.value = val;
+        if (f2) f2.value = val;
+      }
+
+      function selectPlan(plan) {
+        if (signedUp) return;
+        syncPlan(plan);
+        var displayName = plan
+          .replace("15/mo", "$15/mo")
+          .replace("39/mo", "$39/mo");
+        var indicator = document.getElementById("plan-indicator");
+        if (indicator) {
+          indicator.textContent =
+            "✦ " +
+            displayName +
+            " selected — enter your email below to get started";
+          indicator.style.display = "block";
+        }
+        var signup = document.getElementById("signup");
+        if (signup) signup.scrollIntoView({ behavior: "smooth" });
+        setTimeout(function () {
+          var inp = document.getElementById("hero-email");
+          if (inp) inp.focus();
+        }, 500);
+      }
+
+      // FIX 1: disable ALL form inputs + buttons + plan buttons after signup
+      function lockForms() {
+        ["hero-email", "final-email"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) {
+            el.disabled = true;
+            el.style.opacity = "0.5";
+          }
+        });
+        document
+          .querySelectorAll("#hero-mc-form button, #final-mc-form button")
+          .forEach(function (btn) {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+          });
+        document.querySelectorAll(".btn-plan").forEach(function (btn) {
+          btn.style.opacity = "0.35";
+          btn.style.cursor = "not-allowed";
+          btn.style.pointerEvents = "none";
+          btn.textContent = "Already signed up";
+        });
+      }
+
+      function markSignedUp() {
+        signedUp = true;
+        lockForms();
+      }
+
+      function showError(formEl, msg) {
+        if (!formEl) return;
+        var err = formEl.querySelector(".mc-error");
+        if (!err) {
+          err = document.createElement("p");
+          err.className = "mc-error";
+          err.style.cssText = "color:#e8500a;font-size:0.8rem;margin-top:8px;";
+          formEl.appendChild(err);
+        }
+        err.textContent = "⚠ " + msg;
+        setTimeout(function () {
+          if (err) err.textContent = "";
+        }, 4000);
+      }
+
+      function clearError(formEl) {
+        if (!formEl) return;
+        var err = formEl.querySelector(".mc-error");
+        if (err) err.textContent = "";
+      }
+
+      function handleMcSubmit(emailId, successId, formEl) {
+        if (!formEl) return;
+        var input = document.getElementById(emailId);
+        var successEl = document.getElementById(successId);
+        if (!input || !successEl) return;
+
+        var email = input.value.trim();
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        clearError(formEl);
+
+        if (!email) {
+          input.style.outline = "2px solid #e8500a";
+          showError(formEl, "Please enter your email address.");
+          setTimeout(function () {
+            input.style.outline = "";
+          }, 2000);
+          return;
+        }
+        if (!emailRegex.test(email)) {
+          input.style.outline = "2px solid #e8500a";
+          showError(
+            formEl,
+            "That doesn't look right — please check your email and try again.",
+          );
+          setTimeout(function () {
+            input.style.outline = "";
+          }, 2000);
+          return;
+        }
+
+        input.style.outline = "";
+
+        window.location.href =
+          "https://statsy.page/signup?email=" + encodeURIComponent(email);
+      }
+
+      // Enter key support
+      document.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter") return;
+        if (e.target.id === "hero-email")
+          handleMcSubmit(
+            "hero-email",
+            "hero-success",
+            document.getElementById("hero-mc-form"),
+          );
+        if (e.target.id === "final-email")
+          handleMcSubmit(
+            "final-email",
+            "final-success",
+            document.getElementById("final-mc-form"),
+          );
+      });
+
+      // FAQ accordion
+      function toggleAccordion(trigger) {
+        var item = trigger.closest(".accordion-item");
+        var isOpen = item.classList.contains("open");
+        document
+          .querySelectorAll(".accordion-item.open")
+          .forEach(function (el) {
+            el.classList.remove("open");
+          });
+        if (!isOpen) item.classList.add("open");
+      }
+
+      // Transparent nav → solid on scroll
+      var navEl = document.querySelector('nav');
+      function updateNav() {
+        navEl.classList.toggle('nav-scrolled', window.scrollY > 60);
+      }
+      updateNav();
+      window.addEventListener('scroll', updateNav, { passive: true });
+
+      // Scroll reveal
+      var revealObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("revealed");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.01, rootMargin: "0px 0px 0px 0px" },
+      );
+
+      document.querySelectorAll("[data-reveal]").forEach(function (el) {
+        revealObserver.observe(el);
+      });
+
+
+      // Mobile hamburger menu
+      var hamburger = document.querySelector('.nav-hamburger');
+      var mobileNav = document.getElementById('mobile-nav');
+
+      function openMenu() {
+        hamburger.setAttribute('aria-expanded', 'true');
+        mobileNav.classList.add('open');
+        mobileNav.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeMenu() {
+        hamburger.setAttribute('aria-expanded', 'false');
+        mobileNav.classList.remove('open');
+        mobileNav.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+      hamburger.addEventListener('click', function() {
+        mobileNav.classList.contains('open') ? closeMenu() : openMenu();
+      });
+      mobileNav.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', closeMenu);
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileNav.classList.contains('open')) closeMenu();
+      });
+
+      // Smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          var target = document.querySelector(a.getAttribute("href"));
+          if (!target) return;
+          e.preventDefault();
+          target.scrollIntoView({ behavior: "smooth" });
+          // Focus email input when scrolling to signup
+          if (a.getAttribute("href") === "#signup") {
+            setTimeout(function () {
+              var inp = document.getElementById("hero-email");
+              if (inp && !inp.disabled) inp.focus();
+            }, 600);
+          }
+        });
+      });
+    </script>
+
+  </body>
+</html>
