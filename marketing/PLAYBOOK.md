@@ -28,6 +28,20 @@ emails and churn during outages.
   wrong subscriber limit in llms.txt). Check every claim against FACTS.md.
 - Comparison posts (Statuspage / Instatus alternatives) exist; a new domain is
   unlikely to rank for them soon. Prefer long-tail how-to posts.
+- 2026-09-26: A false claim about one feature (e.g. "custom domain on Free")
+  tends to appear in more than one post's quickAnswer AND in a comparison
+  table cell, worded differently each time. When fixing a known false claim,
+  grep the whole `content/blog/` dir for the feature name, not just the one
+  file that was flagged.
+- 2026-09-26: `npm run build` fails in this environment on unrelated grounds
+  (missing Supabase env vars break static export of `/login`), independent of
+  content changes. Don't treat that as a build break caused by your diff —
+  fall back to `npm run lint` + gray-matter frontmatter check as the
+  instructions say, and confirm the failure is the same `/login` Supabase
+  error before moving on.
+- 2026-09-26: `/api/internal/seo-stats` returned 401 even with
+  $SEO_STATS_TOKEN set — flagged for Ferrey, not yet usable for picking
+  targets by real data.
 
 ## Experiments
 | Started | Hypothesis | Measure | Result |
