@@ -39,14 +39,37 @@ emails and churn during outages.
   fall back to `npm run lint` + gray-matter frontmatter check as the
   instructions say, and confirm the failure is the same `/login` Supabase
   error before moving on.
-- 2026-09-26: `/api/internal/seo-stats` returned 401 even with
-  $SEO_STATS_TOKEN set — flagged for Ferrey, not yet usable for picking
-  targets by real data.
+- 2026-09-27: `/api/internal/seo-stats` now returns 200 — the 401 from
+  2026-09-26 was transient/fixed on Ferrey's side. Real GSC + signup data is
+  usable now. 28d totals as of this run: 2 clicks, 235 impressions, avg
+  position 15.1, 0 signups since 2026-08-30 (10 total users).
+- 2026-09-27: Two posts had meta descriptions over the 160-char limit the
+  blog-post rules require (`instatus-alternatives.mdx` at 165,
+  `status-page-for-indie-developers.mdx` at 169) despite passing earlier
+  review — the rule was never checked against existing posts, only applied
+  to new ones. Worth a periodic length sweep across all posts, not just new
+  ones.
+- 2026-09-27: A page ranking at position 8-20 with impressions but 0 clicks
+  is a real, cheap win: rewriting the title/description to be more specific
+  and benefit-forward (added the alternative count + "Free & Paid" to
+  `instatus-alternatives.mdx`, was previously a generic description) costs
+  minutes vs. hours for a new post. Check this before writing new content
+  whenever seo-stats data is available.
 
 ## Experiments
 | Started | Hypothesis | Measure | Result |
 |---|---|---|---|
+| 2026-09-27 | New title/description on `instatus-alternatives.mdx` (was ranking #11.3, 23 impr, 0 clicks) will raise CTR | Clicks/CTR for that page and "instatus alternative(s)" queries in seo-stats | Pending — check in ~1-2 weeks once GSC data catches up |
 
 ## Target keywords
 | Keyword | Post | Last position seen | Checked |
 |---|---|---|---|
+| statsy (brand) | homepage | 7 | 2026-09-27 |
+| instatus alternative | instatus-alternatives | 9.9 | 2026-09-27 |
+| instatus alternatives | instatus-alternatives | 15 | 2026-09-27 |
+| statuspage alternative | statuspage-alternatives | 61.8 | 2026-09-27 |
+| statuspage alternatives | statuspage-alternatives | 55.3 | 2026-09-27 |
+| statuspage.io alternatives | statuspage-alternatives | 30.8 | 2026-09-27 |
+| alternative to statuspage io | statuspage-alternatives | 40.8 | 2026-09-27 |
+| statuspage cost | statuspage-alternatives | 3 | 2026-09-27 |
+| cheap status page | (none targeted yet) | 74.7 | 2026-09-27 |

@@ -3,6 +3,51 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-09-27 — daily run
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap URL
+  (/demo, both alternatives posts, indie-developers post, free-status-page
+  post) returned 200 for Googlebot UA, no noindex, correct canonicals, no
+  cf-mitigated header.
+- SEO stats: `/api/internal/seo-stats` returned 200 this time (the 401 from
+  yesterday is resolved). 28-day totals (2026-08-28 to 2026-09-24): 2 clicks,
+  235 impressions, avg position 15.1, CTR 0.9%. Signups: 0 since 2026-08-30
+  (10 total users, no signups/status pages created in the window).
+  Query/page highlights: "statsy" (brand) at position 7, 128 impressions.
+  `instatus-alternatives` page at position 11.3 with 23 impressions and 0
+  clicks — squarely in the "ranking okay, nobody clicks" zone the playbook
+  flags as the best cheap fix. `statuspage-alternatives` page is worse
+  (position 45.2, 44 impressions) — needs content/backlink work, not just a
+  title tweak, so left for another day.
+- Did: rewrote title + meta description of `content/blog/instatus-alternatives.mdx`
+  ("The Best Instatus Alternatives in 2026" → "6 Best Instatus Alternatives
+  in 2026 (Free & Paid)"; description now names the specific alternatives
+  compared instead of a generic teaser) to raise CTR at its current position.
+  While checking description lengths across all 4 posts I found two over the
+  160-char limit from the blog rules: the instatus one (165 chars, now fixed
+  as part of the rewrite, 157) and `status-page-for-indie-developers.mdx`
+  (169 chars) — trimmed the latter to 147 chars, no wording/claim changes.
+- Why: seo-stats step (2b) explicitly flags "impressions but low CTR or
+  position 8–20" pages as the best target, and this is the first run with
+  working real data. `instatus-alternatives` was the clearest case.
+- Build: `npm run build` fails on this repo regardless of my change (same
+  known missing-Supabase-env break on static export of /login, confirmed
+  identical error to prior runs). Ran `npm run lint` instead — 8 pre-existing
+  errors / 7 warnings, all in untouched app files (dashboard client, public
+  status page client, layout.tsx, SubscribeButton/Form, use-toast). Verified
+  all 4 posts' frontmatter parses with gray-matter (all OK).
+- Result/observation: changes deployed and verified live (curl'd the new
+  title/description on both changed posts, correct text present, still 200
+  and no noindex). Pinged IndexNow for the 2 changed URLs.
+- Next: give the instatus-alternatives CTR change 1-2 weeks (GSC lags ~3
+  days) before judging it — logged as an experiment in PLAYBOOK. Meanwhile
+  `statuspage-alternatives` (position 45.2, decent impressions) is the next
+  target: it likely needs a content/internal-link improvement rather than a
+  title change. No new blog post today (2 of the last 7 days still have
+  room per the 2-per-week cap) — consider one next run targeting "cheap
+  status page" (position 74.7, low competition, matches Statsy's free tier)
+  or similar long-tail terms from the updated PLAYBOOK target list.
+- NEEDS FERREY: none today.
+
 ## 2026-09-26 — daily run
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap URL
   returned 200 for Googlebot UA, no noindex, correct canonicals, no cf-mitigated.
