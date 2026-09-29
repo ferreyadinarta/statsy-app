@@ -55,21 +55,37 @@ emails and churn during outages.
   `instatus-alternatives.mdx`, was previously a generic description) costs
   minutes vs. hours for a new post. Check this before writing new content
   whenever seo-stats data is available.
+- 2026-09-29: A PLAYBOOK "next target" keyword can still be the wrong shape
+  for a comparison-style post — "cheap status page" reads like it needs a
+  listicle, but the two existing listicles (Statuspage/Instatus alternatives)
+  are the weakest-ranking posts on the site. Before writing, check whether
+  the query's top results (and the post type needed to compete) are listicles
+  or how-tos, not just its position/competition. Picked a different PLAYBOOK
+  example ("how to tell users your app is down") instead, which fit the
+  how-to shape.
+- 2026-09-29: Found a factual gap while writing unrelated content, not during
+  a dedicated fix pass: `status-page-for-indie-developers.mdx`'s incident
+  template only had 3 stages, missing "monitoring" (product has 4, per
+  `src/lib/email.ts`). Cheap fixes like this are worth bundling into whatever
+  commit is already touching nearby content instead of waiting for a
+  dedicated content-fix day.
 
 ## Experiments
 | Started | Hypothesis | Measure | Result |
 |---|---|---|---|
-| 2026-09-27 | New title/description on `instatus-alternatives.mdx` (was ranking #11.3, 23 impr, 0 clicks) will raise CTR | Clicks/CTR for that page and "instatus alternative(s)" queries in seo-stats | Pending — check in ~1-2 weeks once GSC data catches up |
+| 2026-09-27 | New title/description on `instatus-alternatives.mdx` (was ranking #11.3, 23 impr, 0 clicks) will raise CTR | Clicks/CTR for that page and "instatus alternative(s)" queries in seo-stats | Pending — check in ~1-2 weeks once GSC data catches up (2026-09-29: still 23 impr/0 clicks, only 2 days in, too early) |
+| 2026-09-29 | New post `how-to-tell-users-your-app-is-down.mdx` will rank for that long-tail phrase within a few weeks (no direct competing content found) | Position/impressions for "how to tell users your app is down" and related phrasing in seo-stats byQuery | Pending — new post, no data yet |
 
 ## Target keywords
 | Keyword | Post | Last position seen | Checked |
 |---|---|---|---|
-| statsy (brand) | homepage | 7 | 2026-09-27 |
-| instatus alternative | instatus-alternatives | 9.9 | 2026-09-27 |
-| instatus alternatives | instatus-alternatives | 15 | 2026-09-27 |
-| statuspage alternative | statuspage-alternatives | 61.8 | 2026-09-27 |
-| statuspage alternatives | statuspage-alternatives | 55.3 | 2026-09-27 |
-| statuspage.io alternatives | statuspage-alternatives | 30.8 | 2026-09-27 |
-| alternative to statuspage io | statuspage-alternatives | 40.8 | 2026-09-27 |
-| statuspage cost | statuspage-alternatives | 3 | 2026-09-27 |
-| cheap status page | (none targeted yet) | 74.7 | 2026-09-27 |
+| statsy (brand) | homepage | 7 | 2026-09-29 |
+| instatus alternative | instatus-alternatives | 9.9 | 2026-09-29 |
+| instatus alternatives | instatus-alternatives | 15 | 2026-09-29 |
+| statuspage alternative | statuspage-alternatives | 61.8 | 2026-09-29 |
+| statuspage alternatives | statuspage-alternatives | 52.5 | 2026-09-29 |
+| statuspage.io alternatives | statuspage-alternatives | 30.8 | 2026-09-29 |
+| alternative to statuspage io | statuspage-alternatives | 40.8 | 2026-09-29 |
+| statuspage cost | statuspage-alternatives | 3 | 2026-09-29 |
+| cheap status page | (none — needs a listicle, deprioritized) | 60.4 | 2026-09-29 |
+| how to tell users your app is down | how-to-tell-users-your-app-is-down | not yet indexed | 2026-09-29 |

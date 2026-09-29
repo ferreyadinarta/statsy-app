@@ -3,6 +3,59 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-09-29 — daily run
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap URL
+  (/demo, both alternatives posts, indie-developers post, free-status-page post)
+  returned 200 for Googlebot UA, no noindex, correct canonicals, no cf-mitigated
+  header.
+- SEO stats: `/api/internal/seo-stats` returned 200. 28-day totals (2026-08-30 to
+  2026-09-26): 3 clicks, 237 impressions, avg position 15.4, CTR 1.3%. First-ever
+  signup: 1 signup and 1 status page created on 2026-09-27 (11 total users, up
+  from 10). `instatus-alternatives` still at position 11.3/23 impressions/0
+  clicks — the 2026-09-27 title/description rewrite needs more time (GSC lags
+  ~3 days, only 2 days old); left alone this run per PLAYBOOK. `statuspage-alternatives`
+  basically flat (45.7 position, 47 impressions, was 45.2/44). No other page in
+  the 8-20 position "cheap win" zone this run, so didn't touch existing content
+  titles/descriptions.
+- Did: new post `content/blog/how-to-tell-users-your-app-is-down.mdx` (~1170
+  words) targeting the long-tail query "how to tell users your app is down".
+  Also fixed `status-page-for-indie-developers.mdx`'s incident-update template,
+  which only listed 3 stages (investigating/identified/resolved) and was
+  missing "monitoring" — confirmed against `src/lib/email.ts` that the product
+  has 4 stages, matching FACTS.md. Linked the new post from the indie-dev post,
+  and the new post links back to both the indie-dev post and the free-setup
+  post.
+- Why: no blog post published in the last 7 days (0 of the 2-per-week cap
+  used), so there was room. Web-searched "cheap status page" (2026-09-27's
+  suggested next target) first, but concluded it would need a comparison
+  listicle like the two existing alternatives posts, which the PLAYBOOK
+  already flags as underperforming for a new domain. Searched "how to tell
+  users your app is down" instead — top results are generic outage-diagnosis
+  tools plus one genuinely useful article (Help Scout's outage-communication
+  guide, read and used for grounding), but nothing matches this exact
+  long-tail phrasing as its own post. Matches the audience pitch in PLAYBOOK
+  (paying users deserve transparency) and is a how-to, not a listicle, so it's
+  the kind of content PLAYBOOK says a new domain can actually rank for.
+- Build: `npm run build` fails on this repo regardless of my change (same
+  known missing-Supabase-env break on static export of `/login`). Ran
+  `npm run lint` instead — 8 pre-existing errors / 7 warnings, identical set
+  to prior runs, all in untouched app files. Verified all 5 posts' frontmatter
+  parses with gray-matter (all OK) and all 5 descriptions are ≤160 chars.
+- Result/observation: pushed to main (67a3bd2), deployed, and verified live —
+  new post returns 200/no noindex/correct canonical/correct title, and shows
+  up on `/blog`'s index and in the sitemap-generating file list. Pinged
+  IndexNow for the new post and the updated indie-dev post, got 200.
+- Next: keep watching `instatus-alternatives` CTR experiment (needs another
+  ~1 week). No LOG entry exists for 2026-09-28 — worth checking with Ferrey
+  whether yesterday's scheduled run actually fired; if it silently didn't run,
+  that's worth knowing since the 2-post/7-day pacing and "don't repeat what
+  was just done" logic both depend on LOG being complete. Once signups start
+  showing up in seo-stats with any volume, start cross-referencing which
+  landing query/page correlates with the two 2026-09-27 signups.
+- NEEDS FERREY: no LOG entry for 2026-09-28 — please confirm whether the
+  daily schedule fired that day (this run found nothing to indicate it did or
+  didn't, just a gap in the log).
+
 ## 2026-09-27 — daily run
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap URL
   (/demo, both alternatives posts, indie-developers post, free-status-page
