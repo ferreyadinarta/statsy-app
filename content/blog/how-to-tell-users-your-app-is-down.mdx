@@ -1,0 +1,87 @@
+---
+title: "How to Tell Users Your App Is Down (Without Losing Their Trust)"
+description: "A practical guide to communicating an outage: what to say, where to post it, how often to update, and the wording that keeps users calm instead of angry."
+quickAnswer: "Post the outage on a status page that lives on separate infrastructure from your app, describe it in terms of what users can't do rather than what broke internally, and commit to a time for your next update instead of a fix ETA. Keep updating on that cadence even with no news, then close with a short resolved summary."
+date: "2026-09-29"
+author: "Statsy"
+tags: ["status-page", "incident-communication", "customer-trust"]
+---
+
+<QuickAnswer>
+Post the outage on a status page that lives on separate infrastructure from your app, describe it in terms of what users can't do rather than what broke internally, and commit to a time for your next update instead of a fix ETA. Keep updating on that cadence even with no news, then close with a short resolved summary.
+</QuickAnswer>
+
+Something breaks. You already know what happened, you're fixing it, and every minute you spend heads-down on the fix feels more useful than writing a status update. That instinct is wrong, and it's the single most common mistake in how small teams handle outages.
+
+Users don't judge you by how long the outage lasted. They judge you by whether you told them, and how fast. A 20-minute outage you announced in the first 2 minutes reads as "well-run team, minor hiccup." The same 20-minute outage discovered by a confused user refreshing the page five times reads as "is this thing even maintained?" Same bug, completely different trust outcome.
+
+## Post first, explain later
+
+You don't need to know the root cause to post an update. You need to know that something is wrong and who it affects. The first update can be as thin as:
+
+> **Investigating: some users unable to log in.** We're looking into reports of login failures. Next update in 15 minutes.
+
+That's it. No cause, no fix, no ETA. Just an acknowledgment that you're aware and a promise of when they'll hear from you again. Posting this within a few minutes of noticing the problem does more for user trust than a perfectly-worded postmortem posted three hours later.
+
+The teams that get this wrong go quiet until they have a complete answer. By then, users have already decided the app is broken and nobody's home.
+
+## Write the title your user would use, not your stack trace
+
+This is the part engineers get backwards most often. Compare:
+
+- ❌ "Elevated 5xx rate on payment-service, investigating upstream provider"
+- ✅ "Payments are failing for some customers"
+
+- ❌ "DB connection pool exhaustion causing intermittent timeouts"
+- ✅ "The dashboard is loading slowly or not at all for some users"
+
+Your status page's audience is not your team. Nobody subscribed to it to learn which microservice has a connection leak. They want one sentence that tells them if the thing they're trying to do right now will work. Save the technical detail for an internal postmortem, or a single line lower in the update if you want to be transparent about cause once you know it.
+
+<Callout variant="tip">
+A useful test: would a non-technical user reading only the title know whether their own account is affected? If the answer is no, rewrite it.
+</Callout>
+
+## Promise a time for your next update, not a time for the fix
+
+"We'll have this fixed within the hour" is a promise you frequently can't keep, and breaking it costs more trust than the outage itself. What you can control is when you'll say something next:
+
+> **Identified: root cause found, deploying a fix now. Next update in 20 minutes.**
+
+If 20 minutes pass and it's still not fixed, post again anyway, even if the update is just "still working on it, next update in 20 more minutes." Silence after a broken promise is worse than an honestly slow fix. Pick a cadence you can actually hold to, and hold to it.
+
+## Say what changes for the user right now
+
+If there's a workaround, lead with it. "Uploads are failing, but existing files are safe and the rest of the dashboard works normally" tells a worried user exactly what to expect before they go digging. If there's no workaround, say that plainly instead of padding the update with filler. Users can tell the difference between an update with real information and one that exists just to look like communication.
+
+## Close it out properly
+
+When it's fixed, post the resolution and stop there:
+
+> **Resolved: login failures were caused by an expired certificate on our auth provider. Fixed at 14:32 UTC. Thanks for your patience.**
+
+One sentence on cause if you know it, one on when it was fixed. Don't apologize five times, and don't write a full postmortem inside the status update. If the incident is significant enough to warrant a deeper writeup, that's a separate blog post, not an extension of the incident thread.
+
+If you're running Statsy, this maps directly onto the four incident stages built into the product: investigating, identified, monitoring, and resolved. "Monitoring" is worth using deliberately: it's the update you post once a fix is deployed but you're watching to confirm it actually held, before declaring resolved. Skipping straight from "identified" to "resolved" undersells the fact that you verified the fix instead of just assuming it worked.
+
+## Where these updates actually need to live
+
+A status update is only useful if people see it during the outage, which means it can't live only on the thing that's down.
+
+**A status page on its own subdomain.** If your app is down, a status page hosted on the same infrastructure might be down with it. A hosted status page (see our guide on [setting up a free status page](/blog/how-to-set-up-a-free-status-page)) solves this by default because it's not running on your servers.
+
+**A link users can actually find.** Put it in your app footer, your docs, and your support email autoresponder, before you need it, not while you're scrambling during an incident. Our [status page playbook for indie developers](/blog/status-page-for-indie-developers) covers where this link should live and what the rest of the page should show.
+
+**Email, for people who won't go check a page.** Not everyone refreshes your status page during an outage. On Statsy, subscribers to your status page get an email automatically when a service's status changes, so the update reaches them without you writing a separate email and without spamming them on every keystroke of the incident.
+
+## What this looks like end to end
+
+1. Something breaks. Within minutes, post "Investigating: [user-facing impact]. Next update in 15 minutes."
+2. You find the cause. Post "Identified: [cause in plain language]. Next update in 20 minutes."
+3. You deploy a fix. Post "Monitoring: fix deployed, confirming it holds."
+4. It holds. Post "Resolved: [one-line cause], fixed at [time]."
+
+Four short updates, all plain language, all timestamped. That's the whole system. No war room, no PR-approved corporate phrasing, no promises you can't keep.
+
+The mechanics matter less than the habit: acknowledge fast, describe impact instead of internals, and keep a cadence you actually stick to. Everything else, including which tool hosts the page, is a detail.
+
+<CtaButton href="https://statsy.page/signup">Set up a status page before you need one →</CtaButton>

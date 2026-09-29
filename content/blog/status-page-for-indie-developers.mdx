@@ -105,15 +105,17 @@ Free monitoring tiers usually check every 5 minutes, not every minute. That mean
 
 ## What should I write when an incident happens?
 
-Three updates, no more:
+Four updates, no more:
 
 **1. Investigating** (within 5 minutes of detection): "We're aware of an issue affecting [service]. Investigating now."
 
 **2. Identified** (when you know what broke): "Root cause: [thing]. Working on a fix. ETA: [time or 'updating in 30 min']."
 
-**3. Resolved** (when it's fixed): "Resolved. [One-sentence summary of cause]. Subscribers: thanks for your patience."
+**3. Monitoring** (once a fix is deployed): "Fix deployed, confirming it holds before we close this out."
 
-That's the whole template. Don't write a postmortem in the status update. That's a follow-up blog post. Don't apologize five times. Just communicate.
+**4. Resolved** (when it's fixed): "Resolved. [One-sentence summary of cause]. Subscribers: thanks for your patience."
+
+That's the whole template. Don't write a postmortem in the status update. That's a follow-up blog post. Don't apologize five times. Just communicate. For more on the actual wording to use in each update, see [how to tell users your app is down](/blog/how-to-tell-users-your-app-is-down).
 
 ## When should I upgrade from a free tier?
 
