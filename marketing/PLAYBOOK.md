@@ -98,11 +98,10 @@ emails and churn during outages.
   own `claude/...` session branch, so their posts never deployed and every
   later run read a stale LOG from `main`. Result: missing history, and 4 new
   posts in 4 days against the 2-per-week cap. Branches were merged into
-  `main` by hand on 2026-10-02 and the routine was set to allow pushing to
-  `main`. If a push to `main` is ever rejected again: do not publish to a
-  side branch and move on. Put it at the top of the LOG as NEEDS FERREY and
-  make no further content changes until it's fixed. LOG.md on `main` is the
-  only memory between runs.
+  `main` by hand on 2026-10-02. Since then the "Agent auto-merge" GitHub
+  Action merges each `claude/**` push into `main`. Always confirm your commit
+  reached `origin/main`; if it didn't within 10 minutes, flag NEEDS FERREY and
+  stop. LOG.md on `main` is the only memory between runs.
 
 ## Experiments
 | Started | Hypothesis | Measure | Result |

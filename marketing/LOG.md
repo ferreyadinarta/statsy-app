@@ -6,7 +6,9 @@ what to check next time. Keep entries short.
 ## 2026-10-02 — manual cleanup (Ferrey)
 - Found that the runs on 09-28, 09-30, 10-01 and 10-02 could only push to their
   own `claude/...` session branches, so nothing they did reached `main` or
-  deployed. Routine now allowed to push to `main`.
+  deployed. The routine settings have no option to allow pushing to `main`, so
+  an "Agent auto-merge" GitHub Action now merges `claude/**` branches into
+  `main` (content paths only) and deletes them. See AGENT_PROMPT.md.
 - Merged into `main`: `status-page-for-supabase-app.mdx` (09-30),
   `how-to-announce-scheduled-maintenance-to-users.mdx` (10-01),
   `status-page-vs-uptime-monitoring.mdx` (10-02), the "Monitoring" stage fix in
