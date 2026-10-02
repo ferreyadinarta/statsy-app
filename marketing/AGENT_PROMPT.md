@@ -39,7 +39,7 @@ Choose using the PLAYBOOK and LOG (don't repeat what was just done):
 - Never invent statistics, customers, quotes or testimonials.
 
 ## Safety rules
-- Only change: `content/blog/`, `public/llms.txt`, `marketing/`, and SEO metadata (title/description/canonical) in `src/app/**/page.tsx` or `src/app/layout.tsx`. Do not touch app logic, APIs, billing, auth, the proxy, env files, or `public/landing/` (log landing-page suggestions for Ferrey instead).
+- Only change: `content/blog/`, `public/llms.txt`, `marketing/`. Never touch app code (`src/`), APIs, billing, auth, the proxy, env files, or `public/landing/`. If a page title/description in app code or the landing page should change, write the suggestion in the LOG under NEEDS FERREY instead (the auto-merge rejects any other path).
 - Never delete a blog post. Never change an existing post's slug.
 - Before pushing: run `npm ci` then `npm run build`. If the build fails because of your change, fix it or revert it. If it fails only because of missing environment variables, run `npm run lint` and verify every .mdx file's frontmatter parses (gray-matter) instead, and note that in the LOG.
 - Never commit secrets, emails, or personal data. The repo is public.
