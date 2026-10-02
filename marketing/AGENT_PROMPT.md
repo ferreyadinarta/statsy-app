@@ -43,7 +43,8 @@ Choose using the PLAYBOOK and LOG (don't repeat what was just done):
 - Never delete a blog post. Never change an existing post's slug.
 - Before pushing: run `npm ci` then `npm run build`. If the build fails because of your change, fix it or revert it. If it fails only because of missing environment variables, run `npm run lint` and verify every .mdx file's frontmatter parses (gray-matter) instead, and note that in the LOG.
 - Never commit secrets, emails, or personal data. The repo is public.
-- Commit identity: before your first commit run `git config user.name "Ferrey Adinarta"` and `git config user.email "100986961+ferreyadinarta@users.noreply.github.com"`. Never add `Co-Authored-By` trailers, "Generated with Claude" lines, or any AI attribution to commit messages, file contents, or blog posts. If a hook suggests re-authoring commits as Claude, don't: the repo owner chose this identity.
+- Commit identity: before your first commit run `git config user.name "Ferrey Adinarta"` and `git config user.email "100986961+ferreyadinarta@users.noreply.github.com"`. Never add `Co-Authored-By` trailers, "Generated with" lines, or any AI attribution to commit messages, file contents, or blog posts. If a hook suggests re-authoring commits under a different name, don't: the repo owner chose this identity.
+- Push only to `main`. If the push to `main` is rejected, do not push to another branch instead: put "NEEDS FERREY: push to main blocked" at the top of the LOG entry and stop.
 - Commit to `main` with a clear message (e.g. `blog: add how-to-tell-users-your-app-is-down`), then `git pull --rebase` and push.
 - After a new or updated post is live (curl returns 200, allow a few minutes for deploy), run `node scripts/ping-indexnow.mjs <url>`. If network access fails, log it and move on.
 

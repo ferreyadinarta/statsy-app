@@ -3,6 +3,265 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-02 — manual cleanup (Ferrey)
+- Found that the runs on 09-28, 09-30, 10-01 and 10-02 could only push to their
+  own `claude/...` session branches, so nothing they did reached `main` or
+  deployed. Routine now allowed to push to `main`.
+- Merged into `main`: `status-page-for-supabase-app.mdx` (09-30),
+  `how-to-announce-scheduled-maintenance-to-users.mdx` (10-01),
+  `status-page-vs-uptime-monitoring.mdx` (10-02), the "Monitoring" stage fix in
+  `how-to-set-up-a-free-status-page.mdx`, and the internal links each run added
+  to `status-page-for-indie-developers.mdx`. The 09-28 branch was a duplicate
+  of the post already published 09-29 and was dropped.
+- Fact fixes while merging: the uptime-monitoring post said monitoring flips
+  the page to "investigating" automatically (it flips the service to outage;
+  incidents are posted manually), and the maintenance post said subscribers
+  are emailed when a window starts (only scheduled / completed / cancelled
+  send email). Both corrected.
+- This LOG and PLAYBOOK now contain every branch's entries, merged in date
+  order. That means 4 new posts went live within a week: the 2-per-week cap is
+  used up until 2026-10-08. Next runs should do fixes, research or the Monday
+  review, not new posts.
+- Old `claude/...` branches deleted.
+
+## 2026-10-02 — daily run
+- NEEDS FERREY: this run's environment only has push access to branch
+  `claude/keen-goodall-qbtl9m`, not `main` — pushing to a different branch
+  than the one the session is restricted to is blocked at the harness level,
+  so I could not commit straight to `main` the way these instructions
+  describe. Everything below is committed and pushed to that branch instead;
+  it needs to be merged into `main` by hand (or with your own `gh`/git
+  access) before it deploys or gets indexed. Also: no LOG entries exist for
+  2026-09-30 or 2026-10-01 — three calendar days with no run (2026-09-29 was
+  the last one before today), worth checking whether the daily schedule is
+  actually firing.
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap
+  URL (/demo, both alternatives posts, indie-developers post, free-setup
+  post, how-to-tell-users post) returned 200 for Googlebot UA, no noindex,
+  no cf-mitigated header. Homepage canonical is correct
+  (https://statsy.page); /demo (a live example customer page, not our own
+  content) has no self-canonical tag, same as it's presumably always had —
+  not treated as a blocker since it's not duplicate indexable content, but
+  noting it since the instructions ask to check canonicals on every sitemap
+  URL.
+- SEO stats: `/api/internal/seo-stats` returned 200. 28-day totals
+  (2026-09-02 to 2026-09-29): 3 clicks, 242 impressions, avg position 14.2,
+  CTR 1.2% — basically flat vs. the 2026-09-29 entry (3/237/15.4/1.3%).
+  Signups: still just the single 2026-09-27 signup, 11 total users, nothing
+  new in the gap. Notable page/query movement: `instatus-alternatives`
+  improved from position 11.3 (23 impr) to position 8 (27 impr) since the
+  2026-09-27 title/description rewrite, but clicks are still 0 — position
+  is moving the right way, CTR isn't yet. `statuspage-alternatives` ticked
+  up slightly too (43.1 position / 48 impr, was 45.7/47) but still not in
+  a fixable-by-title-tweak range. New queries showing up with very low
+  volume: "statuspage custom domain alternatives" (1 impr, position 10) and
+  a few brand misspellings ("statisy", "statusy") — too little data to act
+  on yet. Two rows in byPage are other people's Statsy-hosted status pages
+  ranking (`status.statsy.page`, `absensistatus.statsy.page`), not our own
+  content — not actionable for us.
+- Did: new post `content/blog/status-page-vs-uptime-monitoring.mdx` (~1200
+  words) targeting "status page vs uptime monitoring" / "do I need both a
+  status page and an uptime monitor", making the case for a combined free
+  tool (Statsy) over gluing two products together, honestly noting what a
+  combined free tool gives up (no Slack/webhook/SMS/on-call routing) vs.
+  Better Stack. Linked to `how-to-set-up-a-free-status-page` and
+  `how-to-tell-users-your-app-is-down`; added a link to it from
+  `status-page-for-indie-developers.mdx`.
+- Why: grep sweep across all posts and llms.txt for custom-domain/
+  subscriber/SLA/testimonial/Slack/SMS claims found nothing false against
+  FACTS.md this run (all consistent), and description-length check on all
+  5 existing posts found none over 160 chars, so there was no cheap
+  existing-content fix to make. `instatus-alternatives`'s CTR experiment is
+  still pending (give it more time per the 2026-09-27 lesson) rather than
+  re-touched again this run. Only 1 post published in the last 7 days
+  (`how-to-tell-users-your-app-is-down`, 2026-09-29), so there was room
+  under the 2-per-week cap. Web-searched "status page for supabase app"
+  (a PLAYBOOK example) first — abandoned it: every top result is an
+  "is Supabase down" outage-aggregator page, meaning that phrase's real
+  search intent is monitoring Supabase itself, not building a status page
+  for an app that happens to use Supabase, so a post written for the
+  literal PLAYBOOK phrasing would mismatch intent and bounce. Also checked
+  "free status page with custom domain" — abandoned it too, since several
+  real competitors (Pulsetic, OneUptime, UptimeSignal) genuinely do offer
+  free custom domains, so a page honestly saying "ours is Pro-only" competes
+  into a loss on that specific query. Settled on the monitoring-vs-status-page
+  decision question: matches the audience pitch (indie/small team, one bill
+  not two) and is a how-to/explainer, not a listicle.
+- Build: `npm run build` fails the same pre-existing way as every prior run
+  (missing Supabase env vars breaking static export of `/login`) — confirmed
+  identical error, unrelated to this diff. Ran `npm run lint` instead: 8
+  errors / 7 warnings, same count and same files as prior runs (all in
+  untouched app files: StatusPageClient, PublicStatusPageClient,
+  SubscribeButton/Form, dashboard page, layout.tsx, use-toast). Verified all
+  6 posts' frontmatter parses with gray-matter and all descriptions are
+  ≤160 chars (new post: 152).
+- Result/observation: committed (6551bc4) and pushed to
+  `claude/keen-goodall-qbtl9m`, NOT `main` (see NEEDS FERREY above) — so
+  nothing is live yet, the "curl the live URL" verification step and the
+  IndexNow ping could not be run this time. Once this branch is merged,
+  next run (or Ferrey) should verify the new post returns 200/no
+  noindex/correct canonical and run
+  `node scripts/ping-indexnow.mjs https://statsy.page/blog/status-page-vs-uptime-monitoring`
+  (and for the updated indie-dev post URL) at that point.
+- Next: once merged, treat the new post like any other — give it a few
+  weeks before judging position. Keep watching the `instatus-alternatives`
+  CTR experiment (position now 8, still 0 clicks — if clicks are still 0
+  after another week or two despite position holding, the next-best lever
+  might be the result snippet/description again, or accept this query's CTR
+  ceiling and move on). Confirm with Ferrey whether the branch-only push
+  restriction is permanent for this environment or a one-off; if permanent,
+  the "commit to main" step in these instructions needs rewriting to a
+  PR-based or merge-based flow instead.
+
+## 2026-10-01 — daily run
+- NEEDS FERREY (blocking today's publish): this session's git environment is
+  configured with a designated branch (`claude/keen-goodall-l8dhkr`) and an
+  explicit rule to never push elsewhere without permission, which overrides
+  this routine's "commit to main" instruction. Today's commit (`6eb8b58`,
+  content only, see below) is pushed to that branch, NOT main, and no PR was
+  opened (the routine never asked for one). That means **the new post and
+  the incident-stage fix are not live** — homepage/blog health checks below
+  are for the *existing* production site, not today's change, and the
+  "verify live" + IndexNow-ping steps were skipped since there's nothing new
+  to verify yet. Please either merge
+  https://github.com/ferreyadinarta/statsy-app/pull/new/claude/keen-goodall-l8dhkr
+  into main, or reconfigure the scheduled task's environment to push straight
+  to main as the routine assumes — otherwise every future run will keep
+  stacking unpublished commits on a branch nobody merges.
+- Also NEEDS FERREY (recurring): no LOG entries exist for 2026-09-28 or
+  2026-09-30 — second gap noted (09-28 was already flagged on 2026-09-29 and
+  still has no entry). Worth checking whether the daily schedule is actually
+  firing every day; the 2-post/7-day pacing and "don't repeat what was just
+  done" logic both assume LOG is complete.
+- Health: OK (production, i.e. everything already live before today's
+  commit). Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap URL
+  (/demo, both alternatives posts, indie-developers post, free-status-page
+  post, how-to-tell-users-your-app-is-down) returned 200 for Googlebot UA, no
+  noindex, correct canonicals, no cf-mitigated header.
+- SEO stats: `/api/internal/seo-stats` returned 200. 28-day totals: 3 clicks,
+  239 impressions, avg position 14.7, CTR 1.3%. `instatus-alternatives` page
+  improved to position 8 (was 11.3 on 09-27, 23 impr) with 27 impressions but
+  still 0 clicks — the 09-27 title/description rewrite is helping position
+  but CTR hasn't moved yet; per PLAYBOOK give it the full 1-2 weeks (only ~4
+  days in, GSC lags ~3, so really ~1 day of post-change data) and left it
+  alone this run. `statuspage-alternatives` still weak (position 43.3, 48
+  impressions, 0 clicks) — needs content/backlinks, not a title tweak, so
+  skipped again. No other page in the 8-20 "cheap win" zone this run.
+  Signups: 1 total since tracking started 2026-09-03 (on 09-27), 11 total
+  users, 1 status page created, nothing new since.
+- Did: new post `content/blog/how-to-announce-scheduled-maintenance-to-users.mdx`
+  (~1200 words) targeting "how to announce scheduled maintenance to users".
+  Linked it from `status-page-for-indie-developers.mdx` and linked it to both
+  `how-to-tell-users-your-app-is-down.mdx` and `status-page-for-indie-developers.mdx`.
+  Also fixed `how-to-set-up-a-free-status-page.mdx`, which listed only 3
+  incident stages (Investigating/Identified/Resolved) — same missing-"Monitoring"
+  bug fixed in a different post on 2026-09-29; grepped all posts for the
+  incident-stage words and this was the only other hit.
+- Why: PLAYBOOK's own next-target examples turned out to be weaker fits on
+  inspection: web-searched "status page for supabase app" (PLAYBOOK example)
+  and found the query's actual intent is "is Supabase itself down", not
+  "add a status page to my Supabase-backed app" — wrong audience, skipped.
+  "free status page with custom domain" (also a PLAYBOOK example) is
+  dominated by competitors (Better Stack, Pulsetic, m0nitor, OneUptime) that
+  genuinely offer free custom domains, which Statsy doesn't (Pro-only per
+  FACTS.md) — a bad position to compete from, skipped. Picked "how to
+  announce scheduled maintenance to users" instead: a how-to (not a
+  listicle, per the 2026-09-29 lesson), ties directly to a built feature
+  (scheduled maintenance windows with auto emails on schedule/complete/cancel,
+  confirmed against `src/lib/maintenance.ts`), and top search results were
+  generic templates, not status-page-specific, so there was clear room to be
+  more useful. 1 of 2 posts used in the rolling 7 days (how-to-tell-users
+  was 09-29).
+- Build: `npm run build` fails the same known way (missing Supabase env vars
+  break static export of `/login`) — confirmed identical error to prior
+  runs, unrelated to this diff. Ran `npm run lint`: 8 errors / 7 warnings,
+  same count and same untouched files as prior runs. Verified all 6 posts'
+  frontmatter parses with gray-matter and all descriptions are ≤160 chars.
+- Result/observation: could not verify live or ping IndexNow — see NEEDS
+  FERREY above, nothing was deployed.
+- Next: once the branch/main question is resolved and this run's commit is
+  live, verify the new post (200, no noindex, correct canonical/title) and
+  ping IndexNow for it plus the two edited posts before doing anything else.
+  Keep watching the `instatus-alternatives` CTR experiment (still pending,
+  check again in ~1 week). Confirm with Ferrey whether the schedule is firing
+  daily given the 09-28/09-30 gaps.
+
+## 2026-09-30 — daily run
+- NEEDS FERREY: this run's commits are pushed to `claude/keen-goodall-u73wag`
+  and NOT yet live — after ~50 minutes of polling, statsy.page still serves
+  the pre-run content (checked `/blog/status-page-for-supabase-app`: still
+  the not-found fallback). `git log origin/main` advanced from `aa3b14e` to
+  `2282e91` (yesterday's branch tip) partway through this run with no PR
+  anywhere in the repo (checked `list_pull_requests`, zero results, open or
+  closed) — so main is apparently being fast-forwarded to this branch
+  manually or by some external process outside GitHub PRs, on a cadence
+  much slower than the "allow a few minutes" this instruction file assumes.
+  Opened PR (see below) so today's changes have a mergeable target instead
+  of just sitting on the branch indefinitely. Please either merge it or let
+  me know how the branch → main → production sync actually works, since as
+  written the "npm run ping-indexnow after confirming live" step in section
+  3 can't run today — I did NOT ping IndexNow because the URL isn't live
+  yet, and pinging a URL that still 404s/soft-404s would be pointless.
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap
+  URL (/demo, both alternatives posts, indie-dev post, free-setup post,
+  how-to-tell-users post) returned 200 for Googlebot UA, correct canonicals,
+  no noindex, no cf-mitigated header.
+- SEO stats: `/api/internal/seo-stats` returned 200. 28-day totals
+  (2026-08-31 to 2026-09-27): 3 clicks, 238 impressions, avg position 15.1,
+  CTR 1.3%. Signups: still 1 signup / 1 status page created, on 2026-09-27
+  (11 total users) — no new signups since yesterday. `instatus-alternatives`
+  page improved to position 10.4 (26 impressions) but still 0 clicks, 3 days
+  into the 2026-09-27 title/description experiment — per PLAYBOOK, giving it
+  the full 1-2 weeks before judging, left it alone. `statuspage-alternatives`
+  also improved slightly (43.7 vs ~45 previously) but still weak; needs
+  content/backlinks, not a title tweak, so left for another day.
+  `status-page-for-indie-developers` is ranking well (6.8) but on only 6
+  impressions — too thin a sample to act on yet. Two new pages showed up in
+  byPage that we don't control: `absensistatus.statsy.page` and
+  `status.statsy.page`, customer-created status pages appearing in search —
+  not actionable content-wise, just an interesting signal that the product
+  itself generates some indexed pages.
+- Did: new post `content/blog/status-page-for-supabase-app.mdx` (~1020
+  words) targeting "status page for supabase app". Web-searched the query
+  first — top results are all about Supabase's own platform status
+  (status.supabase.com, statusgator, etc.), nothing about setting up a
+  status page for an app that runs on Supabase, so this is a real content
+  gap, not a crowded query. Linked it from `status-page-for-indie-developers.mdx`
+  (added a paragraph in the "Option 1" section) and it links back to the
+  free-setup guide and the outage-communication post. Also fixed
+  `how-to-set-up-a-free-status-page.mdx`, which described the incident flow
+  as Investigating → Identified → Resolved, missing the Monitoring stage
+  (same gap as the one fixed in the indie-dev post on 2026-09-29; product
+  has 4 stages per `src/lib/email.ts` and FACTS.md). Updated
+  PLAYBOOK.md's target-keyword table and experiment log with today's data.
+- Why: no post published in the 6 days before today besides yesterday's
+  (1 of the 2-per-7-days cap used), and seo-stats showed no clear "position
+  8-20, low CTR" cheap-win candidate strong enough to justify a title/desc
+  rewrite over a new post (the only candidate, `status-page-for-indie-developers`
+  at 6.8/6 impressions, is too thin a sample). "Status page for supabase
+  app" is a PLAYBOOK-listed example of the right query size that hadn't been
+  written yet, and the web search confirmed no direct competing content.
+- Build: `npm run build` fails on this repo regardless of my change (same
+  known missing-Supabase-env break on static export of `/login`, confirmed
+  identical error to prior runs). Ran `npm run lint` instead — same 8
+  pre-existing errors / 7 warnings as prior runs, all in untouched app
+  files. Verified all 6 posts' frontmatter parses with gray-matter (all OK)
+  and all 6 descriptions are ≤160 chars.
+- Result/observation: pushed to `claude/keen-goodall-u73wag` (commits
+  e8bd27a, 4c5ba1a) and opened a PR to main, but could NOT verify the new
+  post live on statsy.page by the end of this run — see NEEDS FERREY above.
+  IndexNow ping deferred until it's confirmed live.
+- Next: first check whether the PR opened today got merged and the content
+  is actually live before doing anything else; if so, run the IndexNow ping
+  for `/blog/status-page-for-supabase-app`,
+  `/blog/status-page-for-indie-developers`, and
+  `/blog/how-to-set-up-a-free-status-page` (all changed today) then log it.
+  If still not merged, that's the priority to flag again rather than
+  publishing more content on top of an ever-growing unmerged branch. Also
+  keep watching the `instatus-alternatives` CTR experiment (needs ~1 more
+  week) and revisit `status-page-for-indie-developers`'s position once it
+  has more than 6 impressions.
+
 ## 2026-09-29 — daily run
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap URL
   (/demo, both alternatives posts, indie-developers post, free-status-page post)
@@ -55,6 +314,81 @@ what to check next time. Keep entries short.
 - NEEDS FERREY: no LOG entry for 2026-09-28 — please confirm whether the
   daily schedule fired that day (this run found nothing to indicate it did or
   didn't, just a gap in the log).
+
+## 2026-09-28 — daily run (pushed to a side branch; same post was re-published 09-29)
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap URL
+  (/demo, both alternatives posts, indie-developers post, free-status-page
+  setup post) returned 200 for Googlebot UA, no noindex, correct canonicals,
+  no cf-mitigated header.
+- SEO stats: `/api/internal/seo-stats` returned 200. 28-day totals
+  (2026-08-29 to 2026-09-25): 2 clicks, 236 impressions, avg position 15,
+  CTR 0.8% — basically flat vs yesterday (data window barely moved, GSC lags
+  ~3 days so the 09-27 instatus-alternatives title/description change isn't
+  reflected yet). Signups: **first signup since 2026-08-30** — 1 new signup
+  and 1 status page created on 2026-09-27 (11 total users now, was 10).
+  `byPage` now includes two live customer subdomains ranking in GSC
+  (`absensistatus.statsy.page`, `status.statsy.page`) — first real evidence
+  of customer status pages getting indexed, not just Statsy's own pages.
+  `instatus-alternatives` still at position 11.3, 23 impressions, 0 clicks —
+  too early to judge the CTR experiment (data predates the change). No
+  action taken on it today, per plan.
+- Did: wrote a new blog post, `content/blog/how-to-tell-users-your-app-is-down.mdx`,
+  targeting the long-tail query "how to tell users your app is down" (this
+  is the exact example task named in the agent's own instructions, and
+  wasn't written yet despite being an obvious fit for the audience). Before
+  writing, web-searched the exact query and "cheap status page" and "free
+  status page no credit card" as candidates — the first showed no strong
+  exact-match article ranking (closest was a general Help Scout piece on
+  outage communication, not this phrasing), while the other two are
+  dominated by competitor product/comparison pages (Better Stack, Hyperping,
+  UptimeRobot, Instatus, etc. all rank their own roundups or landing pages),
+  so picked the least-contested one. Linked the new post to 2 existing posts
+  (`how-to-set-up-a-free-status-page`, `status-page-for-indie-developers`)
+  and added a backlink from `status-page-for-indie-developers.mdx`'s
+  incident-update section back to the new post.
+- Why: no new post in the last 7 days (still under the 2/week cap), and this
+  keyword is low-competition, matches FACTS.md exactly (incident model:
+  investigating/identified/monitoring/resolved; email alerts only on status
+  change), and fits the audience/pitch angle in PLAYBOOK directly.
+- Build: `npm run build` failed on the same known pre-existing issue (missing
+  Supabase env vars break static export of `/login`), confirmed identical
+  error to prior runs, unrelated to this change. Ran `npm run lint` instead —
+  same 8 pre-existing errors / 7 warnings as 09-27, all in untouched app
+  files. Verified all 5 posts' frontmatter parses with gray-matter (all OK,
+  all descriptions ≤160 chars).
+- Result/observation: this run's execution environment only allows pushing to
+  a per-run branch (`claude/keen-goodall-655bkx`), not directly to `main` —
+  the previous day's branch had already been merged into `main` by the time
+  this run started, which is how yesterday's changes actually reached
+  production. So this run's commits are pushed to that branch but **not yet
+  live**: curling the new post URL returns HTTP 200 but serves the generic
+  `/blog` fallback page, not the post (see new known issue below), and
+  IndexNow was **not** pinged this run since there's nothing live yet to
+  ping. Once the branch is merged to `main` and deployed, a future run
+  should verify the post is live and ping IndexNow for it (and for
+  `status-page-for-indie-developers`, which was also edited).
+- New known issue found while checking the above: `/blog/<any-slug>`,
+  including slugs that don't exist at all, returns **HTTP 200** with the
+  generic blog listing page instead of a real 404 status (soft 404). This
+  is pre-existing app routing behavior (`src/app/blog/[slug]/...`), not a
+  metadata issue, so it's outside this agent's allowed scope (content/blog,
+  llms.txt, marketing/, and SEO metadata in page.tsx/layout.tsx only) — a
+  real fix means calling `notFound()` from `next/navigation` when the slug
+  lookup fails. Flagging for Ferrey rather than touching app logic.
+- Next: keep watching `instatus-alternatives` CTR experiment (needs another
+  week+ of GSC lag to judge). `statuspage-alternatives.mdx` (position ~46,
+  44 impressions, 0 clicks) still needs real content/internal-link work, not
+  a title tweak — good candidate for tomorrow if no new post is due. The two
+  customer subdomains now appearing in GSC are worth a periodic glance to
+  see if organic signups start correlating with search impressions. A future
+  run should check whether today's branch merged to `main`, and if so,
+  verify the new post is live and ping IndexNow for it then.
+- NEEDS FERREY: (1) today's branch (`claude/keen-goodall-655bkx`) needs to be
+  merged to `main` for the new post and the indie-developers post edit to go
+  live — please merge or let me know if there's an auto-merge step I should
+  expect. (2) `/blog/<slug>` returns HTTP 200 for non-existent slugs instead
+  of a proper 404 (soft 404) — worth a `notFound()` fix in the blog route
+  when you have a minute; low urgency but bad practice for crawlers.
 
 ## 2026-09-27 — daily run
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt, and every sitemap URL
@@ -136,7 +470,7 @@ what to check next time. Keep entries short.
   set in this environment — token may be missing/wrong on the deployed env,
   or expired. Please check.
 
-## 2026-09-26 — setup (by Ferrey + Claude)
+## 2026-09-26 — setup (manual)
 - Fixed homepage indexing: statsy.page now serves the landing page directly
   (public/landing/), sitemap cleaned to 7 URLs, submitted to Google Search Console.
 - Submitted Statsy to ivbeg/awesome-status-pages (PR open).

@@ -15,8 +15,10 @@ emails and churn during outages.
 ## Strategy (current)
 - New domain with little authority: target specific, low-competition searches
   (long-tail), not head terms like "status page".
-- Examples of the right size: "status page for supabase app", "how to tell users
-  your app is down", "free status page with custom domain" (answer honestly: Pro).
+- Examples of the right size: "how to tell users your app is down", "how to
+  announce scheduled maintenance to users". Rejected after checking intent:
+  "status page for supabase app" and "free status page with custom domain"
+  (see Known lessons).
 - Each post answers one question fully, includes a quickAnswer, links to 1–2 other
   Statsy posts, and ends with a soft CTA to /signup.
 
@@ -69,23 +71,62 @@ emails and churn during outages.
   `src/lib/email.ts`). Cheap fixes like this are worth bundling into whatever
   commit is already touching nearby content instead of waiting for a
   dedicated content-fix day.
+- 2026-09-30: A 200 from curl is NOT proof a new post is live. `/blog/[slug]`
+  calls `notFound()` for unknown slugs and the fallback renders with a 200
+  (generic title, no canonical, noindex) while a deploy is rolling out. Poll
+  for a string unique to the new post (its title) before pinging IndexNow.
+- 2026-10-01: When a bug is "a template lists N stages instead of N+1", grep
+  the stage names themselves (Investigating/Identified/Resolved) across all of
+  `content/blog/`. The missing "Monitoring" stage was in two posts, not one.
+- 2026-10-02: The PLAYBOOK example "status page for supabase app" doesn't
+  actually have the search intent it looks like it has — every top result
+  is an "is Supabase down" outage-aggregator page. People typing that phrase
+  want to know if Supabase itself is down, not how to add a status page to
+  their own Supabase-backed app. Deprioritized; don't resurrect without
+  checking intent again. General lesson: web-search every candidate phrase
+  and read what actually ranks before writing, even one that's already
+  sitting in this table — a keyword can look right and still have the wrong
+  intent.
+- 2026-10-02: "free status page with custom domain" is a bad target even
+  though it matches Statsy's audience — several real competitors (Pulsetic,
+  OneUptime, UptimeSignal) genuinely give free custom domains, so a page
+  that has to honestly say "ours is Pro-only" is competing to lose on that
+  exact query. Skip queries where the honest answer undercuts the pitch;
+  look for the adjacent question instead (e.g. "do I need a custom domain at
+  all" works, "is there a free one" doesn't).
+- 2026-10-02: Runs on 09-28, 09-30, 10-01 and 10-02 could only push to their
+  own `claude/...` session branch, so their posts never deployed and every
+  later run read a stale LOG from `main`. Result: missing history, and 4 new
+  posts in 4 days against the 2-per-week cap. Branches were merged into
+  `main` by hand on 2026-10-02 and the routine was set to allow pushing to
+  `main`. If a push to `main` is ever rejected again: do not publish to a
+  side branch and move on. Put it at the top of the LOG as NEEDS FERREY and
+  make no further content changes until it's fixed. LOG.md on `main` is the
+  only memory between runs.
 
 ## Experiments
 | Started | Hypothesis | Measure | Result |
 |---|---|---|---|
-| 2026-09-27 | New title/description on `instatus-alternatives.mdx` (was ranking #11.3, 23 impr, 0 clicks) will raise CTR | Clicks/CTR for that page and "instatus alternative(s)" queries in seo-stats | Pending — check in ~1-2 weeks once GSC data catches up (2026-09-29: still 23 impr/0 clicks, only 2 days in, too early) |
-| 2026-09-29 | New post `how-to-tell-users-your-app-is-down.mdx` will rank for that long-tail phrase within a few weeks (no direct competing content found) | Position/impressions for "how to tell users your app is down" and related phrasing in seo-stats byQuery | Pending — new post, no data yet |
+| 2026-09-27 | New title/description on `instatus-alternatives.mdx` (was ranking #11.3, 23 impr, 0 clicks) will raise CTR | Clicks/CTR for that page and "instatus alternative(s)" queries in seo-stats | Pending — position improved to 8 (27 impr) by 2026-10-02, but clicks still 0. Position is moving, CTR isn't yet; give it another 1-2 weeks before trying a second description rewrite |
+| 2026-09-29 | New post `how-to-tell-users-your-app-is-down.mdx` will rank for that long-tail phrase within a few weeks (no direct competing content found) | Position/impressions for "how to tell users your app is down" and related phrasing in seo-stats byQuery | Pending — not yet showing in byQuery as of 2026-10-02 |
+| 2026-09-30 | New post `status-page-for-supabase-app.mdx` will rank for "status page for supabase app" | Position/impressions for "supabase status page" phrasing in seo-stats byQuery | Pending — published 2026-10-02 (merged late). Later runs judged the query's intent wrong ("is Supabase down"); expect weak results, keep as an internal-link target |
+| 2026-10-01 | New post `how-to-announce-scheduled-maintenance-to-users.mdx` will rank for that long-tail phrase (top results were generic templates) | Position/impressions for "announce scheduled maintenance" phrasing in seo-stats byQuery | Pending — published 2026-10-02 (merged late), no data yet |
+| 2026-10-02 | New post `status-page-vs-uptime-monitoring.mdx` will rank for "status page vs uptime monitoring" / "do I need both" phrasing — competitive query (statuspage.me has a near-identical angle) but matches audience pitch tightly | Position/impressions for those phrases in seo-stats byQuery | Pending — published 2026-10-02, no data yet |
 
 ## Target keywords
 | Keyword | Post | Last position seen | Checked |
 |---|---|---|---|
-| statsy (brand) | homepage | 7 | 2026-09-29 |
+| statsy (brand) | homepage | 6.9 | 2026-10-02 |
 | instatus alternative | instatus-alternatives | 9.9 | 2026-09-29 |
 | instatus alternatives | instatus-alternatives | 15 | 2026-09-29 |
-| statuspage alternative | statuspage-alternatives | 61.8 | 2026-09-29 |
-| statuspage alternatives | statuspage-alternatives | 52.5 | 2026-09-29 |
+| (page-level) instatus-alternatives | instatus-alternatives | 8 | 2026-10-02 |
+| statuspage alternative | statuspage-alternatives | 61 | 2026-10-02 |
+| statuspage alternatives | statuspage-alternatives | 50.3 | 2026-10-02 |
 | statuspage.io alternatives | statuspage-alternatives | 30.8 | 2026-09-29 |
 | alternative to statuspage io | statuspage-alternatives | 40.8 | 2026-09-29 |
 | statuspage cost | statuspage-alternatives | 3 | 2026-09-29 |
 | cheap status page | (none — needs a listicle, deprioritized) | 60.4 | 2026-09-29 |
 | how to tell users your app is down | how-to-tell-users-your-app-is-down | not yet indexed | 2026-09-29 |
+| how to announce scheduled maintenance to users | how-to-announce-scheduled-maintenance-to-users | not yet indexed | 2026-10-02 |
+| status page vs uptime monitoring | status-page-vs-uptime-monitoring | not yet indexed | 2026-10-02 |
+| status page for supabase app | status-page-for-supabase-app (exists; query deprioritized, wrong intent) | not yet indexed | 2026-10-02 |
