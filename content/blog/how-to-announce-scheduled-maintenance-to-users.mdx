@@ -1,0 +1,84 @@
+---
+title: "How to Announce Scheduled Maintenance to Your Users"
+description: "When to notify users about planned maintenance, what the notice should say, and how to set it up so a status page handles the emails for you."
+quickAnswer: "Post the maintenance window on your status page and email subscribers when you schedule it, giving routine work 1-2 days notice and anything riskier closer to a week. State the exact time range in UTC, what will be affected, and whether users should expect downtime or just slowness, then let the page auto-update when the window starts and ends."
+date: "2026-10-01"
+author: "Statsy"
+tags: ["status-page", "scheduled-maintenance", "incident-communication"]
+---
+
+<QuickAnswer>
+Post the maintenance window on your status page and email subscribers when you schedule it, giving routine work 1-2 days notice and anything riskier closer to a week. State the exact time range in UTC, what will be affected, and whether users should expect downtime or just slowness, then let the page auto-update when the window starts and ends.
+</QuickAnswer>
+
+Planned maintenance has a trust problem that unplanned outages don't: it's entirely your fault if a user is caught off guard by it. Nobody can blame you for a server catching fire at 3am. They can absolutely blame you for a database migration you knew about a week in advance showing up as a surprise 20-minute outage with no warning.
+
+The fix isn't complicated, but it has more moving parts than people expect: how far ahead to notify, what the notice should actually say, and where it needs to show up so people see it before the window opens, not after.
+
+## How far in advance to notify
+
+The notice period should match the blast radius, not a fixed rule:
+
+- **Routine maintenance** (a deploy with a few seconds of restart, a database index rebuild) — 1 to 2 days notice is enough. Most users won't notice the window at all.
+- **Maintenance with real downtime** (a database migration, a provider cutover, anything measured in tens of minutes) — give closer to a week, especially if any of your users run their own business on top of your product during business hours.
+- **Recurring maintenance** (a weekly backup window) — announce it once, keep it visible on the status page, and you don't need to re-announce every occurrence unless the pattern changes.
+
+Whatever window you pick, send a second notice closer to the start — a day before, or a few hours before for short windows. The first notice is for planning; the second is the one people actually remember.
+
+<Callout variant="tip">
+Always state the time in UTC, even if most of your users are in one timezone. "2:00 AM – 4:00 AM UTC" is unambiguous. "2:00 AM" on its own forces every reader to guess whose 2am you mean.
+</Callout>
+
+## What the announcement should say
+
+Four things, in order:
+
+1. **What's happening.** One sentence, plain language: "We're migrating our database to a new provider."
+2. **When.** The exact start and end time, in UTC, as a range — not just a start time. Users plan around a window, not a single timestamp.
+3. **What they'll notice.** Say explicitly whether this means downtime ("the app will be unreachable for the full window") or just degraded performance ("responses may be slower than usual, but nothing should fail"). These require completely different levels of user concern, and conflating them either causes needless panic or an unpleasant surprise.
+4. **What to do, if anything.** Usually nothing — but if there's an action required (export data first, expect to be logged out, API calls will need a retry), say so here, not buried in a FAQ.
+
+Skip the apology-heavy framing ("We're so sorry for any inconvenience this may cause!!"). A maintenance window is routine operational work, not a mistake. State it plainly and move on.
+
+## Where it needs to show up
+
+The announcement is only useful if it reaches people before the window starts, which means it can't live in just one place:
+
+**On your status page**, as a visible scheduled item, not buried in a changelog. Anyone checking the page in the days before the window — or who clicks through from a support ticket — should see it immediately.
+
+**By email**, for everyone who won't proactively check a status page. If you're running [Statsy](https://statsy.page), scheduling a maintenance window sends subscribers an email automatically the moment you create it, with the time range already formatted in UTC. You write the title and description once; the notice and the email come from the same place, so they can't drift out of sync with each other.
+
+This is the same split covered in our guide to [telling users your app is down](/blog/how-to-tell-users-your-app-is-down) for unplanned incidents — the difference here is that you get to send the first notice days ahead of time instead of scrambling in the first five minutes of an outage.
+
+## Setting the window up
+
+On Statsy, scheduling maintenance takes four fields:
+
+1. **Title** — the one-line summary users will see ("Database migration," not "pg_upgrade to v16").
+2. **Description** — the longer explanation: what's happening, what to expect, anything users need to do.
+3. **Start and end time** — picked in your own local time; Statsy converts it to UTC for the public page and the email.
+4. **Affected services** — which of your components this window touches. If only your API is affected, your website and dashboard stay marked operational the whole time.
+
+Once saved, the window shows up on your public status page ahead of time, and subscribers get the scheduled-maintenance email right away. You don't write a separate email — it goes out from the same action.
+
+<Callout variant="tip">
+A maintenance window doesn't count against your status page's uptime percentage the way an incident does. That's deliberate: planned, announced downtime is a different thing from your service unexpectedly failing, and your uptime history shouldn't conflate the two.
+</Callout>
+
+## What happens when the window opens and closes
+
+You don't have to babysit the clock. Once a window's start time arrives, the affected services automatically show as under maintenance on the public page. When the end time passes, it automatically moves to completed and subscribers get a second email confirming it's done — you don't need to log back in and close it out manually, though you can add a note first if something relevant happened during the window.
+
+If plans change and you need to cancel a window before it starts, cancelling it sends subscribers a cancellation notice too, so nobody shows up expecting downtime that isn't going to happen.
+
+## The pattern, end to end
+
+1. Decide the window and how much notice it needs (a day or two for routine work, up to a week for anything riskier).
+2. Schedule it with a plain-language title, a description covering what/when/impact, and the affected services. Subscribers get notified immediately.
+3. Send a reminder closer to the start if the first notice was more than a couple of days out.
+4. Let the window run — it moves to in-progress and then completed on its own, and subscribers get an email when it completes.
+5. If something comes up and you need to cancel, do it from the dashboard; the cancellation notice goes out the same way.
+
+None of this requires more than a status page that treats maintenance as a first-class thing instead of an afterthought bolted onto incidents. If you don't have one yet, our guide to the [indie developer status page stack](/blog/status-page-for-indie-developers) covers what to look for.
+
+<CtaButton href="https://statsy.page/signup">Schedule your first maintenance window →</CtaButton>

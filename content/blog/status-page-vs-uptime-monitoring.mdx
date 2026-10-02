@@ -1,0 +1,74 @@
+---
+title: "Status Page vs. Uptime Monitoring: Do You Need Both?"
+description: "A status page and an uptime monitor solve different problems. Here's how to tell which one you're missing, and why most small teams end up needing both."
+quickAnswer: "Uptime monitoring tells you when something breaks; a status page tells your users. If you only have monitoring, you find out about outages but your users still hear it from each other first. If you only have a status page with no automated monitoring, it only says what's true when you remember to update it by hand. Most teams need both, which is why tools like Statsy build monitoring into the status page instead of selling them separately."
+date: "2026-10-02"
+author: "Statsy"
+tags: ["status-page", "uptime-monitoring", "indie-dev"]
+---
+
+<QuickAnswer>
+Uptime monitoring tells you when something breaks; a status page tells your users. If you only have monitoring, you find out about outages but your users still hear it from each other first. If you only have a status page with no automated monitoring, it only says what's true when you remember to update it by hand. Most teams need both, which is why tools like Statsy build monitoring into the status page instead of selling them separately.
+</QuickAnswer>
+
+You've got an uptime checker pinging your app every few minutes, or maybe you don't have anything yet and you're trying to figure out what to set up first. Either way, the question is the same: is an uptime monitor enough, or do you also need a status page? They sound like they do the same job. They don't.
+
+## What each one actually does
+
+**Uptime monitoring** is a watcher. It pings your service URLs on a schedule, and when a check fails, it tells *you* — an email, a push notification, a dashboard going red. The audience is you and your team. Nobody outside your company sees it.
+
+**A status page** is an announcement. It's a public page that says "API: operational, Dashboard: degraded" and shows incident updates as you write them. The audience is your users. It only says what you tell it to say, unless it's wired up to the monitoring.
+
+Here's the part that trips people up: neither one replaces the other.
+
+- Monitoring without a status page means you know about the outage immediately, but your users find out from a support ticket, a tweet, or just hitting refresh repeatedly. You were aware. They weren't told.
+- A status page without monitoring means someone has to notice the outage first, then remember to log in and flip the status manually. In practice this means the page says "operational" for 20 minutes after things broke, because nobody got around to updating it. A status page that lags reality is worse than no status page, because people start ignoring it.
+
+## A concrete example
+
+Say your API starts timing out at 2:14am.
+
+With monitoring only: you get an alert a few minutes later, after two failed checks in a row. You fix it by 2:40am. Your users spent that whole time refreshing the app, assuming it was their wifi, before giving up and emailing support the next morning.
+
+With a status page only (no monitoring): nobody is watching at 2:14am. You wake up at 8am to 12 support emails and manually mark the API as "investigating," three hours after it actually went down. The page was wrong the entire time anyone needed it.
+
+With both, connected: the monitor catches the failure a few minutes in and flips the API to "outage" on the status page automatically, and everyone subscribed gets an email. Anyone who checks the page sees accurate information within minutes, at 2am, without you doing anything. You post a written incident update ("investigating") once you're awake. You still fix the bug at 2:40am, but the communication problem never existed.
+
+That third scenario is the one worth building toward. The question isn't "which do I need," it's "how do I get the status page to reflect the monitoring without doing it by hand."
+
+## Why they're usually sold separately anyway
+
+Historically: Atlassian Statuspage does status pages and expects you to wire up your own monitoring via its API or Zapier. Dedicated monitors like UptimeRobot or Pingdom check your services and alert you, but don't give you a polished public page. So teams end up paying for two tools and gluing them together, or paying for one and manually updating the other.
+
+This split made more sense when status pages were an enterprise thing bought separately from infrastructure monitoring by a different team. For a solo developer or a three-person SaaS, that split is just two bills and one integration you have to maintain.
+
+## What to actually set up, in order
+
+If you have neither yet:
+
+1. **Start with a tool that does both.** [Statsy's free plan](https://statsy.page/signup) gives you a public status page and automated URL monitoring (every 5 minutes, 2 consecutive failures before a service is marked down) in the same place, with no credit card required. The status page updates itself; you don't maintain a second integration.
+2. **Add your services.** Your API, your dashboard, your database health-check endpoint, whatever your users would notice if it stopped responding. Free plan covers up to 3.
+3. **Let it run for a week before you touch anything else.** You'll see which services flap (flip status on transient blips) and which are genuinely reliable. Don't over-tune the thresholds on day one.
+
+If you already have monitoring (say, a self-hosted Uptime Kuma instance or a paid alerting tool) but no public page:
+
+- Check if it can push status changes somewhere public. Some self-hosted tools support this via webhooks; most hosted monitoring tools don't include a public page at all.
+- If wiring your existing monitor to a separate status page isn't realistic, it's often less total work to switch to a tool that does both than to maintain the glue code. That's the trade-off worth weighing before you build an integration nobody else will maintain if you stop.
+
+If you already have a status page but update it by hand:
+
+- That's the riskiest setup of the three, because the page's accuracy depends entirely on someone noticing and logging in. Adding automated monitoring in front of it — even a separate free checker that emails you — closes the gap until you have time to consolidate.
+
+## What you give up with a combined free tool
+
+Being honest about the trade-off: a bundled free tool like Statsy's won't match a dedicated enterprise monitoring platform on things like on-call escalation schedules, Slack/webhook alert routing, or SMS paging. Those are real features some teams need, and Statsy doesn't have them. What Statsy's free plan gives you instead is the two most common pieces — a public page and basic automated monitoring — in one place, for $0, which covers most indie products and small teams before they'd ever need escalation policies anyway.
+
+<Callout variant="tip">
+If you're not sure whether you've outgrown a combined free tool, the signal isn't traffic or revenue, it's whether you have an on-call rotation. If nobody's "on call," you don't need the separate paging product yet.
+</Callout>
+
+## TL;DR
+
+Monitoring and status pages answer different questions — "is it broken" versus "do my users know" — and you eventually need an answer to both. The cheapest way to get there isn't two tools glued together, it's one tool that already does both. For the setup itself, see [how to set up a free status page](/blog/how-to-set-up-a-free-status-page); for what to actually write once an incident is live, see [how to tell users your app is down](/blog/how-to-tell-users-your-app-is-down).
+
+<CtaButton href="https://statsy.page/signup">Get a status page with monitoring built in, free →</CtaButton>

@@ -1,0 +1,65 @@
+---
+title: "How to Set Up a Status Page for Your Supabase App"
+description: "Supabase's status page only covers their platform, not your app. Here's how to set up one that reflects your app's actual uptime, not Supabase's."
+quickAnswer: "Supabase's status page (status.supabase.com) only tracks Supabase's own platform, not your specific app or project. To give users an accurate picture, set up a separate status page that monitors your app's actual URLs, ideally including an endpoint that touches your Supabase project. A free tool like Statsy does this in a few minutes with no credit card."
+date: "2026-09-30"
+author: "Statsy"
+tags: ["status-page", "supabase", "uptime-monitoring"]
+---
+
+<QuickAnswer>
+Supabase's status page (status.supabase.com) only tracks Supabase's own platform, not your specific app or project. To give users an accurate picture, set up a separate status page that monitors your app's actual URLs, ideally including an endpoint that touches your Supabase project. A free tool like Statsy does this in a few minutes with no credit card.
+</QuickAnswer>
+
+If your app runs on Supabase and something breaks, the first instinct is to check status.supabase.com. Sometimes it shows an incident and the mystery is solved. Often it shows "All systems operational" while your users are still getting errors, and now you're debugging two problems at once: the actual outage, and confused users who think you're either lying or clueless because "the status page says everything's fine."
+
+The fix isn't to distrust Supabase's status page. It's to stop treating it as your app's status page, because it was never meant to be one.
+
+## Why "Supabase is up" doesn't mean your app is up
+
+Supabase's status page reports on Supabase's infrastructure: the managed Postgres service, Auth, Storage, Edge Functions, the dashboard. It's genuinely useful for that, and worth keeping an eye on when you're diagnosing an incident.
+
+But your app has failure points Supabase can't see:
+
+- **Your frontend deploy.** A bad build on Vercel or Netlify takes your app down with Supabase fully healthy.
+- **Your database, not the database service.** Supabase Postgres being "operational" doesn't mean your specific project is fine. You can hit your own connection pool limit, write a slow query that times out under load, or ship a migration that breaks a table your app depends on. None of that shows up on a platform-wide status page.
+- **Row Level Security and auth config.** A misconfigured RLS policy or an expired API key can make every request fail for your users while Supabase's Auth and Postgres services both report green.
+- **Your own API routes and third-party integrations.** Stripe, Resend, a cron job, anything else in your stack can be the actual cause.
+
+Supabase being up is necessary for your app to work. It isn't sufficient. A status page that only reflects Supabase's platform will be wrong about your app's actual uptime most of the time an incident happens.
+
+<Callout variant="tip">
+If you've ever had a user say "your status page says you're fine but I can't log in," this is almost always the cause: they found Supabase's status page (or yours, pointed at the wrong thing) instead of one that reflects what's actually happening to your app.
+</Callout>
+
+## What to actually monitor
+
+The fix is to monitor your app the way your users experience it, not the infrastructure underneath it. Two approaches, in order of how much signal they give you:
+
+**1. Monitor your app's real, public URL.** If your users hit `app.yourproduct.com`, that's what should be checked. This catches frontend deploy failures, DNS issues, and anything that breaks the page from loading at all.
+
+**2. Add a health endpoint that actually touches Supabase.** A plain "is the server up" ping can return 200 even when your database connection is failing. Build a small API route, something like `/api/health`, that runs a cheap Supabase query (a `select 1`-style read on a small table is enough) and returns a 500 if it fails. Point your monitoring at that URL instead of, or in addition to, your homepage. Now a Supabase outage, an RLS misconfiguration, or a connection limit problem actually flips your status page to "down," instead of staying silently green.
+
+This second option is what makes a status page for a Supabase app more useful than a generic one: it turns "is my database reachable and queryable right now" into a public signal, without you writing any alerting logic yourself.
+
+## Setting it up with Statsy
+
+1. **Sign up** at [statsy.page/signup](https://statsy.page/signup). No credit card.
+2. **Create a status page.** Give it a name and a slug; it's live immediately at `yourslug.statsy.page`.
+3. **Add services for the things that matter.** At minimum, your app's main URL. If you built a Supabase health-check endpoint, add that as its own service ("Database" or "API"), separate from the frontend. Seeing "App: Operational, Database: Outage" tells your users far more than a single combined status ever could.
+4. **Let it run.** Statsy checks each URL automatically (every 5 minutes on the free plan, every 1 minute on Pro) and flags a service down after 2 consecutive failed checks, which avoids false alarms from a single dropped request.
+5. **Post updates when something breaks.** When a check fails, the service flips to Outage and subscribers get an email automatically. From there you can post incident updates (investigating, identified, monitoring, resolved) so users know what's happening without pinging you individually.
+
+The free plan covers one status page with up to 3 services, which is enough for most single-project Supabase apps: frontend, API, and a Supabase-dependent health check. If you're running multiple products or need a custom domain instead of `yourslug.statsy.page`, that's on the $15/mo Pro plan.
+
+## Where to put the link
+
+Once it exists, the status page only helps if people can find it during an outage, not just when you remember to mention it. Put the link in your app's footer, your docs, and your support autoresponder. Our guide on [setting up a free status page](/blog/how-to-set-up-a-free-status-page) covers the mechanics of that in more detail if you haven't built one before.
+
+And when an incident actually happens, how you word the update matters as much as having the page at all — see [how to tell users your app is down](/blog/how-to-tell-users-your-app-is-down) for the specifics.
+
+## The short version
+
+Don't send worried users to status.supabase.com and call it done. It answers "is Supabase's platform healthy," not "is your app working right now," and those are different questions with different answers more often than you'd expect. Point your monitoring at your own app, add a health check that actually queries your Supabase project if you can, and give your users a status page that tells them the truth about the thing they actually use.
+
+<CtaButton href="https://statsy.page/signup">Set up a status page for your app →</CtaButton>

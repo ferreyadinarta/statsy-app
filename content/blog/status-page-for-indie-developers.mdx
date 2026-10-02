@@ -64,6 +64,8 @@ This is what most indie devs should do. Sign up for a free hosted service like [
 
 Trade-off: you depend on the host. But for an indie product, that's fine because you depend on Vercel, Cloudflare, Supabase, and Stripe already. One more dependency at $0 isn't the bottleneck.
 
+If your app runs on Supabase specifically, a generic "is it up" check isn't enough; see our guide on [setting up a status page for a Supabase app](/blog/status-page-for-supabase-app) for how to monitor your actual project instead of just Supabase's platform status.
+
 ### Option 2: Self-host an open source tool (a few hours)
 
 Tools like Cachet, Statping, and Uptime Kuma exist. You'll need to host them, monitor them (yes, the meta problem of who monitors your monitor), keep them updated, and configure email delivery.
@@ -116,6 +118,10 @@ Four updates, no more:
 **4. Resolved** (when it's fixed): "Resolved. [One-sentence summary of cause]. Subscribers: thanks for your patience."
 
 That's the whole template. Don't write a postmortem in the status update. That's a follow-up blog post. Don't apologize five times. Just communicate. For more on the actual wording to use in each update, see [how to tell users your app is down](/blog/how-to-tell-users-your-app-is-down).
+
+That covers unplanned incidents. For work you already know is coming, like a database migration or provider cutover, see our guide to [announcing scheduled maintenance to users](/blog/how-to-announce-scheduled-maintenance-to-users) instead — the notice period and wording are different from an active incident.
+
+If you're running a separate uptime checker and manually updating this page, see [status page vs. uptime monitoring](/blog/status-page-vs-uptime-monitoring) for why that gap is worth closing before it bites you.
 
 ## When should I upgrade from a free tier?
 
