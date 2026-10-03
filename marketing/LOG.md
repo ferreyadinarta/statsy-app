@@ -3,6 +3,14 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-03
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-03..09-30, lags): 3 clicks, 237 impressions, avg position 14.4, CTR 1.3%. Signups: 1 in 28d (2026-09-27), 11 total users. Flat vs last entries. `instatus-alternatives` still position 8, 27 impr, 0 clicks. `status-page-for-indie-developers` now shows (pos 6, 8 impr). New posts (09-29 onward) not in GSC data yet (it ends 09-30).
+- Did: internal-link fix, no new post (4 posts in last 7 days, cap until 2026-10-08). Added "related" links to `how-to-set-up-a-free-status-page`, `instatus-alternatives`, `statuspage-alternatives`, which had 0 outbound blog links. `instatus-alternatives` had no closing CTA, so added one linking to /signup.
+- Why: older posts were orphan-ish dead ends; linking to the new how-to posts passes them internal signal and keeps readers moving.
+- Result/observation: `npm run build` failed on the same pre-existing `/login` Supabase env error. Lint not worse than before; all frontmatter parses, descriptions <=160 chars.
+- Next: 2026-10-05 or later: check GSC for the new posts' queries. Monday 10-05 weekly review (rewrite PLAYBOOK). New post allowed from 10-08.
+
 ## 2026-10-02 — manual cleanup (Ferrey)
 - Found that the runs on 09-28, 09-30, 10-01 and 10-02 could only push to their
   own `claude/...` session branches, so nothing they did reached `main` or
