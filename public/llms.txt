@@ -22,10 +22,10 @@ Each user's status page lives at `{slug}.statsy.page` (e.g. `acme.statsy.page`) 
 
 ## Differentiators
 
-- Free plan includes automated monitoring (most competitors gate this)
+- Free plan includes automated URL monitoring, a public status page, and email alerts to subscribers
 - No credit card required
 - Setup in minutes
-- Built for small teams and indie devs, not enterprises
+- Built for small teams and indie devs, not enterprises (no SMS, Slack, webhook or on-call alerting)
 
 ## Contact
 

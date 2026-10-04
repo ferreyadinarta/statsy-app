@@ -3,6 +3,14 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-04
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC to 2026-10-01): 3 clicks, 231 impressions, avg position 13.8, CTR 1.3%. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` still pos 8 / 27 impr / 0 clicks; `statuspage-alternatives` pos 42 / 45 impr. New posts (09-29 onward) still not in GSC data.
+- Did: `public/llms.txt` accuracy fix. Replaced the unsourced "most competitors gate this" differentiator with a plain statement of what Free includes, and added the missing "no SMS/Slack/webhook/on-call" note per FACTS.md. Swept all post descriptions: all <=160 chars. Grep for Business plan / Free custom domain / badge claims: clean.
+- Why: new-post cap (4 posts in rolling 7 days) holds until 2026-10-08; nothing else new in the data to act on.
+- Result/observation: no build run needed beyond content-only change (llms.txt is not part of the build); no code touched.
+- Next: Monday 10-05 weekly review (rewrite PLAYBOOK, check whether new posts appear in GSC). New post allowed from 10-08.
+
 ## 2026-10-03
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-03..09-30, lags): 3 clicks, 237 impressions, avg position 14.4, CTR 1.3%. Signups: 1 in 28d (2026-09-27), 11 total users. Flat vs last entries. `instatus-alternatives` still position 8, 27 impr, 0 clicks. `status-page-for-indie-developers` now shows (pos 6, 8 impr). New posts (09-29 onward) not in GSC data yet (it ends 09-30).
