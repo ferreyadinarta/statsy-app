@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-05
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-05..10-02): 3 clicks, 253 impressions, avg position 13.6, CTR 1.2%. Signups: 1 in 28d (2026-09-27), 11 total users. Flat. `instatus-alternatives` pos 8, 36 impr, 0 clicks; `statuspage-alternatives` pos 42.8, 46 impr; `status-page-for-indie-developers` pos 5.9, 7 impr; `how-to-tell-users-your-app-is-down` first appears (1 impr, pos 32, query "application outage"). Other 4 new posts not in GSC yet.
+- Did: Monday weekly review. Rewrote `marketing/PLAYBOOK.md` (131 -> ~96 lines): merged duplicate lessons, refreshed keyword positions, added a next-steps section. No new post (cap until 2026-10-08).
+- Why: nothing in the data justified touching content; the new posts need time to appear in GSC.
+- Result/observation: about half of all impressions are the brand query "statsy". Content has produced no clicks yet; 28d traffic is essentially brand + one page at pos 8.
+- Next: 10-08 or later: one new how-to post (candidates in PLAYBOOK, verify intent first). Re-check GSC for the new posts around 10-12; second title rewrite on instatus-alternatives if still 0 clicks.
+- NEEDS FERREY: content alone is unlikely to move signups on a new domain. Consider a few off-site mentions or links (X post, Indie Hackers, Show HN, SaaS/status-page directories).
+
 ## 2026-10-04
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC to 2026-10-01): 3 clicks, 231 impressions, avg position 13.8, CTR 1.3%. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` still pos 8 / 27 impr / 0 clicks; `statuspage-alternatives` pos 42 / 45 impr. New posts (09-29 onward) still not in GSC data.
