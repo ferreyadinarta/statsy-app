@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-06
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC to ~2026-10-03): 3 clicks, 250 impressions, avg position 14, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. `how-to-tell-users-your-app-is-down` now 3 impr at pos 16.3; `instatus-alternatives` 32 impr pos 8.2, 0 clicks; `statuspage-alternatives` 46 impr pos 44.5. The other 3 new posts still absent from GSC.
+- Did: no content change (log-only run).
+- Why: 3 posts fall inside the rolling 7 days (10-01, 10-02, plus the 09-30 post merged 10-02), so the cap holds until 10-08; no false claims or broken items surfaced to fix; GSC data too thin to justify another title rewrite yet.
+- Result/observation: nothing moved. Still ~half of impressions are the brand query.
+- Next: 10-08 or later: one new how-to post (e.g. "what to write in a status page incident update"; web-search intent first). Re-check GSC ~10-12 for new posts; second instatus-alternatives title rewrite if still 0 clicks.
+- NEEDS FERREY: unchanged from 10-05: off-site mentions/links (X, Indie Hackers, directories) are the likely missing lever.
+
 ## 2026-10-05
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-05..10-02): 3 clicks, 253 impressions, avg position 13.6, CTR 1.2%. Signups: 1 in 28d (2026-09-27), 11 total users. Flat. `instatus-alternatives` pos 8, 36 impr, 0 clicks; `statuspage-alternatives` pos 42.8, 46 impr; `status-page-for-indie-developers` pos 5.9, 7 impr; `how-to-tell-users-your-app-is-down` first appears (1 impr, pos 32, query "application outage"). Other 4 new posts not in GSC yet.
