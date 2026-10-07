@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-07
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-07..10-04): 3 clicks, 248 impressions, avg position 13.1, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` pos 8, 33 impr, 0 clicks; `statuspage-alternatives` pos 44.8, 40 impr; `how-to-tell-users-your-app-is-down` 4 impr pos 14.5; `status-page-for-indie-developers` pos 6, 8 impr. Brand "statsy" 129 impr, 2 clicks. The other 3 new posts still absent.
+- Did: research only (PLAYBOOK "Next steps" updated with intent checks for two candidate topics). No content change, no build needed.
+- Why: new-post cap holds until 10-08 (posts dated 10-01/10-02 inside rolling 7 days); nothing false or broken to fix.
+- Result/observation: "what to write in a status page incident update" is a template-style how-to intent (Better Stack, Hosted Graphite, Cronitor, OneUptime rank), winnable with a worked four-stage example. "how often should uptime checks run" is dominated by vendor FAQs.
+- Next: 10-08 or later: write the incident-update post (internal links to how-to-tell-users-your-app-is-down and how-to-announce-scheduled-maintenance-to-users). GSC re-check ~10-12.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-06
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC to ~2026-10-03): 3 clicks, 250 impressions, avg position 14, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. `how-to-tell-users-your-app-is-down` now 3 impr at pos 16.3; `instatus-alternatives` 32 impr pos 8.2, 0 clicks; `statuspage-alternatives` 46 impr pos 44.5. The other 3 new posts still absent from GSC.

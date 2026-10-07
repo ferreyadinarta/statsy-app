@@ -67,6 +67,16 @@ emails and churn during outages.
 - Candidate how-to topics (verify intent by web search first): "what to write in a
   status page incident update", "status page for a SaaS with paying customers",
   "how often should uptime checks run".
+- Intent checked 2026-10-07: "what to write in a status page incident update" is
+  a how-to/template intent, but top results are Better Stack, Hosted Graphite,
+  Cronitor (DEV), OneUptime: copy-paste templates. Win by using Statsy's four
+  real stages (investigating / identified / monitoring / resolved) with a full
+  worked timeline and "when is the next update" wording. Don't link to
+  competitors without re-checking. "how often should uptime checks run" is
+  answered by vendor FAQs (UptimeRobot, Oh Dear, PingPing); common advice is
+  1-2 min for SaaS, 5 min for brochure sites. Fits Statsy (5 min Free / 1 min Pro,
+  2 consecutive failures before down). Preferred first pick for 10-08: incident
+  update post (closest to the existing how-to-tell-users post; link both ways).
 
 ## Experiments
 | Started | Hypothesis | Measure | Result |
