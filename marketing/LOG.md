@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-08
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC to ~2026-10-05): 3 clicks, 240 impressions, avg position 13.2, CTR 1.3%. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` pos 8, 32 impr, 0 clicks; `statuspage-alternatives` pos 45.3, 39 impr; `how-to-tell-users-your-app-is-down` 4 impr pos 14.5. Brand "statsy" 127 impr, 2 clicks. Other 3 new posts still absent.
+- Did: new post `content/blog/what-to-write-in-a-status-page-incident-update.mdx` (~1200 words, four-stage wording plus a full worked timeline). Added a link to it from `how-to-tell-users-your-app-is-down.mdx`; the new post links to that one and to the maintenance post.
+- Why: cap lifted today (last post 10-02); intent was web-checked on 10-07 (template-style how-to; competitors are generic fill-in-the-blank), so I did not repeat the search today. Angle: Statsy's real four stages plus a worked example.
+- Result/observation: `npm run build` fails on the same pre-existing `/login` Supabase env error; all 9 posts' frontmatter parses via gray-matter, descriptions <=160 chars.
+- Next: confirm post is live, ping IndexNow. GSC re-check ~10-12; second instatus-alternatives title rewrite if still 0 clicks. Next new post allowed 10-09 at the earliest (cap: 2 per rolling 7 days; 1 used).
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-07
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-07..10-04): 3 clicks, 248 impressions, avg position 13.1, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` pos 8, 33 impr, 0 clicks; `statuspage-alternatives` pos 44.8, 40 impr; `how-to-tell-users-your-app-is-down` 4 impr pos 14.5; `status-page-for-indie-developers` pos 6, 8 impr. Brand "statsy" 129 impr, 2 clicks. The other 3 new posts still absent.

@@ -1,0 +1,93 @@
+---
+title: "What to Write in a Status Page Incident Update (With a Full Example)"
+description: "What to put in each incident update on your status page: wording for investigating, identified, monitoring and resolved, plus a worked timeline you can copy."
+quickAnswer: "Each incident update should say what users can't do, whether it is still happening, what you are doing next, and when the next update will come. Write it in plain language, one short paragraph per stage: investigating, identified, monitoring, resolved."
+date: "2026-10-08"
+author: "Statsy"
+tags: ["status-page", "incident-communication", "templates"]
+---
+
+<QuickAnswer>
+Each incident update should say what users can't do, whether it is still happening, what you are doing next, and when the next update will come. Write it in plain language, one short paragraph per stage: investigating, identified, monitoring, resolved.
+</QuickAnswer>
+
+Most advice about incident updates is a list of templates with blanks to fill in. Templates help, but the blanks are where people get stuck at 2 a.m. with a broken app: what exactly goes in "[impact]"? How much cause is too much? What do you write when nothing has changed?
+
+This post gives you a short checklist for any update, the wording for each of the four stages, and one complete example timeline you can adapt. If you want the broader picture of outage communication (where to post, how to keep trust), read [how to tell users your app is down](/blog/how-to-tell-users-your-app-is-down) first. This one is about the words themselves.
+
+## The four things every update needs
+
+Whatever the stage, check your draft against these:
+
+1. **Impact:** what can't users do right now? Name the feature, not the component. "Checkout is failing" beats "payment-service degraded."
+2. **Scope:** who is affected? "Some users," "users in the EU," "everyone" are all useful. Leaving it out makes every reader wonder if they are in the group.
+3. **Status:** is it still happening, or is this a fix in progress? One verb is enough: "We are investigating," "We have deployed a fix."
+4. **Next update:** a time, not a fix ETA. "Next update by 14:30 UTC" is a promise you can keep. "Fixed within the hour" often isn't.
+
+If a draft has all four, it is a good update, even if it is three lines long.
+
+## Stage 1: Investigating
+
+Use this the moment you know something is wrong, even if you don't know why. Speed matters more than detail here.
+
+> **Investigating: login failures.** Some users are unable to log in. We are looking into it now. Next update by 14:15 UTC.
+
+Don't guess at causes this early. If you write "database issue" and it turns out to be an expired certificate, you have to correct yourself publicly. "We are investigating" is honest and enough.
+
+## Stage 2: Identified
+
+Use this once you know what is wrong and are working on a fix. This is where you can add one plain-language line of cause, if it helps users understand.
+
+> **Identified: login failures.** The problem is an expired certificate with our login provider. We are rolling out a fix. Logged-in sessions are not affected. Next update by 14:30 UTC.
+
+Notice the workaround-style detail: "logged-in sessions are not affected." Telling users what still works is often more valuable than the cause. Keep internal jargon out. Save the full technical story for a postmortem.
+
+## Stage 3: Monitoring
+
+Use this when a fix is deployed but you are still watching to confirm it held. Many teams skip this stage and jump from identified to resolved. Don't. It tells users the fix is in without claiming victory too early, and it gives you room if the problem comes back.
+
+> **Monitoring: login failures.** A fix has been deployed and logins are succeeding again. We are watching to make sure it holds. Next update by 15:00 UTC.
+
+If the issue returns, go back to investigating or identified rather than opening a brand new incident. One incident, one timeline, is easier for readers to follow.
+
+## Stage 4: Resolved
+
+Short and final. Say when it ended, give one line of cause if you have it, and stop.
+
+> **Resolved: login failures.** Logins have been working normally since 14:42 UTC. The cause was an expired certificate, which we have renewed. Thanks for your patience.
+
+Don't apologise five times and don't turn this into a postmortem. If the incident was big enough to deserve a deeper write-up, publish it separately and link to it in one line.
+
+## A full example timeline
+
+Here is a complete incident as users would see it on a status page, with the title staying the same and each update added to the timeline.
+
+**Title:** Dashboard not loading for some users
+
+- **14:02 UTC, Investigating.** Some users see a blank dashboard after logging in. The marketing site and API are not affected. We are investigating. Next update by 14:20 UTC.
+- **14:19 UTC, Investigating.** Still investigating. The issue appears to affect users who logged in after 13:45 UTC. No change in status. Next update by 14:40 UTC.
+- **14:34 UTC, Identified.** A change we deployed at 13:45 UTC is causing the blank dashboard. We are reverting it. Next update by 14:50 UTC.
+- **14:48 UTC, Monitoring.** The revert is deployed and dashboards are loading again. We are watching error rates. Next update by 15:15 UTC.
+- **15:14 UTC, Resolved.** Dashboards have loaded normally since 14:47 UTC. A faulty release caused the problem and has been rolled back.
+
+Two things to copy from this. First, the second update (14:19) says nothing has changed, and that is fine. A "still working on it" update that arrives on time is worth more than silence while you hunt for news. Second, every update names a next-update time, so a reader never has to wonder whether you have gone quiet.
+
+## Wording that helps, and wording that hurts
+
+- **Use "some users" only when you mean it.** If you can say who, say who.
+- **Avoid "minor" and "brief" in the first hour.** You don't yet know. Users who can't work don't think it is minor.
+- **Don't blame a vendor by name in the middle of an incident** unless it helps users act. You can describe it as "a third-party provider" and give details later.
+- **Never write "no impact" for something you haven't verified.** Say "we have not seen evidence of impact on X" if you are not sure.
+- **Keep every update under about 60 words.** If you need more, you are probably writing a postmortem.
+
+## Doing this with Statsy
+
+Statsy's incidents use exactly these four stages (investigating, identified, monitoring, resolved), and each incident keeps a timeline of updates, so the example above maps one-to-one. You post updates yourself; Statsy's automatic monitoring can mark a service down after two consecutive failed checks, and email alerts go to you and your subscribers when a service's status changes. Free includes 1 status page, 3 services and 50 email subscribers, with no credit card required. Pro adds more pages, services and subscribers, faster checks and a custom domain.
+
+If you also run planned downtime, the wording is different. See [how to announce scheduled maintenance to users](/blog/how-to-announce-scheduled-maintenance-to-users).
+
+## The short version
+
+Write the impact in user terms, say who is affected, say where you are in the process, and commit to a next-update time. Then keep that commitment. The exact phrasing matters less than showing up on schedule.
+
+<CtaButton href="https://statsy.page/signup">Create a free status page →</CtaButton>
