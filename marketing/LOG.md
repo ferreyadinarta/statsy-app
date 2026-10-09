@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-09
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-09..10-06): 3 clicks, 250 impressions, avg position 12.4, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. `how-to-tell-users-your-app-is-down` now 10 impr pos 8.9; `instatus-alternatives` 34 impr pos 8.6, 0 clicks; `statuspage-alternatives` 35 impr pos 45.2. Brand "statsy" 133 impr, 2 clicks. Other 3 newer posts still absent.
+- Did: new post `content/blog/how-often-should-uptime-checks-run.mdx` (~1200 words). Linked to it from `status-page-vs-uptime-monitoring.mdx`; it links to that and to the incident-update post. Confirmed 10-08 incident-update post is live (title found in HTML) and pinged IndexNow for it.
+- Why: cap OK (10-08 post + 10-02 post at the edge of the 7-day window). Intent re-checked by web search: vendor FAQs/guides; common advice 1 min for core SaaS, 5-15 min for low priority, 2-3 consecutive failures. Angle: pick interval per service, threshold matters more than speed. No competitor claims made.
+- Result/observation: `npm run build` fails on the same pre-existing `/login` Supabase env error; frontmatter of all posts parses, descriptions <=160.
+- Next: ping IndexNow for the new post once live. GSC re-check ~10-12; second instatus-alternatives title rewrite if still 0 clicks. No new post until ~10-15 (2 in rolling window after today).
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-08
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC to ~2026-10-05): 3 clicks, 240 impressions, avg position 13.2, CTR 1.3%. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` pos 8, 32 impr, 0 clicks; `statuspage-alternatives` pos 45.3, 39 impr; `how-to-tell-users-your-app-is-down` 4 impr pos 14.5. Brand "statsy" 127 impr, 2 clicks. Other 3 new posts still absent.

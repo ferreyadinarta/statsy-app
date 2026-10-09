@@ -1,0 +1,81 @@
+---
+title: "How Often Should Uptime Checks Run? A Practical Guide for Small SaaS"
+description: "1 minute or 5 minutes? How to pick an uptime check interval, why consecutive-failure thresholds matter more than speed, and what each choice costs you."
+quickAnswer: "For a paid SaaS, check your core app and API every 1 to 2 minutes. Marketing pages and docs are fine at 5 minutes. Pair any interval with a rule that needs two failed checks in a row before you call something down, so one network blip doesn't trigger a false outage."
+date: "2026-10-09"
+author: "Statsy"
+tags: ["uptime-monitoring", "status-page", "indie-dev"]
+---
+
+<QuickAnswer>
+For a paid SaaS, check your core app and API every 1 to 2 minutes. Marketing pages and docs are fine at 5 minutes. Pair any interval with a rule that needs two failed checks in a row before you call something down, so one network blip doesn't trigger a false outage.
+</QuickAnswer>
+
+Every uptime tool asks you to pick an interval, and the choices look arbitrary: 30 seconds, 1 minute, 5 minutes, 15 minutes. Faster sounds better, but it isn't free. It can cost money, it can produce false alarms, and past a point it doesn't change what you do when something breaks. Here is how to choose.
+
+## What the interval actually controls
+
+The interval sets how long a failure can go unnoticed before the next check catches it. On average, detection is late by about half the interval. A 5-minute interval means you learn about an outage roughly 2.5 minutes after it started, and up to 5 minutes in the worst case. A 1-minute interval cuts that to about 30 seconds on average.
+
+There is a second effect: an outage shorter than the interval can slip between two checks and never be seen. With 5-minute checks, a 90-second blip may leave no trace at all. For most small products that is acceptable, but it is worth knowing.
+
+Note that the interval is only half of the delay. Most tools also wait for confirmation before declaring an outage. Detection time is roughly the interval times the number of failures you require, plus the check timeout.
+
+## Why the failure threshold matters more than speed
+
+A single failed check is weak evidence. Networks drop packets, a deploy restarts a container, a DNS lookup times out. If one failed request marks your service as down, you will get false alarms, and worse, your public status page will flap between "outage" and "operational" for no reason. Users who see that stop trusting the page.
+
+The usual fix is a consecutive-failure rule: only mark a service down after N failed checks in a row. Two is a sensible default for a small product. It filters out most one-off blips while adding only one interval of delay.
+
+This is why a fast interval with a threshold of two often beats a slow interval with a threshold of one. At 1 minute with two failures, you confirm an outage in about two minutes. At 5 minutes with two failures, it takes about ten.
+
+## A simple way to choose
+
+Ask two questions per service:
+
+1. **How long can this be broken before someone is hurt?** If a login failure means paying customers can't use what they paid for, minutes matter. If it is your changelog page, they don't.
+2. **What will you do with the alert?** If you won't act within five minutes anyway (you're asleep, you're in a meeting, you're the only engineer), checking every 30 seconds buys you nothing.
+
+A reasonable starting map:
+
+| What you're checking | Interval | Why |
+|---|---|---|
+| Login, core API, checkout | 1 to 2 minutes | Paying users are affected within minutes |
+| Main app dashboard | 1 to 5 minutes | Important, but partial slowness is more common than a full outage |
+| Marketing site, docs, blog | 5 to 15 minutes | Short outages rarely hurt anyone |
+| Internal tools | 5 to 15 minutes | Your team will tell you directly |
+
+These numbers are common starting points from monitoring vendors' guides rather than a hard standard, so treat them as defaults you adjust.
+
+## What to point the check at
+
+The interval is useless if the check doesn't test anything real. A few rules:
+
+- **Check a URL that exercises something.** The homepage returning 200 doesn't prove your database is reachable. A small `/health` endpoint that runs a trivial query tells you more.
+- **Don't check a CDN-cached page and call it your app.** A cached page can answer fine while your backend is down.
+- **Watch for slow, not just dead.** Plenty of real incidents are "the app responds in 8 seconds." Statsy, for example, marks a service degraded when a successful response takes longer than 3 seconds twice in a row.
+- **Mind your auth.** If the endpoint requires a login, an expired token will look like an outage. Statsy treats 401 and 403 responses as up, since they mean the server answered, so a protected endpoint won't false-alarm, but it also won't prove the protected logic works.
+
+## The cost side
+
+Checking more often is not free for you or your tool. More requests mean more load on small servers (rarely a problem), more log noise, and in many products, a higher price tier. That is the reason intervals are a plan feature almost everywhere.
+
+On Statsy's Free plan, checks run every 5 minutes. On Pro ($15/month), you can run every 1 minute and set a custom interval per service, so the login endpoint can be checked every minute while the docs site stays at five. Both plans use the same rules: a 5-second timeout, and two consecutive failures before a service is marked down.
+
+If you're not sure you need the faster tier, start at 5 minutes. Look at your incident history after a month. If you keep finding out about problems from user emails before your monitor fires, shorten the interval on the services involved. If you never do, the money is better spent elsewhere.
+
+## Intervals are not the whole story
+
+Detection is only the first step. Once a check fails, your users need to hear about it, and that is a separate problem. A monitor that catches an outage in 60 seconds but leaves your status page blank still leaves users guessing. We cover the split in [status page vs uptime monitoring](/blog/status-page-vs-uptime-monitoring), and the wording of the messages themselves in [what to write in a status page incident update](/blog/what-to-write-in-a-status-page-incident-update).
+
+## Summary
+
+- Core app and API: 1 to 2 minutes. Everything else: 5 minutes is fine.
+- Require two consecutive failures before marking anything down.
+- Detection time is roughly interval times failures needed, so a "slow" interval with strict confirmation can be later than you expect.
+- Check URLs that test something real, and watch response time as well as up/down.
+- Start slower, review your incident history, and speed up only where you've actually been late.
+
+If you want monitoring and a public status page in one place, the Free plan covers one status page with three services and 5-minute checks, no credit card needed.
+
+<CtaButton href="https://statsy.page/signup">Start monitoring for free →</CtaButton>
