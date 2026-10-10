@@ -45,6 +45,7 @@ emails and churn during outages.
   `/login`), unrelated to content. Fall back to `npm run lint` + gray-matter
   frontmatter check, confirm it's the same `/login` error, and note it in the LOG.
   Lint has 8 errors / 7 warnings in untouched app files; don't count those.
+- Competitor claims age: the "Instatus has no monitoring / no middle tier" claim was false (Instatus Free has 15 monitors, 2-min checks). Re-verify the competitor table rows (Better Stack, Freshstatus, StatusPage, Kuma) on pricing pages before relying on them; don't claim what competitors lack.
 - Deploy proof: `/blog/[slug]` returns 200 with a generic noindex fallback while a
   deploy rolls out. Poll for the post's own title before pinging IndexNow.
 - Pipeline: session branches can't push to `main`; the "Agent auto-merge" action

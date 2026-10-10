@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-10
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 13 sitemap URLs: 200 for Googlebot UA, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-10..10-07): 3 clicks, 239 impressions, avg position 11.4, CTR 1.3%. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` 34 impr pos 8.6, 0 clicks; `statuspage-alternatives` 30 impr pos 42.7; `how-to-tell-users-your-app-is-down` 10 impr pos 8.9. Brand "statsy" 130 impr. The 4 newest posts still absent from GSC.
+- Did: fixed a false competitor claim. instatus.com/pricing (fetched this run) lists the Instatus Free plan with 15 monitors at 2-minute checks, 200 subscribers, no custom domain; paid from $20/mo. Our posts said Instatus has no built-in monitoring and no middle tier. Rewrote `instatus-alternatives.mdx` (intro, reasons, comparison table, quickAnswer, Statsy section, closing section) and `statuspage-alternatives.mdx` (table row + Instatus paragraph). The post now argues on price ($15 vs $20) and custom domain on Pro, and concedes Instatus Free has more subscribers and faster checks.
+- Why: FACTS.md requires checked sources for competitor claims; the wrong claim sat in our best-ranking post. No new post: cap used (10-08, 10-09).
+- Result/observation: build fails on the same pre-existing `/login` Supabase env error; frontmatter of all posts parses, descriptions <=160. The quickAnswer no longer says "best free". This also resets the title/CTR experiment slightly (title unchanged).
+- Next: Monday 10-12 weekly review: check GSC for the new posts, decide on instatus-alternatives title rewrite. Other competitor claims (Better Stack $29, Freshstatus $19, StatusPage $29/$99, Uptime Kuma) in the same table are still unsourced: verify before the next edit there. No new post until ~10-15.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-09
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 9 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-09..10-06): 3 clicks, 250 impressions, avg position 12.4, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. `how-to-tell-users-your-app-is-down` now 10 impr pos 8.9; `instatus-alternatives` 34 impr pos 8.6, 0 clicks; `statuspage-alternatives` 35 impr pos 45.2. Brand "statsy" 133 impr, 2 clicks. Other 3 newer posts still absent.
