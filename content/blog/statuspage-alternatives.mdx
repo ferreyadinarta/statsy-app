@@ -1,17 +1,17 @@
 ---
 title: "The Best StatusPage.io Alternatives in 2026 (Including Free Ones)"
-description: "StatusPage.io starts at $29/mo and gates the features most teams actually need. Here are the best alternatives, what they cost, and which to pick."
-quickAnswer: "The best free alternative to StatusPage.io is Statsy: a public status page, automated uptime monitoring, and email subscribers on a free plan with no credit card required (custom domain requires the $15/mo Pro plan). For teams that need Slack integrations and on-call routing, Better Stack or Instatus are the closest paid alternatives."
+description: "StatusPage.io paid plans start at $29/mo. Here are the alternatives, what they cost, and which to pick, including free ones with built-in monitoring."
+quickAnswer: "The best free alternative to StatusPage.io is Statsy: a public status page, automated uptime monitoring, and email subscribers on a free plan with no credit card required (custom domain requires the $15/mo Pro plan). For teams that need on-call routing, Better Stack is the closest paid alternative."
 date: "2026-05-26"
 author: "Statsy"
 tags: ["status-page", "statuspage-alternatives", "uptime-monitoring", "tools"]
 ---
 
 <QuickAnswer>
-The best free alternative to StatusPage.io is Statsy: a public status page, automated uptime monitoring, and email subscribers on a free plan with no credit card required (custom domain requires the $15/mo Pro plan). For teams that need Slack integrations and on-call routing, Better Stack or Instatus are the closest paid alternatives.
+The best free alternative to StatusPage.io is Statsy: a public status page, automated uptime monitoring, and email subscribers on a free plan with no credit card required (custom domain requires the $15/mo Pro plan). For teams that need on-call routing, Better Stack is the closest paid alternative.
 </QuickAnswer>
 
-StatusPage.io used to be the obvious choice. Then Atlassian bought it, bolted it into their suite, and kept nudging the prices up. Today the $29/mo basic plan doesn't include custom domains. That's a $99/mo upgrade. For a subdomain.
+StatusPage.io used to be the obvious choice. Then Atlassian bought it, bolted it into their suite, and kept nudging the prices up. Today the paid plans start at $29/mo and climb to $99/mo, then $399/mo, as your subscriber count grows. (Atlassian's pricing page, checked October 2026.)
 
 Most people searching for alternatives have already done the mental math. This is for them.
 
@@ -19,7 +19,7 @@ Most people searching for alternatives have already done the mental math. This i
 
 The short version: it's priced like an enterprise product but most teams using it aren't enterprises.
 
-Custom domains sit behind the $99/mo standard tier. The $29 plan gives you `yourcompany.statuspage.io`, which looks like what it is: a company that outsourced their status page. Automations and API-driven status updates are also gated, so if you want your monitoring tool to flip statuses automatically, you're paying the higher tier or doing it manually.
+Atlassian's pricing page (checked October 2026) lists a Free plan with 100 subscribers, then Hobby at $29/mo (250 subscribers, custom domain included), Startup at $99/mo (1,000 subscribers) and Business at $399/mo (5,000). The price climbs with your subscriber count, so a growing product pays more each time its audience grows, even if the page itself hasn't changed.
 
 There's also the Atlassian account requirement. Even for a public-facing status page with no internal users, you're navigating an Atlassian workspace. For teams not already in Jira, that's a lot of setup for something that should take 10 minutes.
 
@@ -29,11 +29,10 @@ There's also the Atlassian account requirement. Even for a public-facing status 
 |------|-----------|---------------|---------------------|-----------|
 | **Statsy** | Yes, no card | Paid only | Yes | $15/mo |
 | Instatus | Yes | Paid only | Yes | $20/mo |
-| Better Stack | Limited | Paid only | Yes | $29/mo |
-| Freshstatus | Yes | Paid only | No (via integrations) | $19/mo |
+| Better Stack | Yes (1 page) | Listed as a feature | Yes | Extra pages $15/mo |
 | Uptime Kuma | Self-hosted | Yes (you host it) | Yes | $0 + server |
 | Cachet | Self-hosted | Yes (you host it) | No | $0 + server |
-| StatusPage.io | No | $99/mo tier | No (via integrations) | $29/mo |
+| StatusPage.io | Yes (100 subscribers) | Hobby ($29/mo) and up | No | $29/mo |
 
 ## Which one should you pick?
 
@@ -53,7 +52,7 @@ Instatus is a direct replacement in terms of look and feature set. Custom domain
 
 ### You need on-call routing too: Better Stack
 
-Better Stack bundles uptime monitoring, log management, and status pages. If you're already paying for a standalone monitoring tool, consolidating onto Better Stack at $29/mo can end up cheaper overall.
+Better Stack bundles uptime monitoring, log management, and status pages. Its pricing page (checked October 2026) includes one status page free and lists extra public pages at $15/mo each, with add-ons such as password protection priced per page. If you're already paying for a standalone monitoring tool, consolidating there can be cheaper overall.
 
 If you just need a status page with no incident response infrastructure, Better Stack is more product than you need.
 
@@ -65,13 +64,9 @@ Open source, runs on any server, has both monitoring and a public status page. S
 Self-hosted monitoring tools have the meta-problem: the thing watching your systems is hosted on a system that can fail. If that server goes down, you lose both your monitoring and your way to tell users about it. Hosted tools avoid this by running on separate infrastructure.
 </Callout>
 
-### You want free and don't mind a bit stale: Freshstatus
-
-Freshstatus is Freshworks' status page product. Free tier exists, but custom domains are paid-only and the product hasn't been updated much recently. It works, but it feels like a secondary priority within the larger Freshworks suite. Fine if your needs are basic.
-
 ## Is there a completely free StatusPage.io replacement?
 
-Yes. Statsy's free plan covers most of what StatusPage.io charges $29/mo for, including the monitoring part. Freshstatus also has a free tier if you need something with a different look.
+Yes. Statsy's free plan covers a public page, monitoring, incidents and email subscribers (50 on Free). StatusPage.io's free plan allows 100 subscribers, but it has no built-in monitoring, so you'd need another tool to flip statuses.
 
 If you're willing to self-host, Uptime Kuma is free and has more monitoring configuration options than any hosted tool.
 
@@ -93,7 +88,7 @@ If you're deciding what to require from an alternative, these are the ones that 
 
 **Automated monitoring.** Manually flipping statuses is the part that breaks at 3am when you're asleep. If the tool doesn't monitor your services itself, you need to pair it with something that does.
 
-**Custom domain on a sane tier.** `status.yourcompany.com` is standard. Gating it behind a 3x price jump is a Atlassian-specific problem, not an industry norm.
+**Custom domain on a sane tier.** `status.yourcompany.com` is standard. Some tools include it on their cheapest paid plan; check before you commit.
 
 **Email subscribers.** Users need to be able to subscribe and hear from you directly during outages. Without this, they find out from Twitter.
 

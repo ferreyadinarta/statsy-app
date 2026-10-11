@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-11
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 11 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-11..10-08): 3 clicks, 232 impressions, avg position 11.5. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` 34 impr pos 8.6, 0 clicks; `statuspage-alternatives` 30 impr pos 42.7; `how-to-tell-users-your-app-is-down` 10 impr pos 8.9. Brand "statsy" 127 impr. The newer posts are still absent from GSC.
+- Did: verified competitor pricing and fixed false claims. atlassian.com/software/statuspage/pricing (fetched this run): Free 100 subscribers, Hobby $29 (custom domain included), Startup $99, Business $399. Our posts said custom domain needs the $99 tier and there is no free plan: wrong. betterstack.com/pricing: 1 status page free, custom sub-domain listed, extra pages $15/mo; our "$29/mo, Limited" was unsourced. Freshstatus pricing page 404'd, so removed all Freshstatus claims (rows, section, price). Edited `statuspage-alternatives.mdx`, `instatus-alternatives.mdx`, `status-page-for-indie-developers.mdx` (table). Also pinged IndexNow for the uptime-checks post (live, title confirmed).
+- Why: FACTS.md bans unverified competitor claims; it was the Next item from 10-10. Sunday and the 2-posts cap is used (10-08, 10-09), so no new post.
+- Result/observation: build not run for content-only edits beyond lint/frontmatter (see below); StatusPage's actual weakness is no built-in monitoring and price scaling with subscribers, not custom-domain gating.
+- Next: Monday weekly review 10-12 (rewrite PLAYBOOK). Uptime Kuma/Cachet rows still unsourced (general knowledge, low risk). llms.txt names competitors only generically. Next post allowed ~10-15.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-10
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 13 sitemap URLs: 200 for Googlebot UA, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-10..10-07): 3 clicks, 239 impressions, avg position 11.4, CTR 1.3%. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` 34 impr pos 8.6, 0 clicks; `statuspage-alternatives` 30 impr pos 42.7; `how-to-tell-users-your-app-is-down` 10 impr pos 8.9. Brand "statsy" 130 impr. The 4 newest posts still absent from GSC.
