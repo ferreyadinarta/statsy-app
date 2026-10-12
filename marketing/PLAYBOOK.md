@@ -59,26 +59,19 @@ emails and churn during outages.
   shown the 5 posts published 09-29..10-02 (only how-to-tell-users shows, 1 impr
   at pos 32). Judging them before ~mid-October is premature. Signups: 1 in 28d.
 
-## Next steps (set 2026-10-05)
-- Posts cap: none new until 2026-10-08 (4 posts landed 09-29..10-02). Then at most 1-2/wk.
-- Wait for GSC to show the new posts before judging them; re-check ~2026-10-12.
-- If instatus-alternatives still has 0 clicks around 2026-10-12, try one more
-  title rewrite. Brand query is the main traffic source; ask Ferrey for off-site
-  links/mentions (X, Indie Hackers, directories), since a new domain can't rank on
-  content alone.
-- Candidate how-to topics (verify intent by web search first): "what to write in a
-  status page incident update", "status page for a SaaS with paying customers",
-  "how often should uptime checks run".
-- Intent checked 2026-10-07: "what to write in a status page incident update" is
-  a how-to/template intent, but top results are Better Stack, Hosted Graphite,
-  Cronitor (DEV), OneUptime: copy-paste templates. Win by using Statsy's four
-  real stages (investigating / identified / monitoring / resolved) with a full
-  worked timeline and "when is the next update" wording. Don't link to
-  competitors without re-checking. "how often should uptime checks run" is
-  answered by vendor FAQs (UptimeRobot, Oh Dear, PingPing); common advice is
-  1-2 min for SaaS, 5 min for brochure sites. Fits Statsy (5 min Free / 1 min Pro,
-  2 consecutive failures before down). Preferred first pick for 10-08: incident
-  update post (closest to the existing how-to-tell-users post; link both ways).
+## Next steps (set 2026-10-12, weekly review)
+- Posts cap: 2 posts landed 10-08 and 10-09; next new post allowed 10-15 or later,
+  at most 1 per week until GSC shows the 10-08/10-09 posts. Content volume is not the
+  bottleneck: 10 posts, 3 clicks/28d, ~55% of impressions are the brand query.
+- Do not rewrite the instatus-alternatives title again yet: 35 impr in 28d is too
+  thin to read CTR; revisit once it passes ~100 impr or drops below position 12.
+- Biggest lever is off-site: links/mentions (X, Indie Hackers, directories). Only
+  Ferrey can do this; keep it in NEEDS FERREY every Monday.
+- Candidate topics (web-check intent first): "status page for a SaaS with paying
+  customers", "post-incident review template for small teams", "how to set up
+  status page email notifications". Skip anything that needs competitor claims.
+- Still to verify before reuse: Uptime Kuma / Cachet rows in the alternatives posts
+  (unsourced).
 
 ## Experiments
 | Started | Hypothesis | Measure | Result |
@@ -94,19 +87,20 @@ emails and churn during outages.
 ## Target keywords
 | Keyword | Post | Last position seen | Checked |
 |---|---|---|---|
-| statsy (brand) | homepage | 6.7 | 2026-10-05 |
-| instatus alternative | instatus-alternatives | 10.8 | 2026-10-05 |
+| statsy (brand) | homepage | 6.5 (136 impr, 2 clicks) | 2026-10-12 |
+| instatus alternative | instatus-alternatives | 12.2 (10 impr) | 2026-10-12 |
 | instatus alternatives | instatus-alternatives | 15 | 2026-09-29 |
-| (page-level) instatus-alternatives | instatus-alternatives | 8 (36 impr, 0 clicks) | 2026-10-05 |
-| statuspage alternative | statuspage-alternatives | 61 | 2026-10-05 |
+| (page-level) instatus-alternatives | instatus-alternatives | 9.2 (35 impr, 0 clicks) | 2026-10-12 |
+| statuspage alternative | statuspage-alternatives | 51.9 (10 impr) | 2026-10-12 |
 | statuspage alternatives | statuspage-alternatives | 50.3 | 2026-10-02 |
 | statuspage.io alternatives | statuspage-alternatives | 30.8 | 2026-09-29 |
 | alternative to statuspage io | statuspage-alternatives | 40.8 | 2026-09-29 |
 | statuspage cost | statuspage-alternatives | 3 | 2026-09-29 |
 | cheap status page | (none — needs a listicle, deprioritized) | 60.4 | 2026-09-29 |
-| how to tell users your app is down | how-to-tell-users-your-app-is-down | page seen at 32 (1 impr) | 2026-10-05 |
+| how to tell users your app is down | how-to-tell-users-your-app-is-down | page-level 7.4 (13 impr, 0 clicks; query not named in GSC) | 2026-10-12 |
 | how to announce scheduled maintenance to users | how-to-announce-scheduled-maintenance-to-users | not yet indexed | 2026-10-02 |
 | status page vs uptime monitoring | status-page-vs-uptime-monitoring | not yet indexed | 2026-10-02 |
 | what to write in a status page incident update | what-to-write-in-a-status-page-incident-update | not yet indexed | 2026-10-08 |
 | status page for supabase app | status-page-for-supabase-app (exists; query deprioritized, wrong intent) | not yet indexed | 2026-10-02 |
 | how often should uptime checks run | how-often-should-uptime-checks-run | not yet indexed | 2026-10-09 |
+| statuspage custom domain alternatives | statuspage-alternatives | 10 (1 impr) | 2026-10-12 |

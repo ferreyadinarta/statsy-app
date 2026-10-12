@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-12
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 11 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-12..10-09): 3 clicks, 246 impressions, avg position 11.3, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. Brand "statsy" 136 impr, 2 clicks. `instatus-alternatives` 35 impr pos 9.2, 0 clicks; `how-to-tell-users-your-app-is-down` 13 impr pos 7.4, 0 clicks (up from 10 impr pos 8.9); `statuspage-alternatives` 27 impr pos 47.1. The 10-08 and 10-09 posts and the 10-01/10-02 posts are still absent from GSC.
+- Did: Monday weekly review. Updated `marketing/PLAYBOOK.md` (next steps, keyword positions). No content change.
+- Why: Data is too thin to judge any post (3 clicks in 28d, about 55% of impressions are the brand query). Another title rewrite on instatus-alternatives would be noise at 35 impr. The posting cap also advises waiting: 2 posts landed 10-08/10-09.
+- Result/observation: Impressions are steady but there is no click movement from content yet. The only post-level signal is how-to-tell-users-your-app-is-down creeping up (13 impr, pos 7.4).
+- Next: New post allowed from ~10-15 (max 1 that week); candidates are in PLAYBOOK. Re-check GSC for the four newest posts.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories). Content alone isn't moving a new domain.
+
 ## 2026-10-11
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 11 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-11..10-08): 3 clicks, 232 impressions, avg position 11.5. Signups: 1 in 28d, 11 total users. Flat. `instatus-alternatives` 34 impr pos 8.6, 0 clicks; `statuspage-alternatives` 30 impr pos 42.7; `how-to-tell-users-your-app-is-down` 10 impr pos 8.9. Brand "statsy" 127 impr. The newer posts are still absent from GSC.
