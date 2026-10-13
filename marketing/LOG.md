@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-13
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 13 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-13..10-10): 3 clicks, 251 impressions, avg position 11.4, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. First sighting of `what-to-write-in-a-status-page-incident-update` (3 impr, pos 6.3). `how-to-tell-users-your-app-is-down` 13 impr pos 7.4; `instatus-alternatives` 34 impr pos 8.6, 0 clicks; `statuspage-alternatives` 29 impr pos 47. Brand "statsy" 137 impr.
+- Did: no content change (log-only run).
+- Why: new-post cap holds until 10-15 (posts on 10-08 and 10-09); nothing false or broken to fix; data too thin for another rewrite.
+- Result/observation: the 10-08 post indexed within ~5 days. 10-01/10-02 posts and the 10-09 post are still absent from GSC.
+- Next: 10-15 or later: one new how-to post (candidates in PLAYBOOK, web-check intent first).
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-12
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 11 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-12..10-09): 3 clicks, 246 impressions, avg position 11.3, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. Brand "statsy" 136 impr, 2 clicks. `instatus-alternatives` 35 impr pos 9.2, 0 clicks; `how-to-tell-users-your-app-is-down` 13 impr pos 7.4, 0 clicks (up from 10 impr pos 8.9); `statuspage-alternatives` 27 impr pos 47.1. The 10-08 and 10-09 posts and the 10-01/10-02 posts are still absent from GSC.
