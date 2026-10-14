@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-14
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 11 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC to ~2026-10-11): 3 clicks, 255 impressions, avg position 11.6, CTR 1.2%. Signups: 2 in 28d (new one on 2026-10-13, plus a second status page created that day), 12 total users. Brand "statsy" 141 impr, 2 clicks. `instatus-alternatives` 33 impr pos 8.5, 0 clicks; `statuspage-alternatives` 29 impr pos 47; `how-to-tell-users-your-app-is-down` 13 impr pos 7.4; incident-update post 3 impr pos 6.3; `status-page-vs-uptime-monitoring` first sighting (1 impr, pos 86). Customer subdomains (absensistatus., status.statsy.page) also show a few impressions. The 10-09 uptime-checks post and the maintenance post are still absent.
+- Did: no content change (log-only run).
+- Why: new-post cap holds until 10-15 (posts on 10-08 and 10-09 inside the rolling 7 days); nothing false or broken to fix; data too thin for another rewrite.
+- Result/observation: flat. First signup in ~2.5 weeks landed 10-13, source unknown.
+- Next: 10-15 or later: one new how-to post (PLAYBOOK candidates; web-check intent first, avoid competitor claims).
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-13
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 13 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-13..10-10): 3 clicks, 251 impressions, avg position 11.4, CTR 1.2%. Signups: 1 in 28d, 11 total users. Flat. First sighting of `what-to-write-in-a-status-page-incident-update` (3 impr, pos 6.3). `how-to-tell-users-your-app-is-down` 13 impr pos 7.4; `instatus-alternatives` 34 impr pos 8.6, 0 clicks; `statuspage-alternatives` 29 impr pos 47. Brand "statsy" 137 impr.
