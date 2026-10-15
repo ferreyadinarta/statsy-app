@@ -1,0 +1,96 @@
+---
+title: "Status Page Email Notifications: What to Send and When"
+description: "How email notifications on a status page work, which events should trigger an email, how to get customers to subscribe, and what to keep out of the inbox."
+quickAnswer: "Email notifications should fire on changes a customer can act on: an incident starting, each meaningful update, resolution, and scheduled maintenance. Put a subscribe form on the public page, link it from your app, and keep emails short with a clear status and next-update time. Don't email on every internal blip."
+date: "2026-10-15"
+author: "Statsy"
+tags: ["status-page", "email-notifications", "incident-communication"]
+---
+
+<QuickAnswer>
+Email notifications should fire on changes a customer can act on: an incident starting, each meaningful update, resolution, and scheduled maintenance. Put a subscribe form on the public page, link it from your app, and keep emails short with a clear status and next-update time. Don't email on every internal blip.
+</QuickAnswer>
+
+A status page that nobody looks at during an outage does half its job. Most of your users won't think to check it. They will notice the app is broken, then email you. Email notifications flip that: the people affected hear about it from you first, and your support inbox stays quieter.
+
+Setting them up is the easy part. Deciding what deserves an email, and getting people to subscribe in the first place, is where most small teams go wrong.
+
+## How subscriber notifications work
+
+The mechanics are similar on most status page tools:
+
+1. The public status page has a subscribe box where a visitor enters their email.
+2. When you create or update an incident, or schedule maintenance, every subscriber of that page gets an email.
+3. Every email carries an unsubscribe link, so people can leave without contacting you.
+
+Details differ between tools, and they matter. Some require subscribers to confirm their address, some only send when you tick a "notify subscribers" box, and some cap the number of subscribers on cheaper plans. Check those three things on whatever tool you pick, and send yourself a test.
+
+On [Statsy](https://statsy.page), visitors subscribe with just an email address on your public page. Subscribers get emails for incident updates, scheduled maintenance, and status changes. Each email has an unsubscribe link. The Free plan allows 50 subscribers per page and Pro allows 500. Statsy does not send SMS, Slack, or webhook alerts, so email is the only channel.
+
+## What should trigger an email
+
+Think of it from the reader's side. An email is worth sending when it answers one of these questions: *Is it my problem? Is it fixed? When will I hear more?*
+
+**Send an email for:**
+
+- **An incident starting.** The first message ("Investigating: API requests are failing") is the most valuable one. It tells people to stop debugging their own setup.
+- **Meaningful updates.** A new stage ("Identified," "Monitoring") or new information, such as a workaround or a revised estimate.
+- **Resolution.** People want to know it is safe to retry. Without this email they keep assuming it's broken.
+- **Scheduled maintenance.** Once when you schedule it, and ideally a reminder before it starts. We cover the wording in [how to announce scheduled maintenance to users](/blog/how-to-announce-scheduled-maintenance-to-users).
+
+**Don't send an email for:**
+
+- A one-minute blip that resolved itself before anyone could have noticed.
+- Progress updates with nothing new in them ("still looking into it"). If you promised an update every 30 minutes, posting a short "no change" note on the page is fine, but think twice before emailing it.
+- Internal details. Subscribers don't need the root cause of a Redis eviction. They need to know what is affected and whether to wait.
+
+The cost of too many emails is unsubscribes. The cost of too few is the same support tickets you were trying to avoid.
+
+## Let monitoring send the first alert, and a human send the explanation
+
+Automated alerts are good at speed. A human is good at context. A workable split for a small team:
+
+- Monitoring detects the failure and flips the service to "outage" on your page. On Statsy, a service is marked down after 2 consecutive failed checks, and the owner and subscribers are emailed on the status change only, not on every check.
+- You then open an incident with a short human explanation and post updates as you learn things.
+
+That way subscribers learn about the problem within minutes even if you are asleep or in a meeting, and the written explanation follows when you can write one. For the wording of those updates, see [what to write in a status page incident update](/blog/what-to-write-in-a-status-page-incident-update).
+
+## How to get people to subscribe
+
+A subscribe box nobody sees has zero subscribers. The status page itself is the least visited page you own, so you have to bring people to it before an outage:
+
+- **Link it from your app.** A small "Status" link in the footer or settings menu. Add it to your help center and docs too.
+- **Mention it in your onboarding or welcome email.** One line is enough: "Get notified if something breaks: yourapp.statsy.page."
+- **Put it in your support auto-reply.** Anyone who emails you about an outage should be told the status page exists and that they can subscribe.
+- **Ask your biggest customers directly.** Ten subscribers who run their business on your product are worth more than fifty random ones.
+- **Link it from your API error responses or docs** if you serve developers. Developers hitting a 503 want to know whether it is you or them.
+
+<Callout variant="tip">
+Test the full loop before you need it: subscribe with your own email, create a throwaway incident, and check what arrives (and what lands in spam). Better to find a problem on a quiet Tuesday than mid-outage.
+</Callout>
+
+## What a good notification email looks like
+
+Keep it short enough to read on a phone lock screen:
+
+- **Subject:** the incident title and its current stage, so people can tell updates apart.
+- **First line:** what is affected, in plain words ("Logging in is failing for some users").
+- **Status:** investigating, identified, monitoring, or resolved.
+- **When you'll next update**, if the incident is ongoing.
+- **A link to the status page** for the live view.
+
+Skip the apologies in the first message. Apologise once, briefly, in the resolution update.
+
+## Watch your subscriber limits
+
+Free plans cap subscribers on most tools, and a cap is easy to forget until someone can't sign up. On Statsy that's 50 per page on Free and 500 on Pro. If you're a small SaaS, 50 can last a long time, but if you serve a mailing-list-sized audience, plan for it. Our guide to the [indie developer status page stack](/blog/status-page-for-indie-developers) covers what else to compare.
+
+## A short checklist
+
+1. Add a subscribe box to your public status page (most tools include one by default).
+2. Link the status page from your app, docs and support replies.
+3. Decide which events send an email: start, meaningful updates, resolution, maintenance.
+4. Send yourself a test incident and check the inbox.
+5. After the first real incident, look at unsubscribes and support tickets. Adjust.
+
+<CtaButton href="https://statsy.page/signup">Set up a free status page →</CtaButton>

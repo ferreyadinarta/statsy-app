@@ -103,4 +103,5 @@ emails and churn during outages.
 | what to write in a status page incident update | what-to-write-in-a-status-page-incident-update | not yet indexed | 2026-10-08 |
 | status page for supabase app | status-page-for-supabase-app (exists; query deprioritized, wrong intent) | not yet indexed | 2026-10-02 |
 | how often should uptime checks run | how-often-should-uptime-checks-run | not yet indexed | 2026-10-09 |
+| status page email notifications | status-page-email-notifications | not yet indexed | 2026-10-15 |
 | statuspage custom domain alternatives | statuspage-alternatives | 10 (1 impr) | 2026-10-12 |

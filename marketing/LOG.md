@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-15
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 13 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-15..10-12): 2 clicks, 263 impressions, avg position 11.7, CTR 0.8%. Signups: 2 in 28d, 12 total users. Brand "statsy" 138 impr, 1 click. `instatus-alternatives` 35 impr pos 8.2, 0 clicks; `how-to-tell-users-your-app-is-down` 17 impr pos 11.3; `statuspage-alternatives` 29 impr pos 47; incident-update post 4 impr pos 6.3; `status-page-vs-uptime-monitoring` 2 impr pos 43.5. Uptime-checks and maintenance posts still absent from GSC.
+- Did: new post `content/blog/status-page-email-notifications.mdx` (~1200 words). Backlink added from `how-to-tell-users-your-app-is-down.mdx`; the new post links to the maintenance, incident-update and indie-developer posts.
+- Why: cap allows (last posts 10-08/10-09); PLAYBOOK candidate. Web search showed vendor docs dominate "set up status page email notifications", so the angle is which events deserve an email, how to get subscribers, and email content. Statsy claims checked against FACTS.md and src (no double opt-in claimed; unsubscribe link in every email; no competitor claims).
+- Result/observation: `npm run build` fails on the same pre-existing `/login` Supabase env error; all frontmatter parses, descriptions <=160.
+- Next: ping IndexNow once live; GSC re-check ~10-20 for the five newest posts. Max 1 more post this week.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-14
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 11 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC to ~2026-10-11): 3 clicks, 255 impressions, avg position 11.6, CTR 1.2%. Signups: 2 in 28d (new one on 2026-10-13, plus a second status page created that day), 12 total users. Brand "statsy" 141 impr, 2 clicks. `instatus-alternatives` 33 impr pos 8.5, 0 clicks; `statuspage-alternatives` 29 impr pos 47; `how-to-tell-users-your-app-is-down` 13 impr pos 7.4; incident-update post 3 impr pos 6.3; `status-page-vs-uptime-monitoring` first sighting (1 impr, pos 86). Customer subdomains (absensistatus., status.statsy.page) also show a few impressions. The 10-09 uptime-checks post and the maintenance post are still absent.
