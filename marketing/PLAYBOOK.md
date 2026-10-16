@@ -98,10 +98,10 @@ emails and churn during outages.
 | statuspage cost | statuspage-alternatives | 3 | 2026-09-29 |
 | cheap status page | (none — needs a listicle, deprioritized) | 60.4 | 2026-09-29 |
 | how to tell users your app is down | how-to-tell-users-your-app-is-down | page-level 7.4 (13 impr, 0 clicks; query not named in GSC) | 2026-10-12 |
-| how to announce scheduled maintenance to users | how-to-announce-scheduled-maintenance-to-users | not yet indexed | 2026-10-02 |
-| status page vs uptime monitoring | status-page-vs-uptime-monitoring | not yet indexed | 2026-10-02 |
+| how to announce scheduled maintenance to users | how-to-announce-scheduled-maintenance-to-users | page-level 40 (3 impr) | 2026-10-16 |
+| status page vs uptime monitoring | status-page-vs-uptime-monitoring | page-level 62 (4 impr) | 2026-10-16 |
 | what to write in a status page incident update | what-to-write-in-a-status-page-incident-update | not yet indexed | 2026-10-08 |
 | status page for supabase app | status-page-for-supabase-app (exists; query deprioritized, wrong intent) | not yet indexed | 2026-10-02 |
 | how often should uptime checks run | how-often-should-uptime-checks-run | not yet indexed | 2026-10-09 |
-| status page email notifications | status-page-email-notifications | not yet indexed | 2026-10-15 |
+| status page email notifications | status-page-email-notifications | not yet indexed (live, IndexNow pinged 10-16) | 2026-10-16 |
 | statuspage custom domain alternatives | statuspage-alternatives | 10 (1 impr) | 2026-10-12 |

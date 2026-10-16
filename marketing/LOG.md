@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-16
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 14 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-16..10-13): 1 click, 268 impressions, avg position 12.4, CTR 0.4%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 136 impr, 0 clicks (pos 6.4). `instatus-alternatives` 37 impr pos 8.5, 0 clicks; `how-to-tell-users-your-app-is-down` 19 impr pos 11.2; `statuspage-alternatives` 27 impr pos 45.5; incident-update post 4 impr pos 6.3; `status-page-vs-uptime-monitoring` 4 impr pos 62; maintenance post first sighting (3 impr, pos 40). Uptime-checks post still absent.
+- Did: no content change. Pinged IndexNow for `status-page-email-notifications` (live, title confirmed in HTML; last run's ping was still pending).
+- Why: rolling 7-day cap reached (posts 10-09 and 10-15); nothing false or broken to fix; data too thin for title rewrites.
+- Result/observation: flat. Clicks dropped from 3 to 1 as older days rolled out of the window; still no non-brand clicks.
+- Next: new post allowed from 10-17 (10-09 post leaves the 7-day window); max 1 this week; candidate topics in PLAYBOOK. Monday 10-19 weekly review.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-15
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 13 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-15..10-12): 2 clicks, 263 impressions, avg position 11.7, CTR 0.8%. Signups: 2 in 28d, 12 total users. Brand "statsy" 138 impr, 1 click. `instatus-alternatives` 35 impr pos 8.2, 0 clicks; `how-to-tell-users-your-app-is-down` 17 impr pos 11.3; `statuspage-alternatives` 29 impr pos 47; incident-update post 4 impr pos 6.3; `status-page-vs-uptime-monitoring` 2 impr pos 43.5. Uptime-checks and maintenance posts still absent from GSC.
