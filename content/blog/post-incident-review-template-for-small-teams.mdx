@@ -1,0 +1,144 @@
+---
+title: "Post-Incident Review Template for Small Teams (One Page, 30 Minutes)"
+description: "A one-page post-incident review template for small teams: timeline, impact, causes, what went well, and action items you will actually finish."
+quickAnswer: "A post-incident review for a small team should fit on one page: a short summary, a timeline, who was affected, contributing causes, what went well, and two or three action items with an owner and a date. Write it within a few days of the outage, keep it blameless, and spend no more than 30 minutes on it."
+date: "2026-10-17"
+author: "Statsy"
+tags: ["incident-response", "postmortem", "templates"]
+---
+
+<QuickAnswer>
+A post-incident review for a small team should fit on one page: a short summary, a timeline, who was affected, contributing causes, what went well, and two or three action items with an owner and a date. Write it within a few days of the outage, keep it blameless, and spend no more than 30 minutes on it.
+</QuickAnswer>
+
+Most post-incident review templates are written for companies with an on-call rotation, an incident commander and a compliance team. If you are two developers (or one) running a SaaS, a six-page postmortem after every blip is a good way to make sure you never write another one.
+
+This post gives you a template short enough to finish, a worked example, and a few rules that keep the review from turning into a chore. For the messages you send to users *during* the outage, see [what to write in a status page incident update](/blog/what-to-write-in-a-status-page-incident-update). This is the internal follow-up that comes after.
+
+## When a review is worth writing
+
+You do not need one for every incident. A reasonable rule for a small team:
+
+- **Write one** if users were affected for more than about 15 minutes, if data was lost or wrong, or if you had to wake up or drop other work to fix it.
+- **Write a three-line note** (what happened, why, what you changed) for smaller incidents.
+- **Always write one** if the same thing has happened twice.
+
+The point is to stop the same failure from costing you again, not to produce documents.
+
+## The one-page template
+
+Copy this into a doc or a markdown file in your repo.
+
+```
+# Incident review: <short title>
+Date: <YYYY-MM-DD>   Duration: <start–end, UTC>   Severity: <minor / major>
+Author: <name>
+
+## Summary
+Two or three sentences. What broke, who noticed, how it ended.
+
+## Impact
+- Who was affected (all users, one region, paying customers only)
+- What they could not do
+- Anything lost or incorrect (data, emails, payments)
+
+## Timeline (UTC)
+- HH:MM  Problem starts (as far as you can tell)
+- HH:MM  First alert or first user report
+- HH:MM  Status page updated
+- HH:MM  Cause identified
+- HH:MM  Fix deployed
+- HH:MM  Confirmed resolved
+
+## Contributing causes
+Plain list. Include the trigger and the reasons it was able to cause damage.
+
+## What went well
+- ...
+
+## What went badly or by luck
+- ...
+
+## Action items
+- [ ] <specific change>  | owner | due date
+```
+
+Two notes on it. The "contributing causes" heading is deliberate: real outages almost never have a single root cause, and "contributing causes" nudges you to list the trigger and the missing safeguard separately. And "by luck" matters: if the fix worked only because you happened to be at your desk, that is a finding.
+
+## Fill in the timeline first
+
+The timeline is the part you will forget fastest, so write it before anything else. Pull the facts from places that already hold timestamps:
+
+- your deploy log or git history
+- your monitoring or alert emails
+- the incident updates on your status page
+- support emails or chat messages from users
+
+The gap between "problem starts" and "first alert" tells you how good your detection is. The gap between "first alert" and "status page updated" tells you how good your communication is. Both are usually more interesting than the gap that includes the fix.
+
+Your status page timeline is a useful source here, but not a substitute: it records what you told users, not what you knew. Keep in mind that incident history on a status page is limited by plan. On Statsy it is kept for 7 days on Free and 90 days on Pro, so copy the key timestamps into your review rather than relying on being able to look them up later.
+
+## A worked example
+
+Here is a short, invented example for a small SaaS, to show the level of detail to aim for.
+
+**Incident review: login failures after deploy**
+Date: 2026-03-04. Duration: 14:02–14:41 UTC. Severity: major.
+
+**Summary.** A deploy changed the session cookie settings and logged out all users. New logins failed with a generic error for 39 minutes. A user email told us before our monitoring did.
+
+**Impact.** All users, login only; already-open pages kept working. No data was lost.
+
+**Timeline (UTC).**
+- 14:02 Deploy finishes
+- 14:11 First user email about login errors
+- 14:14 Status page updated: investigating
+- 14:26 Cause found: cookie domain misconfigured in production
+- 14:38 Fix deployed
+- 14:41 Logins confirmed working, status page resolved
+
+**Contributing causes.**
+- The cookie setting differs between local and production, so it passed on a laptop.
+- Our monitor only checks that the homepage returns 200, so it stayed green.
+- No smoke test of the login flow after deploy.
+
+**What went well.** The status page was updated within 3 minutes of the first report. The rollback option was known and the fix was small.
+
+**What went badly.** We learned about it from a user, nine minutes after the deploy.
+
+**Action items.**
+- [ ] Add a login check to monitoring, not just the homepage | Sam | Mar 11
+- [ ] Add a post-deploy smoke test for login | Sam | Mar 18
+- [ ] Document the production cookie settings in the README | Alex | Mar 11
+
+That is about 200 words and it contains three changes that would have prevented or shortened the outage. That is the bar.
+
+## Rules that keep it useful
+
+**Keep it blameless.** Write "the deploy changed the cookie domain," not "Sam broke login." The goal is to find the weak system, not the person. On a team of two this matters even more, because you have to keep working together.
+
+**Cap the action items.** Two or three, each specific enough to finish in a day or two. "Improve monitoring" is not an action item. "Add a check on /login that expects a 200 and the word 'Sign in'" is.
+
+**Give each item an owner and a date.** Items without both are wishes. Put them in the same tracker you use for normal work, not in the review doc where nobody looks.
+
+**Time-box it.** Thirty minutes to write, ten to review it together. If the cause is still unclear after that, write down what you do not know and schedule a follow-up instead of speculating.
+
+**Do it within a few days.** Memory fades quickly, and the urgency to fix the underlying issue fades with it. Waiting two weeks usually means never.
+
+**Decide what users see.** Many small teams link a short public summary from the resolved incident rather than the whole review. If you do, keep it to what happened, what you changed, and an apology that is said once. Leave out internal names and anything security-sensitive.
+
+## Connecting it to your monitoring
+
+Most reviews end up with an action item about detection. If you are using automated checks, the questions to ask are in [how often should uptime checks run](/blog/how-often-should-uptime-checks-run): which service failed, how quickly would the check have caught it, and does the check test the thing users actually do?
+
+## A minimal version for solo developers
+
+If you are alone, you can skip the ceremony and still get the value. Keep a single `incidents.md` file. For each incident, write the date, the duration, one paragraph on what happened, and the one change you made so it won't recur. Five minutes, no template. Review the file every few months and you will see which part of your system keeps breaking.
+
+## Summary
+
+Keep the review short, blameless, and tied to a few owned action items. A one-page review you finish beats a thorough one you never write.
+
+If you do not yet have a place to tell users what is going on while you are fixing things, Statsy has a free plan: one status page, three monitored services, incident updates and email notifications, no credit card needed.
+
+<CtaButton href="https://statsy.page/signup">Set up a free status page →</CtaButton>
