@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-18
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 15 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-18..10-15): 3 clicks, 296 impressions, avg position 15.4, CTR 1.0%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 129 impr, 1 click (pos 6.5). `instatus-alternatives` 39 impr pos 8.2, 1 click; `how-to-tell-users-your-app-is-down` 20 impr pos 11; `how-to-announce-scheduled-maintenance-to-users` 21 impr pos 49; `statuspage-alternatives` 26 impr pos 40; `status-page-vs-uptime-monitoring` 12 impr pos 54; incident-update post 6 impr pos 9.3; uptime-checks post first sighting (1 impr, pos 8). Email-notifications and post-incident-review posts not yet in GSC.
+- Did: no content change. Confirmed the 10-17 post-incident-review post is live (title in HTML) and pinged IndexNow for it.
+- Why: rolling 7-day cap reached (posts 10-15 and 10-17); nothing false or broken to fix; data too thin for title rewrites.
+- Result/observation: flat. Maintenance post now draws impressions on generic "site/system maintenance message" queries but at positions 50-95, so no clicks expected.
+- Next: Monday 10-19 weekly review (rewrite PLAYBOOK; update keyword table with positions above). Next new post allowed 10-22 or later (10-15 leaves the window).
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-17
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 14 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-17..10-14): 2 clicks, 285 impressions, avg position 14, CTR 0.7%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 130 impr, 0 clicks (pos 6.5). `instatus-alternatives` 40 impr pos 8.3, 1 click (first non-homepage click); `how-to-tell-users-your-app-is-down` 20 impr pos 11; `statuspage-alternatives` 29 impr pos 43.7; maintenance post 12 impr pos 51.5; `status-page-vs-uptime-monitoring` 8 impr pos 44.9; incident-update post 5 impr pos 7. Uptime-checks and email-notifications posts still absent.
