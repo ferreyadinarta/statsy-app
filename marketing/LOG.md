@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-19
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 15 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo canonical points to /blog, as before).
+- Stats (GSC 2026-09-19..10-16): 3 clicks, 323 impressions, avg position 17.6, CTR 0.9%. Signups: 2 in 28d (10-13, 09-27), 12 total users. Brand "statsy" 128 impr, 1 click. `instatus-alternatives` 40 impr pos 8.2, 1 click; `how-to-tell-users-your-app-is-down` 25 impr pos 10.6; `how-to-announce-scheduled-maintenance-to-users` 36 impr pos 52; `statuspage-alternatives` 28 impr pos 39; `status-page-vs-uptime-monitoring` 15 impr pos 56.5; incident-update post 7 impr pos 8.3; indie-developers 8 impr pos 6. Email-notifications and post-incident-review posts not in GSC yet.
+- Did: Monday weekly review. Rewrote PLAYBOOK "Next steps" (evidence, pattern, candidates) and refreshed keyword positions. No content change.
+- Why: data still too thin to judge posts; new-post cap (10-15, 10-17 in window) holds until 10-22.
+- Result/observation: impressions up ~9% but clicks flat. Narrow how-to posts reach page 1-2 fast; broad-topic posts (maintenance, vs-uptime) sit at 50+.
+- Next: new post allowed 10-22 or later (max 1 this week); pick a narrow how-to phrasing, web-check intent.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories). Content alone is not moving a new domain.
+
 ## 2026-10-18
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 15 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-18..10-15): 3 clicks, 296 impressions, avg position 15.4, CTR 1.0%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 129 impr, 1 click (pos 6.5). `instatus-alternatives` 39 impr pos 8.2, 1 click; `how-to-tell-users-your-app-is-down` 20 impr pos 11; `how-to-announce-scheduled-maintenance-to-users` 21 impr pos 49; `statuspage-alternatives` 26 impr pos 40; `status-page-vs-uptime-monitoring` 12 impr pos 54; incident-update post 6 impr pos 9.3; uptime-checks post first sighting (1 impr, pos 8). Email-notifications and post-incident-review posts not yet in GSC.
