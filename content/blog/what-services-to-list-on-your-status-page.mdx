@@ -1,0 +1,124 @@
+---
+title: "What Services to List on Your Status Page (and What to Leave Off)"
+description: "How to choose and name the services on a small SaaS status page: a short list of user-facing parts, plain names, and a few things better left off."
+quickAnswer: "List the three to six things your users would notice breaking, named the way they describe them: the website or app, the API, login, and any feature people pay for. Leave off internal systems and third-party dependencies you can't monitor yourself. Fewer, clearer services make a status page easier to trust and easier to keep accurate."
+date: "2026-10-22"
+author: "Statsy"
+tags: ["status-page", "setup", "best-practices"]
+---
+
+<QuickAnswer>
+List the three to six things your users would notice breaking, named the way they describe them: the website or app, the API, login, and any feature people pay for. Leave off internal systems and third-party dependencies you can't monitor yourself. Fewer, clearer services make a status page easier to trust and easier to keep accurate.
+</QuickAnswer>
+
+When you set up a status page, the first real decision is the list of services. Add too few and the page says "all operational" while a feature your users depend on is broken. Add too many and you spend your outages updating rows nobody understands.
+
+There is no standard answer, but there is a sensible way to get to one.
+
+## Start from what users notice, not from your architecture
+
+Your infrastructure diagram has a database, a queue, a worker pool, a cache, an object store and three vendors. Your users see none of that. They see "I can't log in," "my export never finished," or "the dashboard is blank."
+
+A good test for every candidate row: **if this broke, would a user be able to tell, and would they know which row to look at?**
+
+- "Postgres primary" fails the test. Users have no idea what it is.
+- "Dashboard" passes. "Sign in" passes. "API" passes if you have API customers.
+- "Background workers" is borderline. If the visible effect is "emails arrive late," then name it "Email delivery" instead.
+
+Name services after the symptom a user would describe, using their words. The page is read by someone mid-problem who wants to know whether it is you or them.
+
+## A starting list for a typical small SaaS
+
+For most indie products, four or five services cover nearly everything:
+
+| Service | What it covers | Why it earns a row |
+|---|---|---|
+| Website / marketing site | Landing pages, signup | If it is down, you lose new users |
+| App / dashboard | The logged-in product | The thing people pay for |
+| API | Public endpoints, if customers use them | API users are the first to notice and the loudest |
+| Sign in | Authentication | A login failure looks like a total outage to users |
+| One key feature | Whatever your product is *for* (webhooks received, reports generated, checkout) | Can fail while everything else is fine |
+
+If you have no public API, drop that row. If login is part of the app and fails together with it, you can fold it in. Start small and split a row only after an incident shows you need to.
+
+The Free plan on [Statsy](https://statsy.page) allows 3 services per page and Pro allows 10. That limit is a useful constraint, not just a cap: three well-chosen rows (say, App, API and Sign in) beat ten vague ones.
+
+## One row per failure mode, not per server
+
+Split services when they fail independently and users would tell the difference. Merge them when they always go down together.
+
+A common mistake is listing "API server 1" and "API server 2". If a load balancer hides the difference, users only experience "the API." One row.
+
+The opposite mistake is one row called "Everything." When a single feature breaks, the page either lies ("operational") or overstates ("outage"). Neither helps.
+
+A quick rule: if you would write a different incident update for two things, they are separate rows.
+
+## What to leave off
+
+**Internal systems.** Admin panels, CI, staging, your metrics stack. If users can't reach them, they don't belong on a public page.
+
+**Third-party providers you can't check.** It is tempting to add "Stripe" or "Supabase" as rows. But a row on your status page is a claim you make about your own product. If you can't monitor a dependency or explain its impact, link to the vendor's own status page from an incident update instead, and describe the effect on your users ("Payments are failing because our payment provider is having an outage").
+
+**Things that are not services.** Planned downtime belongs under scheduled maintenance, not as a permanently "degraded" row. We cover that in [how to announce scheduled maintenance to users](/blog/how-to-announce-scheduled-maintenance-to-users).
+
+**Vanity rows.** A list padded with ten green checks looks thorough but hides the one that matters when it turns red.
+
+## Make every row monitorable
+
+A row you cannot check is a row you will forget to update. Before you add one, decide how you will know it is down.
+
+For web-facing services, that usually means a URL that proves the thing works. A few tips:
+
+- **Use a real endpoint.** Check a lightweight health route or a page that exercises the feature, not just the homepage. A CDN can serve a cached homepage while your app is dead.
+- **Keep the check cheap.** Monitoring hits the URL on a schedule, so it should be fast and not write data.
+- **Know what counts as down.** On Statsy, a service is marked down after 2 consecutive failed checks (with a 5 second timeout). A 2xx response that takes longer than 3 seconds, twice in a row, is marked degraded. 401 and 403 responses count as up, since they prove the server answered. Our post on [how often uptime checks should run](/blog/how-often-should-uptime-checks-run) explains why those thresholds matter more than raw speed.
+
+Statsy checks every 5 minutes on Free and every minute on Pro. Some things, like a nightly job or an email pipeline, have no URL to check. Either expose a small health route for them or leave them off until you can verify them; an unmonitored row will sit green while the thing is broken.
+
+## Use the three statuses honestly
+
+Each row is operational, degraded or outage. Keep the meanings tight:
+
+- **Operational:** works as normal.
+- **Degraded:** works, but slowly or with errors for some users.
+- **Outage:** users cannot use it.
+
+Resist the urge to call everything "degraded" to soften bad news. Users who hit an error and see a cheerful yellow row learn that your page can't be trusted, and that is the opposite of its purpose. For wording during an incident, see [what to write in a status page incident update](/blog/what-to-write-in-a-status-page-incident-update).
+
+## Keep descriptions short
+
+Most tools let you add a one-line description to each service. Use it for the sentence a confused user needs: "Dashboard and account settings," "REST API at api.example.com," "Login via email or Google." Skip jargon and version numbers.
+
+## Revisit the list after every incident
+
+The best signal for whether your list is right is the first real outage. Afterwards, ask:
+
+1. Was there a row that matched what users were complaining about? If not, add one.
+2. Did one row cover things that failed separately? Split it.
+3. Did you leave a row green because you had no way to check it? Fix the monitoring or remove the row.
+4. Did anyone ask "is X down?" about something not on the list? That is a candidate.
+
+If you write short post-incident reviews, add this as a standing question. We have a [template for small teams](/blog/post-incident-review-template-for-small-teams).
+
+## A worked example
+
+Say you run a small invoicing app with a public API and a PDF export feature.
+
+1. **App** monitors `https://app.example.com/health`, which checks the database.
+2. **API** monitors `https://api.example.com/v1/status`.
+3. **Sign in** monitors the login page and is described as "Email and Google sign in."
+4. **PDF export** monitors a health route that renders a tiny test PDF.
+
+Four rows, each tied to something a customer would say out loud. When PDF generation breaks on a Tuesday, the page can show only that row as an outage, and the incident update can say exactly that. Nobody has to wonder whether their invoices are safe.
+
+## The short version
+
+- Pick three to six rows, named in your users' words.
+- Split rows only when they fail independently and you would write different updates.
+- Leave off internal tools and vendors you can't verify.
+- Only list what you can monitor.
+- Review the list after every incident.
+
+If you want somewhere to put the list, you can create a free status page on [Statsy](https://statsy.page/signup) without a credit card. The Free plan covers one page with three services; Pro raises that to three pages with ten services each.
+
+<CtaButton href="https://statsy.page/signup">Set up a free status page →</CtaButton>

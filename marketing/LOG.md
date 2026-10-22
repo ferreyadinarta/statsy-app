@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-22
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 15 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-22..10-19): 5 clicks, 387 impressions, avg position 19.1, CTR 1.3%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 136 impr, 3 clicks (pos 5.8). `instatus-alternatives` 45 impr pos 8.3, 1 click; `how-to-tell-users-your-app-is-down` 33 impr pos 13.6; maintenance post 55 impr pos 48; `statuspage-alternatives` 30 impr pos 37; `status-page-vs-uptime-monitoring` 26 impr pos 55; incident-update post 13 impr pos 5.7; uptime-checks 3 impr pos 8.3. Email-notifications and post-incident-review posts still not in GSC.
+- Did: new post `content/blog/what-services-to-list-on-your-status-page.mdx` (~1400 words). Backlink added from `status-page-for-indie-developers.mdx`; the post links to maintenance, uptime-checks, incident-update and post-incident-review posts.
+- Why: cap allows (last posts 10-15, 10-17). PLAYBOOK candidate. Web search showed vendor blogs and a few generic "anatomy" pages; angle is naming/choosing rows in users' words, one row per failure mode, only list what you can monitor. No competitor claims; Statsy claims (3 vs 10 services, 5 vs 1 min checks, down/degraded thresholds, 401/403) checked against FACTS.md.
+- Result/observation: `npm run build` fails on the same pre-existing `/login` Supabase env error; lint at baseline (8 errors / 7 warnings in untouched files); all frontmatter parses, descriptions <=160.
+- Next: confirm live, ping IndexNow. Max 1 post this week (next allowed 10-29 unless weekly-cap math changes). Check GSC for email-notifications and post-incident-review posts.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-21
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 15 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-21..10-18): 3 clicks, 373 impressions, avg position 18.7, CTR 0.8%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 137 impr, 1 click (pos 6.1). `instatus-alternatives` 45 impr pos 8.3, 1 click; `how-to-tell-users-your-app-is-down` 32 impr pos 13.8; `how-to-announce-scheduled-maintenance-to-users` 47 impr pos 50; `statuspage-alternatives` 29 impr pos 36; `status-page-vs-uptime-monitoring` 24 impr pos 56; incident-update post 12 impr pos 6; uptime-checks post 3 impr pos 8.3. Email-notifications and post-incident-review posts still not in GSC.

@@ -109,6 +109,7 @@ emails and churn during outages.
 | how to announce scheduled maintenance to users | how-to-announce-scheduled-maintenance-to-users | page-level 51.9 (36 impr) | 2026-10-19 |
 | status page vs uptime monitoring | status-page-vs-uptime-monitoring | page-level 56.5 (15 impr) | 2026-10-19 |
 | what to write in a status page incident update | what-to-write-in-a-status-page-incident-update | page-level 8.3 (7 impr) | 2026-10-19 |
+| what services to list on a status page | what-services-to-list-on-your-status-page | not yet indexed (published 2026-10-22) | 2026-10-22 |
 | status page for supabase app | status-page-for-supabase-app (exists; query deprioritized, wrong intent) | not yet indexed | 2026-10-02 |
 | how often should uptime checks run | how-often-should-uptime-checks-run | page-level 8 (1 impr) | 2026-10-19 |
 | post-incident review template for small teams | post-incident-review-template-for-small-teams | not yet indexed (published 2026-10-17) | 2026-10-17 |
