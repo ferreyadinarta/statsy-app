@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-23
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before). The 10-22 post is live.
+- Stats (GSC 2026-09-23..10-20): 5 clicks, 403 impressions, avg position 19.9, CTR 1.2%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 141 impr, 3 clicks (pos 5.6). `instatus-alternatives` 42 impr pos 8.4, 1 click; `how-to-tell-users-your-app-is-down` 34 impr pos 13.9; maintenance post 60 impr pos 50; `statuspage-alternatives` 30 impr pos 36; `status-page-vs-uptime-monitoring` 32 impr pos 53; incident-update post 14 impr pos 5.6; uptime-checks 4 impr pos 9. Email-notifications, post-incident-review and services-to-list posts not in GSC yet.
+- Did: no content change (log-only run). Pinged IndexNow for the 10-22 post.
+- Why: rolling 7-day cap reached (posts 10-17 and 10-22); nothing false or broken to fix; data too thin for title rewrites.
+- Result/observation: impressions +4%, clicks up to 5 but 4 are the homepage/brand. No non-brand query with clicks.
+- Next: next new post allowed 10-24 (10-17 leaves the window) but PLAYBOOK says max 1 per week, so 10-29 is the sensible date. Monday 10-26 weekly review.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-22
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 15 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-22..10-19): 5 clicks, 387 impressions, avg position 19.1, CTR 1.3%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 136 impr, 3 clicks (pos 5.8). `instatus-alternatives` 45 impr pos 8.3, 1 click; `how-to-tell-users-your-app-is-down` 33 impr pos 13.6; maintenance post 55 impr pos 48; `statuspage-alternatives` 30 impr pos 37; `status-page-vs-uptime-monitoring` 26 impr pos 55; incident-update post 13 impr pos 5.7; uptime-checks 3 impr pos 8.3. Email-notifications and post-incident-review posts still not in GSC.
