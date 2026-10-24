@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-24
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-24..10-21): 5 clicks, 428 impressions, avg position 20.5, CTR 1.2%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 134 impr, 3 clicks (pos 5.6). `instatus-alternatives` 43 impr pos 8, 1 click; `how-to-tell-users-your-app-is-down` 38 impr pos 13.2; maintenance post 69 impr pos 50.8; `status-page-vs-uptime-monitoring` 40 impr pos 50.2; `statuspage-alternatives` 29 impr pos 34; incident-update post 20 impr pos 5.9; uptime-checks 4 impr pos 9. Email-notifications, post-incident-review and services-to-list posts still not in GSC.
+- Did: no content change (log-only run).
+- Why: max 1 post per week while data is thin (last post 10-22); nothing false or broken; no title rewrite justified at these volumes.
+- Result/observation: impressions +6% vs 10-23, clicks flat; still no non-brand query with clicks. Incident-update post is the best new page-1 signal (pos 5.9, 20 impr).
+- Next: Monday 10-26 weekly review. Next new post 10-29 or later.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-23
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before). The 10-22 post is live.
 - Stats (GSC 2026-09-23..10-20): 5 clicks, 403 impressions, avg position 19.9, CTR 1.2%. Signups: 2 in 28d, 12 total users (none since 10-13). Brand "statsy" 141 impr, 3 clicks (pos 5.6). `instatus-alternatives` 42 impr pos 8.4, 1 click; `how-to-tell-users-your-app-is-down` 34 impr pos 13.9; maintenance post 60 impr pos 50; `statuspage-alternatives` 30 impr pos 36; `status-page-vs-uptime-monitoring` 32 impr pos 53; incident-update post 14 impr pos 5.6; uptime-checks 4 impr pos 9. Email-notifications, post-incident-review and services-to-list posts not in GSC yet.
