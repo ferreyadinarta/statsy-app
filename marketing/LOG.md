@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-27
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-27..10-24): 4 clicks, 461 impressions, avg position 22.3, CTR 0.9%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 131 impr, 3 clicks (pos 5.4). `instatus-alternatives` 47 impr pos 8, 1 click; `how-to-tell-users-your-app-is-down` 45 impr pos 14.4; incident-update 26 impr pos 6.2; maintenance post 95 impr pos 50; `status-page-vs-uptime-monitoring` 49 impr pos 47.7; `statuspage-alternatives` 27 impr pos 28.2; uptime-checks 6 impr pos 8.5; what-services-to-list first sighting (2 impr, pos 29.5). Email-notifications and post-incident-review posts still not in GSC.
+- Did: no content change (log-only run).
+- Why: max 1 new post per week while data is thin (last post 10-22; next 10-29); nothing false or broken; no title rewrite justified at these volumes.
+- Result/observation: impressions +3% vs 10-26, clicks flat (one older click rolled out); no non-brand query with clicks.
+- Next: new post 10-29 or later (narrow how-to, web-check intent). If how-to-tell-users is still pos 10-15 on 11-02, try a title/description rewrite.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-26
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-26..10-23): 5 clicks, 446 impressions, avg position 21.7, CTR 1.1%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 130 impr, 3 clicks (pos 5.5). `instatus-alternatives` 43 impr pos 7.9, 1 click; `how-to-tell-users-your-app-is-down` 41 impr pos 13.2; incident-update 21 impr pos 5.8; maintenance post 86 impr pos 50; `status-page-vs-uptime-monitoring` 43 impr pos 51; `statuspage-alternatives` 27 impr pos 32.
