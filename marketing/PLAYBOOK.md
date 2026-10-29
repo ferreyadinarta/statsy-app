@@ -60,7 +60,7 @@ emails and churn during outages.
   at pos 32). Judging them before ~mid-October is premature. Signups: 1 in 28d.
 
 ## Next steps (set 2026-10-26, weekly review)
-- Cap: max 1 new post per week while data is thin. Last post 10-22; next allowed 10-29.
+- Cap: max 1 new post per week while data is thin. Last post 10-29; next allowed 11-05.
   14 posts now; volume is not the bottleneck.
 - Evidence (GSC 09-26..10-23): 446 impr, 5 clicks, avg pos 21.7, 1 signup (28d), 12 users.
   4 of 5 clicks are the homepage/brand ("statsy" 130 impr, pos 5.5). Only non-brand click:
@@ -108,6 +108,7 @@ emails and churn during outages.
 | status page vs uptime monitoring | status-page-vs-uptime-monitoring | page-level 51.3 (43 impr) | 2026-10-26 |
 | what to write in a status page incident update | what-to-write-in-a-status-page-incident-update | page-level 5.8 (21 impr) | 2026-10-26 |
 | what services to list on a status page | what-services-to-list-on-your-status-page | not yet indexed (published 2026-10-22) | 2026-10-22 |
+| where to host your status page | where-to-host-your-status-page | not yet indexed (published 2026-10-29) | 2026-10-29 |
 | status page for supabase app | status-page-for-supabase-app (exists; query deprioritized, wrong intent) | not yet indexed | 2026-10-02 |
 | how often should uptime checks run | how-often-should-uptime-checks-run | page-level 9 (5 impr) | 2026-10-26 |
 | post-incident review template for small teams | post-incident-review-template-for-small-teams | not yet indexed (published 2026-10-17) | 2026-10-17 |

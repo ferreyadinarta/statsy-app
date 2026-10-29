@@ -1,0 +1,85 @@
+---
+title: "Where to Host Your Status Page So It Stays Up When Your App Is Down"
+description: "A status page on the same server, domain or DNS as your app goes down with it. How to choose a separate failure domain, and a 10-minute test to check yours."
+quickAnswer: "Host your status page somewhere that doesn't share a failure with your app: a different provider, a different account, and ideally a different domain. A hosted status page is the simplest way to get that. Then test it by asking what still works if your app, database and DNS all disappear."
+date: "2026-10-29"
+author: "Statsy"
+tags: ["status-page", "reliability", "indie-dev"]
+---
+
+<QuickAnswer>
+Host your status page somewhere that doesn't share a failure with your app: a different provider, a different account, and ideally a different domain. A hosted status page is the simplest way to get that. Then test it by asking what still works if your app, database and DNS all disappear.
+</QuickAnswer>
+
+A status page has one job that matters more than any other: being reachable when your product isn't. If it lives at `yourapp.com/status` on the same server as your app, an outage takes down the page that was supposed to explain the outage. Users see the same error twice and learn nothing.
+
+This is easy to get wrong because everything works on a normal day. Here is how to think about where to put the page, and how to check what you already have.
+
+## Think in failure domains
+
+A failure domain is a set of things that break together. Your app and a status page are in the same domain if they share any of these:
+
+- **The server or container.** The classic mistake: a `/status` route inside the app you're reporting on.
+- **The hosting account or provider.** A billing lapse, a suspended account or a regional provider incident hits both.
+- **The database.** If the status page reads incidents from the same database your app uses, a database outage blanks it.
+- **The domain and DNS.** If `status.yourapp.com` and `yourapp.com` use the same DNS provider, a DNS problem or an expired domain takes out both.
+- **The deploy pipeline.** If publishing an incident requires a deploy of your app, you can't post during the exact moment a deploy is broken.
+
+You will never reach zero overlap. The goal is to avoid sharing the things that are most likely to fail together, and to know which ones you still share.
+
+## Four common setups, and how they fail
+
+**1. A route inside your app (`/status`).** Easiest to build, worst in practice. Any app crash, bad deploy or database outage removes it. Fine as a convenience page, not as your outage channel.
+
+**2. A separate project on the same provider.** Better: a bad deploy of your app doesn't touch it. But a provider-wide incident, or an account-level problem, still takes both. Many small teams are here, and it is a reasonable starting point as long as you know the limit.
+
+**3. A self-hosted tool on another server.** Tools you run yourself give you control, but you now own another thing to patch and keep alive. If that server is on the same provider or the same small VPS as your app, you have recreated setup 2 with more maintenance.
+
+**4. A hosted status page from a third party.** The page runs on someone else's infrastructure, with its own database and deploy pipeline. For a small team this is usually the best trade: you get a separate failure domain without operating anything. The cost is that you now depend on that vendor, so it's worth checking how they handle their own incidents.
+
+For most indie products, option 4 is the practical answer, with option 2 as the fallback if you want to stay fully in-house.
+
+## The domain question
+
+Domains are the overlap people forget. Two points:
+
+- **Subdomain of your own domain** (`status.yourapp.com`) looks professional and builds trust. It also shares your registrar and DNS with the app. If the domain lapses or your DNS provider has an outage, both disappear.
+- **A different domain entirely** (a vendor's domain, or a second domain you own) survives a problem with your main domain.
+
+On Statsy, every page gets a `yourname.statsy.page` address, so on the Free plan your status page is already on a different domain from your app. Custom domains are a Pro feature ($15/month); if you use one, you gain branding and give up that domain separation unless you point it at a domain with its own DNS provider. Neither is wrong. Pick based on whether branding or independence matters more to you right now.
+
+## What to host separately, and what to keep
+
+Hosting the page elsewhere is only half the job. Two other things matter:
+
+**The monitoring that updates it.** If an outage is detected by a check running on your own server, a server crash silences both the check and the report. External checks, run from outside your infrastructure, still fire when your whole stack is gone. Statsy's monitoring runs from Statsy's infrastructure: it checks your URLs with a 5-second timeout, and marks a service down after two consecutive failures. That's the kind of outside-in check you want for the "everything is down" case.
+
+**The way you publish updates.** You should be able to post an incident from a phone with nothing but a browser login, without touching your repo, your CI or your servers. If posting an update requires SSH or a deploy, it will fail when you need it most.
+
+## A 10-minute test
+
+Run this once, before you need it:
+
+1. **List what your status page depends on.** Server, database, DNS, domain registrar, hosting account, deploy pipeline, monitoring.
+2. **Mark which of them your app also depends on.** Each overlap is a way both can fail together.
+3. **Imagine your app host is gone for two hours.** Can you still open the status page? Can you still publish an incident? Will email subscribers still be notified?
+4. **Check it for real.** Open the page from your phone on mobile data, logged out. Then try posting a test incident without opening your laptop's editor.
+5. **Write down the overlaps you accept.** "Same registrar" is a fine answer if it's a decision and not a surprise.
+
+If step 3 produces a "no", fix that overlap first, before polishing the page's design.
+
+## Don't forget the people side
+
+A reachable page still needs an owner and a habit. Decide who posts, and what the first message says, ahead of time; our guide to [what to write in a status page incident update](/blog/what-to-write-in-a-status-page-incident-update) has wording you can reuse. And make sure users know the address: link it in your app footer, your support emails and your [outage message to users](/blog/how-to-tell-users-your-app-is-down), because a page nobody can find doesn't help even when it's up.
+
+## Summary
+
+- A status page on the same server, database or DNS as your app fails with it.
+- Count shared failure domains: server, provider account, database, domain/DNS, deploy pipeline, monitoring.
+- A hosted third-party page is the simplest way to get separation; a separate project on the same provider is an acceptable fallback.
+- A subdomain of your own domain shares DNS and registrar with your app; a different domain does not.
+- Run the 10-minute test, and write down the overlaps you've chosen to accept.
+
+If you'd rather not run any of this yourself, Statsy's Free plan gives you one hosted status page with three monitored services, 5-minute checks and email alerts, no credit card needed.
+
+<CtaButton href="https://statsy.page/signup">Create a hosted status page for free →</CtaButton>

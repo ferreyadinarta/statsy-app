@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-10-29
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-09-29..10-26): 4 clicks, 482 impressions, avg position 23.8, CTR 0.8%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 132 impr, 3 clicks (pos 5.5). `instatus-alternatives` 44 impr pos 8.1, 1 click; `how-to-tell-users-your-app-is-down` 46 impr pos 14.1; incident-update 28 impr pos 6.1; maintenance post 108 impr pos 50.9; `status-page-vs-uptime-monitoring` 56 impr pos 47.4; `statuspage-alternatives` 28 impr pos 28.4; uptime-checks 6 impr pos 8.5; what-services-to-list 6 impr pos 32.2. Email-notifications and post-incident-review posts still not in GSC.
+- Did: new post `content/blog/where-to-host-your-status-page.mdx` (~1270 words). Backlink added from `how-to-tell-users-your-app-is-down.mdx`; the post links to incident-update and how-to-tell-users posts.
+- Why: weekly cap allows (last post 10-22). Web search for "where to host your status page separate from your app" shows mostly vendor best-practice lists and an old HN thread, no focused how-to with a failure-domain checklist. Statsy claims (slug.statsy.page, custom domain Pro $15, 5s timeout / 2 failures, Free = 1 page / 3 services / 5-min) checked against FACTS.md. No competitor claims.
+- Result/observation: `npm run build` fails on the same pre-existing `/login` Supabase env error; lint at baseline (8 errors / 7 warnings); all frontmatter parses, descriptions <=160.
+- Next: confirm live, ping IndexNow. No new post until 11-05. If how-to-tell-users is still pos 10-15 on 11-02, try a title/description rewrite.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-28
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-28..10-25): 4 clicks, 469 impressions, avg position 23.2, CTR 0.9%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 131 impr, 3 clicks (pos 5.5). `instatus-alternatives` 45 impr pos 8.2, 1 click; `how-to-tell-users-your-app-is-down` 46 impr pos 14.1; incident-update 26 impr pos 6.2; maintenance post 101 impr pos 50.5; `status-page-vs-uptime-monitoring` 53 impr pos 48.4; `statuspage-alternatives` 25 impr pos 30.3; uptime-checks 6 impr pos 8.5; what-services-to-list 3 impr pos 42.7. Email-notifications and post-incident-review posts still not in GSC.
