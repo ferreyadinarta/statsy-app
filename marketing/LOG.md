@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-01
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC to 2026-10-29): 4 clicks, 563 impressions, avg position 24.5, CTR 0.7%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 128 impr, 3 clicks (pos 5.6). `instatus-alternatives` 63 impr pos 6.3, 1 click ("instatus alternatives" 25 impr pos 3.7, 0 clicks); `how-to-tell-users-your-app-is-down` 50 impr pos 14.5; incident-update 35 impr pos 5.8; maintenance post 139 impr pos 51.5 ("maintenance message" pos 79); `status-page-vs-uptime-monitoring` 61 impr pos 46.6; `statuspage-alternatives` 37 impr pos 27.1; uptime-checks 11 impr pos 12.3; what-services-to-list 7 impr pos 32.9. where-to-host, email-notifications, post-incident-review not yet in GSC.
+- Did: title/description rewrite of `content/blog/how-to-tell-users-your-app-is-down.mdx` (title now "How to Tell Users Your App Is Down: What to Say and Where to Post"; description 153 chars; build fails only on the known /login Supabase env error, frontmatter parses). No new post (weekly cap, last post 10-29).
+- Why: page sat at pos 13-14.5 with 40-50 impr and 0 clicks; PLAYBOOK planned this test for 11-02 if still pos 10-15. Moved up a day; title now leads with the exact query.
+- Result/observation: impressions +17% vs 10-29, clicks flat; still no non-brand query with clicks.
+- Next: new post allowed 11-05. Re-check this page's position/CTR around 11-10. Monday 11-02 weekly review.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-10-29
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-09-29..10-26): 4 clicks, 482 impressions, avg position 23.8, CTR 0.8%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 132 impr, 3 clicks (pos 5.5). `instatus-alternatives` 44 impr pos 8.1, 1 click; `how-to-tell-users-your-app-is-down` 46 impr pos 14.1; incident-update 28 impr pos 6.1; maintenance post 108 impr pos 50.9; `status-page-vs-uptime-monitoring` 56 impr pos 47.4; `statuspage-alternatives` 28 impr pos 28.4; uptime-checks 6 impr pos 8.5; what-services-to-list 6 impr pos 32.2. Email-notifications and post-incident-review posts still not in GSC.
