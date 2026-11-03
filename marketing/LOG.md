@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-03
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC to ~2026-10-31): 4 clicks, 643 impressions, avg position 23.6, CTR 0.6%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 127 impr, 3 clicks (pos 5.5). `instatus-alternatives` 96 impr pos 5.7, 1 click ("instatus alternatives" 56 impr pos 4.2, 0 clicks); how-to-tell-users 59 impr pos 14.4; incident-update 47 impr pos 6.1; maintenance 156 impr pos 50.6; vs-uptime-monitoring 72 impr pos 41.9; statuspage-alternatives 44 impr pos 26.8; uptime-checks 15 impr pos 11.1; what-services-to-list 7 impr pos 32.9.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 10-29, next allowed 11-05); how-to-tell-users title rewrite is only 2 days old.
+- Result/observation: impressions +8% vs 11-02, clicks flat; "instatus alternatives" at pos 4.2 with 56 impr and 0 clicks is the clearest CTR problem.
+- Next: new post 11-05 (narrow how-to, web-check intent). ~11-10 re-check how-to-tell-users and consider a second description tweak on instatus-alternatives.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-02
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-03..10-30): 4 clicks, 598 impressions, avg position 24.3, CTR 0.7%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 128 impr, 3 clicks (pos 5.5). `instatus-alternatives` 82 impr pos 5.6, 1 click ("instatus alternatives" 41 impr pos 3.5, 0 clicks); incident-update 40 impr pos 5.9; how-to-tell-users 52 impr pos 14; uptime-checks 15 impr pos 11.1; maintenance 147 impr pos 52.4; vs-uptime-monitoring 66 impr pos 44.1; statuspage-alternatives 43 impr pos 26.5. email-notifications, post-incident-review, where-to-host not yet in GSC.
