@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-05
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC to ~2026-11-02): 4 clicks, 723 impressions, avg position 23.5, CTR 0.6%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 126 impr, 3 clicks (pos 5.7). `instatus-alternatives` 143 impr pos 5.6, 1 click ("instatus alternatives" 101 impr pos 4.7, 0 clicks); how-to-tell-users 55 impr pos 15; incident-update 52 impr pos 5.9; maintenance 169 impr pos 52.6; vs-uptime-monitoring 77 impr pos 41; statuspage-alternatives 56 impr pos 28.1; uptime-checks 19 impr pos 12.1.
+- Did: new post `content/blog/do-you-need-a-status-page-for-a-side-project.mdx` (~1180 words). Backlink added from `status-page-for-indie-developers.mdx`; post links to 5 existing posts. Build fails only on the known /login Supabase env error; frontmatter parses, descriptions <=160.
+- Why: weekly cap allows (last post 10-29). Web search of the query showed vendor-written pages and an honest "optional until users depend on it" consensus; no focused decision checklist. Statsy claims checked against FACTS.md; no competitor claims.
+- Result/observation: impressions +8% vs 11-04, clicks flat. "instatus alternatives" 101 impr, 0 clicks at pos 4.7 is still the CTR problem.
+- Next: confirm live + IndexNow. ~11-10 re-check how-to-tell-users (pos 15, title rewritten 11-01) and consider a second description tweak on instatus-alternatives. No new post until 11-12.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-04
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 16 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC to ~2026-11-01): 4 clicks, 671 impressions, avg position 23.8, CTR 0.6%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 125 impr, 3 clicks (pos 5.5). `instatus-alternatives` 115 impr pos 5.4, 1 click ("instatus alternatives" 75 impr pos 4.1, 0 clicks); how-to-tell-users 58 impr pos 14.5; incident-update 47 impr pos 6.1; maintenance 162 impr pos 51.6; vs-uptime-monitoring 74 impr pos 41.7; statuspage-alternatives 49 impr pos 27.9; uptime-checks 16 impr pos 12.4.

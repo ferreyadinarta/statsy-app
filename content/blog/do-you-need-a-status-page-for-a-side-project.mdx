@@ -1,0 +1,78 @@
+---
+title: "Do You Need a Status Page for a Side Project? A Practical Checklist"
+description: "Not every side project needs a status page. Five signs it's time, what to do instead until then, and the smallest setup that is still worth having."
+quickAnswer: "Not at first. If nobody pays or depends on your side project, monitoring with an alert to yourself is enough. Add a public status page once real users would otherwise email you to ask whether it's down, or once anyone is paying you."
+date: "2026-11-05"
+author: "Statsy"
+tags: ["status-page", "indie-dev", "side-projects"]
+---
+
+<QuickAnswer>
+Not at first. If nobody pays or depends on your side project, monitoring with an alert to yourself is enough. Add a public status page once real users would otherwise email you to ask whether it's down, or once anyone is paying you.
+</QuickAnswer>
+
+Most advice about status pages is written by companies that sell them, and it tends to say you need one yesterday. For a side project with a handful of visitors, that is not true. A status page is a communication tool, and it only pays off when there is someone to communicate with. Here is how to tell whether yours has crossed that line.
+
+## What a status page does (and doesn't) do
+
+A status page answers one question for your users: "Is it you or is it me?" It gives them a single place to check, so they don't refresh, retry, tweet at you, or email support. During an incident it also shows that you know about the problem.
+
+It does not fix anything, and it does not tell you that something broke. That job belongs to monitoring. Many side projects fail quietly for hours because the only monitoring is a user noticing. If you do just one thing, set up a check that alerts you. The page comes second. We cover how the two differ in [status page vs uptime monitoring](/blog/status-page-vs-uptime-monitoring).
+
+## Five signs it's time for a status page
+
+You don't need all of these. One or two is usually enough.
+
+1. **Someone pays you.** Even one subscriber changes the deal. People who pay expect to be told what's going on, and silence during an outage is what turns an annoyed customer into a refund request.
+2. **You've received an "is it down?" message.** The first email or DM asking this is the cheapest signal you'll get. If it happened once, it will happen again, usually at the worst time.
+3. **Other things depend on you.** If your project is an API, a webhook receiver, a widget embedded on other sites or a library that calls home, your downtime becomes someone else's downtime. Those people need somewhere to look.
+4. **You have a community.** A Discord, a subreddit or a mailing list means outages get discussed publicly whether you take part or not. A page lets you set the facts.
+5. **You're going to launch or get press.** Traffic spikes break things. If you're posting on Hacker News or Product Hunt, have the page in place beforehand rather than building it mid-incident.
+
+## Signs you can wait
+
+- Fewer than a few dozen active users, and none paying.
+- Usage is occasional and nobody is blocked when it's down.
+- It's a demo, a portfolio piece or something you're still figuring out.
+
+In these cases, a status page adds a thing to maintain and an empty "all systems operational" message that nobody reads. Your time is better spent on the product.
+
+## What to do instead
+
+Until you need a page, cover the basics:
+
+- **Monitor one real URL.** Pick an endpoint that exercises something, such as a small `/health` route that runs a trivial database query, not just the homepage. Interval advice is in [how often should uptime checks run](/blog/how-often-should-uptime-checks-run).
+- **Alert yourself somewhere you will see it.** Email is fine if you check it. An alert you silence at night isn't an alert.
+- **Have one line ready to say.** Decide in advance where you'll post if things break (a pinned post, your site's footer, your README) so you aren't improvising.
+- **Keep a short list of incidents.** Even a text file with date, cause and fix teaches you more than memory will. It also becomes your content when you do publish a page.
+
+## The smallest status page that is still worth it
+
+When you do cross the line, resist the urge to build a dashboard of everything. The version that works for a side project is small:
+
+- **Two or three components.** Typically the app, the API if you have one, and maybe sign-in. Our guide to [what services to list on your status page](/blog/what-services-to-list-on-your-status-page) goes through how to choose.
+- **Automatic status.** If someone has to remember to flip a switch during an incident, the page will be wrong exactly when it matters. Let checks drive it.
+- **A place for human updates.** Automation tells people that something is wrong. You tell them what you are doing about it, in a sentence or two.
+- **A link people can find.** Put it in your footer, your docs and your support auto-reply. A page nobody can find helps nobody.
+
+## Self-hosted or hosted?
+
+Open-source tools exist, and running one is a fine weekend project. The catch is where it lives. If it sits on the same server, account or DNS as your app, it goes down with your app, which defeats the purpose. We go into this in [where to host your status page](/blog/where-to-host-your-status-page). If you do self-host, put it on separate infrastructure. If you don't want another thing to look after, a hosted page avoids the problem by default.
+
+## What this costs on Statsy
+
+Since we run one, here are the specifics, and they apply only to Statsy. The Free plan is $0 with no credit card: 1 status page, 3 services, up to 50 email subscribers, 7 days of incident history, and checks every 5 minutes. The page lives at a `yourname.statsy.page` address, and Statsy branding is shown. Monitoring marks a service down after two consecutive failures, which keeps one dropped request from flipping your page.
+
+That's enough for most side projects. Pro ($15/mo) adds more pages and services, 1-minute checks, a custom domain and removable branding, and you only need it once the project is earning enough to justify it. Details are in [setting up a free status page](/blog/how-to-set-up-a-free-status-page).
+
+## A quick decision rule
+
+- Nobody depends on it: monitor, alert yourself, skip the page.
+- A few people use it and might ask whether it's down: monitor and consider a minimal page.
+- Anyone pays you, or other software depends on it: publish a status page now and link it everywhere.
+
+The cost of a page is small, but so is the cost of waiting when nobody is looking. Match the effort to the people who would actually be affected.
+
+If you've reached the point where users need to know what's going on, you can [create a free status page](https://statsy.page/signup) in a few minutes.
+
+<CtaButton href="https://statsy.page/signup">Create a free status page →</CtaButton>
