@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-08
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-10-09..11-05): 5 clicks, 882 impressions, avg position 24.2, CTR 0.6%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 119 impr, 3 clicks (pos 5.4). `instatus-alternatives` 220 impr pos 5.3, 1 click; how-to-tell-users 56 impr pos 15.1; incident-update 62 impr pos 10.5 (was 7.4, slipping); maintenance 206 impr pos 56.8; vs-uptime-monitoring 89 impr pos 38.9; statuspage-alternatives 84 impr pos 25.6; uptime-checks 24 impr pos 11.7; what-services 10 impr pos 25.1 (first appearance). Side-project, where-to-host, email-notifications, post-incident-review still absent from GSC.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 11-05, next allowed 11-12); how-to-tell-users title rewrite is 7 days old; instatus-alternatives second tweak planned ~11-10 (tomorrow's Monday review).
+- Result/observation: impressions +5% vs 11-07, clicks +1 (a 5th click, no query attributed beyond brand). No build run (only marketing/ changed).
+- Next: Monday 11-09 weekly review (rewrite PLAYBOOK, <150 lines); re-check how-to-tell-users and rewrite instatus-alternatives description. New post 11-12 (narrow how-to, web-check intent first).
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-07
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC to ~2026-11-04): 4 clicks, 837 impressions, avg position 24.2, CTR 0.5%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 119 impr, 3 clicks (pos 5.4). `instatus-alternatives` 200 impr pos 5.1, 1 click; how-to-tell-users 58 impr pos 14.7; incident-update 59 impr pos 7.4; maintenance 198 impr pos 56.7; vs-uptime-monitoring 82 impr pos 40.7; statuspage-alternatives 71 impr pos 27.7; uptime-checks 20 impr pos 11.6.
