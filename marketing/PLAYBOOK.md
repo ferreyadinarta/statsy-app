@@ -59,26 +59,25 @@ emails and churn during outages.
   shown the 5 posts published 09-29..10-02 (only how-to-tell-users shows, 1 impr
   at pos 32). Judging them before ~mid-October is premature. Signups: 1 in 28d.
 
-## Next steps (set 2026-11-02, weekly review)
-- Cap: max 1 new post per week while data is thin. Last post 10-29; next allowed 11-05.
-  14 posts now; volume is not the bottleneck.
-- Evidence (GSC 10-03..10-30): 598 impr, 4 clicks, avg pos 24.3, 1 signup (28d, 10-13), 12 users.
-  3 of 4 clicks are the brand query ("statsy", 128 impr, pos 5.5). Only non-brand click:
-  `instatus-alternatives` (82 impr, pos 5.6; "instatus alternatives" pos 3.5, 41 impr, still 0 clicks
-  on that query). No non-brand query has meaningful clicks yet.
-- Page-1: instatus-alternatives (5.6), incident-update (5.9, 40 impr), indie-developers (6.7).
-  Edge: uptime-checks (11.1), how-to-tell-users (14, 52 impr; title rewritten 11-01, judge ~11-10).
-  Stuck 25-55: statuspage-alternatives (26.5), vs-uptime-monitoring (44), maintenance (52, 147 impr,
-  only generic "planned maintenance message" queries at pos 70+). Not yet in GSC: email-notifications,
-  post-incident-review, where-to-host.
-- Pattern holds: narrow how-to posts reach page 1-2 within ~2 weeks; broad-topic posts sit at 50+.
-  Page 1 without clicks at these volumes means CTR copy and off-site signals matter more than new posts.
-- Next test: if `instatus-alternatives` stays at pos <6 with 0 clicks on its main query by ~11-10,
-  consider one more title/description tweak (it has 1 click per 82 impr).
+## Next steps (set 2026-11-09, weekly review)
+- Cap: max 1 new post per week while data is thin. Last post 11-05; next allowed 11-12.
+  15 posts now; volume is not the bottleneck.
+- Evidence (GSC 10-10..11-06): 921 impr, 5 clicks, avg pos 24.1, 1 signup (28d, 10-13), 12 users.
+  3 of 5 clicks are brand ("statsy", 122 impr, pos 5.4). Only non-brand click: `instatus-alternatives`
+  (243 impr, pos 5.2); its query "instatus alternatives" has 194 impr at pos 4.8 and 0 clicks, so the
+  title is not winning clicks. Impressions grew ~50% in 4 weeks, clicks did not.
+- Page-1/edge: instatus-alternatives (5.2), indie-developers (7.5), uptime-checks (11.7),
+  incident-update (11.2, slipped from 5.9), how-to-tell-users (15.3, no gain after 11-01 title rewrite).
+  Stuck: statuspage-alternatives (25.8), vs-uptime-monitoring (39), maintenance (57, 213 impr, generic
+  queries at pos 75+). Not yet in GSC: side-project, where-to-host, email-notifications, post-incident-review.
+- Pattern: narrow how-to posts reach page 1-2 within ~2 weeks; broad-topic posts sit at 50+.
+- Test running: 11-09 instatus-alternatives title/description rewrite (see Experiments). Judge ~11-20.
+  If still 0 clicks at pos <6 with 250+ impr, stop tweaking: likely AI overview / SERP features, not copy.
 - Biggest lever is off-site: links/mentions (X, Indie Hackers, directories). Only Ferrey can do this;
   keep it in NEEDS FERREY every Monday.
-- Candidate topics (web-check intent first, avoid competitor claims): "how to write a status page for a
-  side project", "status page for a SaaS with paying customers".
+- Candidate topics (web-check intent first, avoid competitor claims): "status page for a SaaS with
+  paying customers", "what is a status page" explainer angles, "how to write a status page message
+  for partial outage". Skip "scheduled maintenance message" head queries (pos 75+, generic).
 - Still to verify before reuse: Uptime Kuma / Cachet rows in the alternatives posts (unsourced).
 
 ## Experiments
@@ -91,14 +90,15 @@ emails and churn during outages.
 | 2026-10-08 | New post `what-to-write-in-a-status-page-incident-update.mdx` will rank for incident-update wording queries via a worked four-stage timeline | Position/impressions for "incident update" phrasing in byQuery | Pending, published 2026-10-08 |
 | 2026-10-09 | New post `how-often-should-uptime-checks-run.mdx` will rank for uptime-interval how-to queries | Position/impressions for "how often should uptime checks run" phrasing | Pending, published 2026-10-09 |
 | 2026-11-01 | Title/description rewrite of `how-to-tell-users-your-app-is-down.mdx` (pos 14.5, 50 impr, 0 clicks) leading with the exact query will lift it to page 1 / earn clicks | Position/CTR of that page in byPage | Pending; baseline pos 14.5 |
+| 2026-11-09 | Second title/description rewrite of `instatus-alternatives.mdx` ("instatus alternatives" pos 4.8, 194 impr, 0 clicks) to a plainer query-first title | Clicks/CTR on that query and page in byPage | Pending; baseline 243 impr, 1 click, pos 5.2 |
 | 2026-10-02 | New post `status-page-vs-uptime-monitoring.mdx` will rank for "status page vs uptime monitoring" / "do I need both" phrasing — competitive query (statuspage.me has a near-identical angle) but matches audience pitch tightly | Position/impressions for those phrases in seo-stats byQuery | Pending — published 2026-10-02, no data yet |
 
 ## Target keywords
 | Keyword | Post | Last position seen | Checked |
 |---|---|---|---|
-| statsy (brand) | homepage | 5.5 (128 impr, 3 clicks) | 2026-11-02 |
+| statsy (brand) | homepage | 5.4 (122 impr, 3 clicks) | 2026-11-09 |
 | instatus alternative | instatus-alternatives | 10.1 (10 impr) | 2026-11-02 |
-| instatus alternatives | instatus-alternatives | 3.5 (41 impr, 0 clicks) | 2026-11-02 |
+| instatus alternatives | instatus-alternatives | 4.8 (194 impr, 0 clicks) | 2026-11-09 |
 | (page-level) instatus-alternatives | instatus-alternatives | 5.6 (82 impr, 1 click) | 2026-11-02 |
 | statuspage alternative | statuspage-alternatives | 26.5 page-level (43 impr) | 2026-11-02 |
 | statuspage alternatives | statuspage-alternatives | 50.3 | 2026-10-02 |

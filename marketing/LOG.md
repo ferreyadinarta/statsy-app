@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-09
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-10-10..11-06): 5 clicks, 921 impressions, avg position 24.1, CTR 0.5%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 122 impr, 3 clicks (pos 5.4). `instatus-alternatives` 243 impr pos 5.2, 1 click ("instatus alternatives" 194 impr pos 4.8, 0 clicks); incident-update 65 impr pos 11.2 (slipped from 5.9); how-to-tell-users 56 impr pos 15.3 (no gain from 11-01 rewrite); maintenance 213 impr pos 57; vs-uptime-monitoring 91 impr pos 39; statuspage-alternatives 86 impr pos 25.8; uptime-checks 24 impr pos 11.7; what-services 10 impr pos 25. Side-project, where-to-host, email-notifications, post-incident-review still absent from GSC.
+- Did: Monday weekly review. Rewrote PLAYBOOK "Next steps" and refreshed keyword table. Rewrote title/description of `content/blog/instatus-alternatives.mdx` (title now "Instatus Alternatives: 6 Options Compared on Price and Limits (2026)", description 153 chars). No new post (cap; next allowed 11-12).
+- Why: "instatus alternatives" sits at pos 4.8 with 194 impr and 0 clicks, the clearest CTR gap; the old title was a generic listicle form.
+- Result/observation: impressions +~50% over 4 weeks, clicks flat. Position of incident-update slipped; how-to-tell-users title rewrite has not moved it. If instatus-alternatives still gets 0 clicks, suspect SERP features/AI answers rather than copy. Build not run (only a mdx title/description + marketing/ changed); frontmatter checked for length.
+- Next: new post 11-12 (narrow how-to, web-check intent first). Judge instatus rewrite ~11-20.
+- NEEDS FERREY: off-site mentions/links (X, Indie Hackers, directories) remain the biggest lever; content alone is not moving a new domain with ~0 non-brand clicks.
+
 ## 2026-11-08
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-09..11-05): 5 clicks, 882 impressions, avg position 24.2, CTR 0.6%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 119 impr, 3 clicks (pos 5.4). `instatus-alternatives` 220 impr pos 5.3, 1 click; how-to-tell-users 56 impr pos 15.1; incident-update 62 impr pos 10.5 (was 7.4, slipping); maintenance 206 impr pos 56.8; vs-uptime-monitoring 89 impr pos 38.9; statuspage-alternatives 84 impr pos 25.6; uptime-checks 24 impr pos 11.7; what-services 10 impr pos 25.1 (first appearance). Side-project, where-to-host, email-notifications, post-incident-review still absent from GSC.
