@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-10
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-10-11..11-07): 5 clicks, 964 impressions, avg position 24.2, CTR 0.5%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 126 impr, 3 clicks (pos 5.5). `instatus-alternatives` 260 impr pos 5.5, 1 click ("instatus alternatives" 209 impr pos 5.1, 0 clicks); incident-update 68 impr pos 10.9; how-to-tell-users 59 impr pos 14.7; uptime-checks 27 impr pos 14.6; maintenance 222 impr pos 57.7; vs-uptime-monitoring 93 impr pos 39.3; statuspage-alternatives 88 impr pos 25.5; what-services 10 impr pos 25.1. Side-project, where-to-host, email-notifications, post-incident-review still absent from GSC.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 11-05, next allowed 11-12); the instatus-alternatives rewrite is only 1 day old and data lags ~3 days, so it cannot be judged yet.
+- Result/observation: impressions +5% vs 11-09, clicks flat. No build run (only marketing/ changed).
+- Next: new post 11-12 (narrow how-to, web-check intent first). Judge instatus rewrite ~11-20.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-09
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-10..11-06): 5 clicks, 921 impressions, avg position 24.1, CTR 0.5%. Signups: 1 in 28d (10-13), 12 total users. Brand "statsy" 122 impr, 3 clicks (pos 5.4). `instatus-alternatives` 243 impr pos 5.2, 1 click ("instatus alternatives" 194 impr pos 4.8, 0 clicks); incident-update 65 impr pos 11.2 (slipped from 5.9); how-to-tell-users 56 impr pos 15.3 (no gain from 11-01 rewrite); maintenance 213 impr pos 57; vs-uptime-monitoring 91 impr pos 39; statuspage-alternatives 86 impr pos 25.8; uptime-checks 24 impr pos 11.7; what-services 10 impr pos 25. Side-project, where-to-host, email-notifications, post-incident-review still absent from GSC.
