@@ -60,7 +60,7 @@ emails and churn during outages.
   at pos 32). Judging them before ~mid-October is premature. Signups: 1 in 28d.
 
 ## Next steps (set 2026-11-09, weekly review)
-- Cap: max 1 new post per week while data is thin. Last post 11-05; next allowed 11-12.
+- Cap: max 1 new post per week while data is thin. Last post 11-12; next allowed 11-19.
   15 posts now; volume is not the bottleneck.
 - Evidence (GSC 10-10..11-06): 921 impr, 5 clicks, avg pos 24.1, 1 signup (28d, 10-13), 12 users.
   3 of 5 clicks are brand ("statsy", 122 impr, pos 5.4). Only non-brand click: `instatus-alternatives`
@@ -91,6 +91,7 @@ emails and churn during outages.
 | 2026-10-09 | New post `how-often-should-uptime-checks-run.mdx` will rank for uptime-interval how-to queries | Position/impressions for "how often should uptime checks run" phrasing | Pending, published 2026-10-09 |
 | 2026-11-01 | Title/description rewrite of `how-to-tell-users-your-app-is-down.mdx` (pos 14.5, 50 impr, 0 clicks) leading with the exact query will lift it to page 1 / earn clicks | Position/CTR of that page in byPage | Pending; baseline pos 14.5 |
 | 2026-11-09 | Second title/description rewrite of `instatus-alternatives.mdx` ("instatus alternatives" pos 4.8, 194 impr, 0 clicks) to a plainer query-first title | Clicks/CTR on that query and page in byPage | Pending; baseline 243 impr, 1 click, pos 5.2 |
+| 2026-11-12 | New post `degraded-vs-outage-status-page.mdx` will reach page 1-2 for degraded/outage status wording queries (no small-team decision test found) | Position/impressions in byPage | Pending; published 2026-11-12 |
 | 2026-10-02 | New post `status-page-vs-uptime-monitoring.mdx` will rank for "status page vs uptime monitoring" / "do I need both" phrasing — competitive query (statuspage.me has a near-identical angle) but matches audience pitch tightly | Position/impressions for those phrases in seo-stats byQuery | Pending — published 2026-10-02, no data yet |
 
 ## Target keywords

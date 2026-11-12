@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-12
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC to ~2026-11-09): 5 clicks, 1017 impressions, avg position 24.5, CTR 0.5%. Signups: 0 since 10-15 (12 total users). Brand "statsy" 116 impr, 3 clicks (pos 5.3). `instatus-alternatives` 303 impr pos 5.9, 1 click ("instatus alternatives" 256 impr pos 5.6, 0 clicks; rewrite is 3 days old, too early); incident-update 68 impr pos 10.9; how-to-tell-users 55 impr pos 14.1; uptime-checks 29 impr pos 14.1; maintenance 237 impr pos 59; vs-uptime-monitoring 95 impr pos 38.3; statuspage-alternatives 94 impr pos 26.5; what-services 11 impr pos 23.5. Side-project, where-to-host, email-notifications, post-incident-review still absent from GSC.
+- Did: new post `content/blog/degraded-vs-outage-status-page.mdx` (~1370 words). Backlink added from `what-to-write-in-a-status-page-incident-update.mdx`; links to what-services, uptime-checks and incident-update posts. Build fails only on the known /login Supabase env error; frontmatter parses, descriptions <=160.
+- Why: weekly cap allows (last post 11-05). Web search showed vendor glossaries that define partial outage / degraded / major outage differently and no small-team decision test; Statsy has only 3 states, so the post gives a one-question test and examples. Statsy claims checked against FACTS.md; no competitor claims (searched sources used only to shape the angle).
+- Result/observation: impressions +2% vs 11-11, clicks flat.
+- Next: confirm live + IndexNow. Judge instatus rewrite ~11-20. No new post until 11-19.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-11
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-12..11-08): 5 clicks, 993 impressions, avg position 24.1, CTR 0.5%. Signups: 0 in the window since 10-14 (12 total users). Brand "statsy" 121 impr, 3 clicks (pos 5.5). `instatus-alternatives` 283 impr pos 5.7, 1 click ("instatus alternatives" 233 impr pos 5.3, 0 clicks; "instatus alternative" 14 impr pos 11.3); incident-update 69 impr pos 10.8; how-to-tell-users 59 impr pos 14.7; uptime-checks 27 impr pos 14.6; maintenance 227 impr pos 58.4; vs-uptime-monitoring 95 impr pos 38.3; statuspage-alternatives 90 impr pos 25.7; what-services 11 impr pos 23.5. Side-project, where-to-host, email-notifications, post-incident-review still absent from GSC.

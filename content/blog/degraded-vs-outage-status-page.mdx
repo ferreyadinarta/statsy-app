@@ -1,0 +1,102 @@
+---
+title: "Degraded vs Outage: Which Status Should Your Status Page Show?"
+description: "How to choose between operational, degraded and outage on your status page, with a simple test, real examples, and the cases where picking wrong costs trust."
+quickAnswer: "Show degraded when users can still finish what they came to do, just slowly or with occasional errors. Show outage when a core action fails for the people trying it. If you are unsure, ask: would a user who hit this right now be able to complete their task?"
+date: "2026-11-12"
+author: "Statsy"
+tags: ["status-page", "incident-communication", "monitoring"]
+---
+
+<QuickAnswer>
+Show degraded when users can still finish what they came to do, just slowly or with occasional errors. Show outage when a core action fails for the people trying it. If you are unsure, ask: would a user who hit this right now be able to complete their task?
+</QuickAnswer>
+
+Every status page has to answer one small question over and over: which colour does this row get? Green is easy and red is easy. The yellow in the middle is where small teams get it wrong, usually in the same direction: calling a real outage "degraded" because it sounds less bad.
+
+This post gives you a test for choosing, a handful of examples from a typical SaaS, and the mistakes that cost you the most trust. It applies to any status page. Where we mention Statsy, the details match how Statsy works today.
+
+## The three states
+
+Most small-team status pages use three states per service:
+
+- **Operational:** it works as users expect.
+- **Degraded:** it works, but worse than normal.
+- **Outage:** it does not work.
+
+Larger tools often add a fourth, "partial outage", for failures that hit only some users. Statsy has the three above. If only some users are affected, you still pick one of the three and use the incident text to name who. That is not a limitation as long as you write the scope down, and you should write it down in any case.
+
+Definitions vary between vendors, and there is no standard. Some guides treat partial outage as its own state, others fold it into degraded. So don't spend energy matching someone else's legend. Pick the least severe label that is still honest about what your users experience.
+
+## The one-question test
+
+Ask this: **could a user who tried this right now complete their task?**
+
+- **Yes, normally:** operational.
+- **Yes, but slowly, awkwardly or after a retry:** degraded.
+- **No:** outage, even if the failure only hits some users or only one feature.
+
+The test is about the user's task, not your servers. A database that is at 95% CPU while every page still loads is a problem for you and not yet a status change. A login form that returns an error for one in three attempts is a problem for them, and the page should say so.
+
+## Examples
+
+Here is how the test works on a typical small SaaS.
+
+| What is happening | Status | Why |
+|---|---|---|
+| Dashboard loads in 6 seconds instead of 1 | Degraded | Everything works, it is just slow |
+| Image uploads fail, everything else is fine | Outage on "Uploads" | The task can't be done. Mark the one affected service, not the whole product |
+| Login fails for about one in three attempts | Outage on "Login" | Users who hit it can't proceed. Say "some users" in the incident text |
+| Emails arrive 20 minutes late | Degraded on "Email" | Delivered, but late |
+| Webhook deliveries are being dropped | Outage on "Webhooks" | Data is not arriving |
+| Payments succeed but receipts are not sent | Degraded on "Billing" | The core action works, a side effect doesn't |
+| API returns 500 for everyone | Outage on "API" | No ambiguity |
+
+Two patterns stand out. First, **intermittent failure counts as outage for the person it fails for.** "It mostly works" is a comfort to you and not to the user who just lost a form submission. Second, **mark the smallest thing that is actually broken.** One red row labelled "Uploads" is more useful than a red "Product" row that makes everyone panic. If you aren't sure how to split your services, see [what services to list on your status page](/blog/what-services-to-list-on-your-status-page).
+
+## Why people undersell outages
+
+Degraded feels safer to write. It reads as "we're on it" instead of "we broke it." The cost shows up later:
+
+- A user hits an error, checks your page, sees yellow, and concludes the page isn't reliable. The next incident, they skip the page and email you instead, which is the exact thing the page was meant to prevent.
+- Support tickets quote the page back to you: "your status said degraded but I couldn't log in for an hour."
+- The yellow stays up while you debug, so the incident history makes real downtime look minor.
+
+The reverse mistake exists too. Marking an outage because a graph looks odd, when users are unaffected, trains people to ignore red. Both errors have the same root cause: the label was chosen for how it makes you look, not for what users experience.
+
+## Let the check decide the first label
+
+Humans are slowest at the first label, because you have to notice, confirm and then update the page. Automated monitoring removes that delay for the clear cases. On Statsy, a service is marked down after 2 consecutive failed checks (with a 5 second timeout), and a successful 2xx response slower than 3 seconds, twice in a row, is marked degraded. A 401 or 403 counts as up, because it proves the server answered.
+
+That gives you a useful default: failures become outage, slowness becomes degraded, and you adjust by hand when the automatic label is wrong. A check that only requests your homepage can't see a broken login, so for important flows it helps to monitor a URL that exercises them. Our post on [how often uptime checks should run](/blog/how-often-should-uptime-checks-run) covers choosing intervals and what a single check can and can't tell you.
+
+## Move the status as the situation changes
+
+A status is not set once. A typical incident moves through it:
+
+1. **Outage** while it is failing.
+2. **Degraded** once the fix is deployed but things are still slow or you are watching for a relapse.
+3. **Operational** only when you are confident, and the incident is marked resolved.
+
+Dropping from outage to degraded is a useful signal for users: "it works again, we're not done." Pair the status with a plain incident update that says what users can do now and when the next update comes. The wording is its own skill, and we cover it in [what to write in a status page incident update](/blog/what-to-write-in-a-status-page-incident-update).
+
+## Don't use degraded for planned downtime
+
+A permanently yellow row because of planned work teaches users to ignore yellow. Use scheduled maintenance for planned downtime so the status colours stay reserved for things that are actually wrong. Statsy supports scheduled maintenance windows on all plans.
+
+## A quick checklist
+
+Before you change a status, check:
+
+- Can a user complete the task right now? If not, it is an outage.
+- Am I marking the smallest affected service, not the whole product?
+- Does the incident text say who is affected?
+- Did I choose the label for the user's experience, not for how it looks?
+- Do I have a time for the next update?
+
+## Doing this with Statsy
+
+Each service on a Statsy status page is operational, degraded or outage, incidents carry a timeline of updates (investigating, identified, monitoring, resolved), and subscribers get an email when a service's status changes. The Free plan includes 1 status page, 3 services, 50 email subscribers and 5 minute checks, with no credit card required. Pro adds more pages and services, 1 minute checks and a custom domain. Statsy doesn't send SMS, Slack or webhook alerts.
+
+If you'd like to try it, the Free plan is enough to set up a page and see how the three states look.
+
+<CtaButton href="https://statsy.page/signup">Create a free status page →</CtaButton>
