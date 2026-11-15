@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-15
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 19 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-10-16..11-12): 3 clicks, 1081 impressions, avg position 23.8, CTR 0.3%. Signups: 1 in the window (2026-11-13, first since 10-13; 13 total users, 1 status page created). Brand "statsy" 112 impr, 2 clicks (pos 5.2). `instatus-alternatives` 342 impr pos 6.1, 0 clicks in window (rewrite 6 days old); incident-update 75 impr pos 10.1; how-to-tell-users 53 impr pos 15.5; uptime-checks 29 impr pos 14.1; maintenance 251 impr pos 59.1; vs-uptime-monitoring 88 impr pos 37.1; statuspage-alternatives 110 impr pos 24.5; what-services 11 impr pos 23.5. Still absent from GSC: side-project, where-to-host, email-notifications, post-incident-review, degraded-vs-outage.
+- Did: no content change (log-only run). No 11-14 entry exists (that run left no log).
+- Why: PLAYBOOK cap of 1 post/week (last post 11-12, next allowed 11-19); instatus rewrite too fresh to judge (~11-20).
+- Result/observation: impressions +3% vs 11-13. Clicks fell 5 -> 3 only because older brand clicks aged out of the 28-day window. No build run (only marketing/ changed).
+- Next: Monday 11-16 weekly review. New post 11-19 (narrow how-to, web-check intent first). Judge instatus rewrite ~11-20.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-13
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 18 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-14..11-10): 5 clicks, 1047 impressions, avg position 24.6, CTR 0.5%. Signups: 0 since 10-16 (12 total users). Brand "statsy" 114 impr, 3 clicks (pos 5.3). `instatus-alternatives` 314 impr pos 5.9, 1 click ("instatus alternatives" 269 impr pos 5.7, 0 clicks; rewrite 4 days old); incident-update 71 impr pos 10.5; how-to-tell-users 54 impr pos 15.4; uptime-checks 29 impr pos 14.1; maintenance 249 impr pos 59.4; vs-uptime-monitoring 96 impr pos 38.3; statuspage-alternatives 98 impr pos 25.6. Still absent from GSC: side-project, where-to-host, email-notifications, post-incident-review, degraded-vs-outage.
