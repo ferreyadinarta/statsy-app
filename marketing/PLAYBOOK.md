@@ -59,25 +59,27 @@ emails and churn during outages.
   shown the 5 posts published 09-29..10-02 (only how-to-tell-users shows, 1 impr
   at pos 32). Judging them before ~mid-October is premature. Signups: 1 in 28d.
 
-## Next steps (set 2026-11-09, weekly review)
+## Next steps (set 2026-11-16, weekly review)
 - Cap: max 1 new post per week while data is thin. Last post 11-12; next allowed 11-19.
-  15 posts now; volume is not the bottleneck.
-- Evidence (GSC 10-10..11-06): 921 impr, 5 clicks, avg pos 24.1, 1 signup (28d, 10-13), 12 users.
-  3 of 5 clicks are brand ("statsy", 122 impr, pos 5.4). Only non-brand click: `instatus-alternatives`
-  (243 impr, pos 5.2); its query "instatus alternatives" has 194 impr at pos 4.8 and 0 clicks, so the
-  title is not winning clicks. Impressions grew ~50% in 4 weeks, clicks did not.
-- Page-1/edge: instatus-alternatives (5.2), indie-developers (7.5), uptime-checks (11.7),
-  incident-update (11.2, slipped from 5.9), how-to-tell-users (15.3, no gain after 11-01 title rewrite).
-  Stuck: statuspage-alternatives (25.8), vs-uptime-monitoring (39), maintenance (57, 213 impr, generic
-  queries at pos 75+). Not yet in GSC: side-project, where-to-host, email-notifications, post-incident-review.
-- Pattern: narrow how-to posts reach page 1-2 within ~2 weeks; broad-topic posts sit at 50+.
-- Test running: 11-09 instatus-alternatives title/description rewrite (see Experiments). Judge ~11-20.
-  If still 0 clicks at pos <6 with 250+ impr, stop tweaking: likely AI overview / SERP features, not copy.
+  16 posts now; volume is not the bottleneck.
+- Evidence (GSC 10-17..11-13): 1100 impr (+19% vs 10-10..11-06 window), 3 clicks, avg pos 23.3, 1 signup
+  (11-13, first since 10-13), 13 users. All 3 clicks are brand ("statsy", 113 impr, pos 5.2).
+  Non-brand clicks over 4 weeks: 0 in this window. Impressions grow, clicks don't.
+- `instatus-alternatives`: 359 impr, pos 6.2, 0 clicks; "instatus alternatives" 314 impr pos 6.0. Rewrite of
+  11-09 is 7 days old, no click yet. Judge 11-20; if still 0, stop tweaking (SERP features / pos 6 CTR ~ low).
+- Page 1/edge: indie-developers (7.5, 12 impr), incident-update (11.1), uptime-checks (14.1),
+  how-to-tell-users (15.4, flat after rewrite). Stuck: statuspage-alternatives (24), vs-uptime (36),
+  maintenance (58, 252 impr, generic queries). Absent from GSC: side-project, where-to-host,
+  email-notifications, post-incident-review, degraded-vs-outage.
+- Pattern: narrow how-to posts reach page 1-2 within ~2 weeks but get ~10-80 impr; only the competitor-name
+  query (instatus) produces real volume. Weigh next post toward queries naming a tool/problem people
+  already search, not generic practice questions.
 - Biggest lever is off-site: links/mentions (X, Indie Hackers, directories). Only Ferrey can do this;
   keep it in NEEDS FERREY every Monday.
 - Candidate topics (web-check intent first, avoid competitor claims): "status page for a SaaS with
-  paying customers", "what is a status page" explainer angles, "how to write a status page message
-  for partial outage". Skip "scheduled maintenance message" head queries (pos 75+, generic).
+  paying customers", "how to write a status page message for partial outage". Skip generic maintenance
+  head queries. Observed small queries to consider: "30 second uptime checks" (4 impr, pos 19.5),
+  "application outage" (6 impr, pos 39).
 - Still to verify before reuse: Uptime Kuma / Cachet rows in the alternatives posts (unsourced).
 
 ## Experiments
@@ -97,9 +99,9 @@ emails and churn during outages.
 ## Target keywords
 | Keyword | Post | Last position seen | Checked |
 |---|---|---|---|
-| statsy (brand) | homepage | 5.4 (122 impr, 3 clicks) | 2026-11-09 |
+| statsy (brand) | homepage | 5.2 (113 impr, 2 clicks) | 2026-11-16 |
 | instatus alternative | instatus-alternatives | 10.1 (10 impr) | 2026-11-02 |
-| instatus alternatives | instatus-alternatives | 4.8 (194 impr, 0 clicks) | 2026-11-09 |
+| instatus alternatives | instatus-alternatives | 6.0 (314 impr, 0 clicks) | 2026-11-16 |
 | (page-level) instatus-alternatives | instatus-alternatives | 5.6 (82 impr, 1 click) | 2026-11-02 |
 | statuspage alternative | statuspage-alternatives | 26.5 page-level (43 impr) | 2026-11-02 |
 | statuspage alternatives | statuspage-alternatives | 50.3 | 2026-10-02 |

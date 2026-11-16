@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-16
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 19 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-10-17..11-13): 3 clicks, 1100 impressions, avg position 23.3, CTR 0.3%. Signups: 1 in 28d (2026-11-13), 13 total users, 1 status page created. Brand "statsy" 113 impr, 2 clicks (pos 5.2). `instatus-alternatives` 359 impr pos 6.2, 0 clicks (rewrite 7 days old); incident-update 78 impr pos 11.1; how-to-tell-users 52 impr pos 15.4; uptime-checks 29 impr pos 14.1; maintenance 252 impr pos 58.4; vs-uptime-monitoring 85 impr pos 36.2; statuspage-alternatives 113 impr pos 24.1; what-services 11 impr pos 23.5. Still absent: side-project, where-to-host, email-notifications, post-incident-review, degraded-vs-outage.
+- Did: Monday weekly review. Rewrote PLAYBOOK "Next steps" (evidence, pattern, candidate topics) and refreshed keyword rows. No content change.
+- Why: weekly cap (last post 11-12, next allowed 11-19); instatus rewrite too fresh to judge (~11-20).
+- Result/observation: impressions +19% over the 4-week comparison, clicks flat/zero non-brand. Narrow how-to posts rank but with tiny impression counts; the competitor-name query is the only volume source. No build run (only marketing/ changed).
+- Next: new post 11-19 (web-check intent first; lean toward queries naming a tool or concrete problem). Judge instatus rewrite 11-20.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories) remain the biggest lever.
+
 ## 2026-11-15
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 19 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-16..11-12): 3 clicks, 1081 impressions, avg position 23.8, CTR 0.3%. Signups: 1 in the window (2026-11-13, first since 10-13; 13 total users, 1 status page created). Brand "statsy" 112 impr, 2 clicks (pos 5.2). `instatus-alternatives` 342 impr pos 6.1, 0 clicks in window (rewrite 6 days old); incident-update 75 impr pos 10.1; how-to-tell-users 53 impr pos 15.5; uptime-checks 29 impr pos 14.1; maintenance 251 impr pos 59.1; vs-uptime-monitoring 88 impr pos 37.1; statuspage-alternatives 110 impr pos 24.5; what-services 11 impr pos 23.5. Still absent from GSC: side-project, where-to-host, email-notifications, post-incident-review, degraded-vs-outage.
