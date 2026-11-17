@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-17
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 19 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC latest window): 3 clicks, 1143 impressions, avg position 23.1, CTR 0.3%. Signups: 1 in 28d (2026-11-13), 13 total users, 1 status page created. Brand "statsy" 106 impr, 2 clicks (pos 5.3). `instatus-alternatives` 380 impr pos 6.3, 0 clicks (rewrite 8 days old); degraded-vs-outage first appears (21 impr, pos 10.2); incident-update 75 impr pos 12.4; how-to-tell-users 50 impr pos 13.3; uptime-checks 29 impr pos 14.7; maintenance 265 impr pos 57.7; vs-uptime-monitoring 82 impr pos 35.8; statuspage-alternatives 116 impr pos 24.4.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 11-12, next allowed 11-19); instatus rewrite to be judged ~11-20.
+- Result/observation: impressions +4% vs 11-16, clicks flat. No build run (only marketing/ changed).
+- Next: new post 11-19 (web-check intent; query naming a tool/concrete problem). Judge instatus rewrite 11-20.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-16
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 19 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-17..11-13): 3 clicks, 1100 impressions, avg position 23.3, CTR 0.3%. Signups: 1 in 28d (2026-11-13), 13 total users, 1 status page created. Brand "statsy" 113 impr, 2 clicks (pos 5.2). `instatus-alternatives` 359 impr pos 6.2, 0 clicks (rewrite 7 days old); incident-update 78 impr pos 11.1; how-to-tell-users 52 impr pos 15.4; uptime-checks 29 impr pos 14.1; maintenance 252 impr pos 58.4; vs-uptime-monitoring 85 impr pos 36.2; statuspage-alternatives 113 impr pos 24.1; what-services 11 impr pos 23.5. Still absent: side-project, where-to-host, email-notifications, post-incident-review, degraded-vs-outage.
