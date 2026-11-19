@@ -1,0 +1,134 @@
+---
+title: "Maintenance Message Examples: 8 Copy-Paste Templates for Your Site or App"
+description: "Copy-paste maintenance messages for a maintenance page, in-app banner, status page and email, plus what to put in each and the wording to avoid."
+quickAnswer: "A good maintenance message says what is affected, the exact time window in UTC, what users will notice, and whether they need to do anything. Keep it to two or three plain sentences, use the word 'temporarily', and put the same facts on your maintenance page, status page and email."
+date: "2026-11-19"
+author: "Statsy"
+tags: ["status-page", "scheduled-maintenance", "templates"]
+---
+
+<QuickAnswer>
+A good maintenance message says what is affected, the exact time window in UTC, what users will notice, and whether they need to do anything. Keep it to two or three plain sentences, use the word "temporarily", and put the same facts on your maintenance page, status page and email.
+</QuickAnswer>
+
+When you take a site down for maintenance, the message you show is usually written in a hurry and says something like "We'll be back soon!" That tells a user nothing: soon like five minutes, or soon like tomorrow? Is my data safe? Should I retry?
+
+This post gives you templates you can paste and edit. They are grouped by where the message appears, because a banner, a maintenance page and an email each need a different length. If you want the planning side (how far ahead to notify and which channels to use), see our guide to [announcing scheduled maintenance to users](/blog/how-to-announce-scheduled-maintenance-to-users).
+
+## The four facts every message needs
+
+Every template below is built from the same four pieces:
+
+1. **What is affected.** "The dashboard", "API requests", "the whole site".
+2. **When.** A start and end time as a range, in UTC. "2:00 to 3:00 UTC" beats "tonight".
+3. **What users will notice.** Downtime, slowness, or logged-out sessions. Be specific.
+4. **What to do.** Usually nothing. If something is required (retry failed requests, save your work), say it here.
+
+Add the word **temporarily** when the site is fully down. Without it, a visitor can read "down for maintenance" as "this service is gone".
+
+## Templates for a maintenance page
+
+This is what visitors see when they load your site during downtime. Short, no jokes in the headline, and a clear end time.
+
+**Template 1: planned, with a known end time**
+
+> **We're down for scheduled maintenance**
+> Our site is temporarily unavailable while we upgrade our database. We expect to be back by 03:00 UTC. Your data is not affected. Check [status link] for updates.
+
+**Template 2: planned, end time uncertain**
+
+> **Temporarily down for maintenance**
+> We're migrating to a new server. This started at 02:00 UTC and we expect it to take about an hour, but we'll update [status link] if it runs longer. No action needed on your side.
+
+**Template 3: unplanned maintenance (something needs fixing now)**
+
+> **We're making an urgent fix**
+> We found a problem that needs immediate work, so the site is temporarily unavailable. We'll post updates at [status link] every 30 minutes until it's back.
+
+The last template is a hybrid: it's closer to an incident than to planned maintenance. If you are unsure which one you have, our post on [what to write in an incident update](/blog/what-to-write-in-a-status-page-incident-update) covers the timeline format.
+
+## Templates for an in-app banner
+
+A banner is for work that has not started yet, shown to logged-in users. It needs to fit in one line and link to details.
+
+**Template 4: advance notice banner**
+
+> Scheduled maintenance on 24 Nov, 02:00 to 03:00 UTC. The app will be unavailable for up to an hour. [Details]
+
+**Template 5: banner for slowness only**
+
+> Maintenance in progress until 03:00 UTC. Pages may load slower than usual, but nothing should fail.
+
+Saying "nothing should fail" matters. It stops people from opening support tickets when the app is merely slow.
+
+## Templates for an email
+
+Email gives you room to explain, but people still skim. Keep the subject line informative and put the window in the first line.
+
+**Template 6: advance notice email**
+
+> **Subject:** Scheduled maintenance: 24 Nov, 02:00 to 03:00 UTC
+>
+> Hi,
+>
+> We'll be upgrading our database on 24 November between 02:00 and 03:00 UTC. During that time the dashboard and API will be unavailable. Public pages stay up.
+>
+> If you run automated jobs against our API in that window, expect them to fail and retry afterwards. You don't need to do anything else.
+>
+> We'll send one more email when the work is finished. Live updates are at [status link].
+
+**Template 7: completion email**
+
+> **Subject:** Maintenance complete
+>
+> The database upgrade is finished and everything is back to normal as of 02:41 UTC. If anything looks wrong on your side, reply to this email and we'll look at it.
+
+The completion email is the one most teams skip. It tells users the window is over and that it is safe to resume work.
+
+## Template for a status page entry
+
+A status page is the one place that should always be reachable, even when your app is not. Scheduled maintenance there has a title and a description, and the description can reuse the email text.
+
+**Template 8: status page maintenance entry**
+
+> **Title:** Database upgrade
+> **Window:** 24 Nov, 02:00 to 03:00 UTC
+> **Description:** We're upgrading our database. The dashboard and API will be unavailable for up to an hour. Public status pages are not affected. No action needed.
+
+Keep the title short and about the user's world ("Database upgrade", not "pg_upgrade to v16"). On [Statsy](https://statsy.page), scheduled maintenance windows are available on every plan, and subscribers get an email when you schedule one. Subscriber limits are 50 on Free and 500 on Pro.
+
+If you are not sure where to host that page so it survives your own downtime, see [where to host your status page](/blog/where-to-host-your-status-page).
+
+## Wording to avoid
+
+- **"We apologize for any inconvenience."** Planned maintenance is routine work. Apologising makes it sound like a mistake. For unplanned issues, a single plain apology after the fix is enough.
+- **"Back soon" or "shortly".** Give a time. If you can't, say when you'll next update.
+- **Local times without a zone.** Always UTC, or the zone written out.
+- **Technical jargon in the headline.** "Upgrading our database" is fine. "Running pg_upgrade" belongs in your internal notes.
+- **Promising an end time you can't keep.** If you say 03:00 and it runs to 04:00, the delay does more damage than a looser estimate would have. Say "about an hour" and update the message when you know more.
+
+## Matching the message to the channel
+
+| Where | Length | Includes |
+|---|---|---|
+| Maintenance page | 2 to 3 sentences | Cause, expected end, status link |
+| In-app banner | 1 line | Date, window, link |
+| Email | 1 short paragraph per fact | Window, impact, action, follow-up promise |
+| Status page | Title + short description | Window, affected services, impact |
+
+Whatever channel you use, the facts should match. If the banner says 02:00 to 03:00 and the email says 02:00 to 04:00, users will trust neither.
+
+## A quick check before you publish
+
+1. Does it say what is affected, when (UTC), what users will notice, and what to do?
+2. Would a user who reads only the first sentence know whether they are impacted?
+3. Is there a link to somewhere that will still load during the downtime?
+4. Have you scheduled a completion message?
+
+If all four are yes, send it.
+
+## Where Statsy fits
+
+If you'd rather not hand-write three versions of the same message, a status page can carry it for you: you schedule the window once, and the page and subscriber emails are generated from the same entry. Statsy's free plan includes one status page with three services and up to 50 email subscribers, with no credit card required.
+
+<CtaButton href="https://statsy.page/signup">Create a free status page →</CtaButton>

@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-19
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 19 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated.
+- Stats (GSC 2026-10-20..11-16): 1 click, 1167 impressions, avg position 23.0. Signups: 1 in 28d (2026-11-13), 13 total users, 1 status page. Brand "statsy" 97 impr, 0 clicks (pos 5.5). `instatus-alternatives` 401 impr pos 6.4, 0 clicks ("instatus alternatives" 354 impr pos 6.1; rewrite 10 days old, still 0 clicks); maintenance post 271 impr pos 57.9, driven by generic "maintenance message" queries at pos 66-90 ("temporarily down for maintenance" 31, "planned maintenance message" 22, "maintenance message" 19, "site maintenance message" 11); degraded-vs-outage 37 impr pos 15.9; incident-update 73 pos 12.7; "statuspage pricing" 27 impr pos 57.6 (not targeted).
+- Did: new post `content/blog/maintenance-message-examples-for-your-website.mdx` (~1300 words, 8 copy-paste templates by channel). Backlink added from `how-to-announce-scheduled-maintenance-to-users.mdx`; links to incident-update and where-to-host posts. Build fails only on the known /login Supabase env error; frontmatter parses, descriptions <=160.
+- Why: weekly cap allows (last post 11-12). The existing maintenance post already collects ~100 impr/28d on "maintenance message" wording but has no templates; a template-style post matches that intent. Web search showed vendor pages (UptimeRobot, Atlassian) and agency listicles of maintenance-page designs; none is aimed at small-team copy for banner/email/status page. No competitor claims; Statsy claims checked against FACTS.md. Reverses earlier "skip generic maintenance queries" note since we now have real impression data for the template-type phrasing.
+- Result/observation: clicks fell to 1 as older brand clicks aged out; impressions flat. Positions for these phrasings are 66-90, so expect a slow climb at best.
+- Next: confirm live + IndexNow. Judge instatus rewrite: still 0 clicks; stop tweaking it unless SERP changes. No new post until 11-26. Check whether the new post gets impressions for "maintenance message" queries around 12-03.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-18
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 19 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-19..11-15): 3 clicks, 1160 impressions, avg position 22.9, CTR 0.3%. Signups: 1 in 28d (2026-11-13), 13 total users, 1 status page created. Brand "statsy" 103 impr, 2 clicks (pos 5.3). `instatus-alternatives` 395 impr pos 6.4, 0 clicks (rewrite 9 days old); degraded-vs-outage 28 impr pos 14.3; incident-update 74 impr pos 12.5; how-to-tell-users 49 impr pos 13.4; uptime-checks 28 impr pos 14.8; maintenance 269 impr pos 57.3; vs-uptime-monitoring 76 impr pos 33.9; statuspage-alternatives 118 impr pos 24.5.
