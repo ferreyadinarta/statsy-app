@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-20
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated.
+- Stats (GSC window ending ~11-17): 1 click, 1179 impressions, avg position 23.1. Signups: 2 in 28d (2026-11-13 and 2026-11-20), 14 total users, 2 status pages created. Brand home page 137 impr, 1 click (pos 5.5). `instatus-alternatives` 400 impr pos 6.4, 0 clicks (rewrite 11 days old); maintenance post 290 impr pos 55.4; degraded-vs-outage 44 impr pos 19.2; incident-update 72 pos 12.8; how-to-tell-users 51 pos 12.6; uptime-checks 27 pos 15.0; statuspage-alternatives 123 pos 22.9; vs-uptime 69 pos 32.6. Maintenance-message-examples not in GSC yet (published 11-19).
+- Did: no content change. Confirmed `maintenance-message-examples-for-your-website` is live (title found in HTML, in sitemap) and pinged IndexNow (200). Commit 16d1d62 is on origin/main.
+- Why: weekly cap (last post 11-19, next allowed 11-26).
+- Result/observation: instatus rewrite judged: 0 clicks after ~11 days at pos 6.4 with 400 impr. Stop tweaking it; the query likely has SERP features/brand results taking clicks. A new signup landed today (source unknown; not attributable to search).
+- Next: no new post until 11-26. Monday 11-23 weekly review. Check whether the maintenance-message post shows up in GSC around 12-03.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-19
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 19 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated.
 - Stats (GSC 2026-10-20..11-16): 1 click, 1167 impressions, avg position 23.0. Signups: 1 in 28d (2026-11-13), 13 total users, 1 status page. Brand "statsy" 97 impr, 0 clicks (pos 5.5). `instatus-alternatives` 401 impr pos 6.4, 0 clicks ("instatus alternatives" 354 impr pos 6.1; rewrite 10 days old, still 0 clicks); maintenance post 271 impr pos 57.9, driven by generic "maintenance message" queries at pos 66-90 ("temporarily down for maintenance" 31, "planned maintenance message" 22, "maintenance message" 19, "site maintenance message" 11); degraded-vs-outage 37 impr pos 15.9; incident-update 73 pos 12.7; "statuspage pricing" 27 impr pos 57.6 (not targeted).
