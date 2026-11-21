@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-21
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated.
+- Stats (GSC 2026-10-22..11-18): 1 click, 1173 impressions, avg position 22.9. Signups: 2 in 28d (11-13, 11-20), 14 total users, 2 status pages. Brand home 134 impr, 1 click (pos 5.3). `instatus-alternatives` 404 impr pos 6.5, 0 clicks; maintenance post 294 impr pos 54.4; degraded-vs-outage 45 pos 18.9; how-to-tell-users 49 pos 12.8; uptime-checks 29 pos 15.5; vs-uptime 61 pos 31.5. Essentially unchanged vs 11-20.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 11-19, next allowed 11-26); instatus rewrite already judged, not tweaking.
+- Result/observation: flat. Maintenance-message-examples still not in GSC (2 days old).
+- Next: Monday 11-23 weekly review (rewrite PLAYBOOK). New post 11-26.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-20
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated.
 - Stats (GSC window ending ~11-17): 1 click, 1179 impressions, avg position 23.1. Signups: 2 in 28d (2026-11-13 and 2026-11-20), 14 total users, 2 status pages created. Brand home page 137 impr, 1 click (pos 5.5). `instatus-alternatives` 400 impr pos 6.4, 0 clicks (rewrite 11 days old); maintenance post 290 impr pos 55.4; degraded-vs-outage 44 impr pos 19.2; incident-update 72 pos 12.8; how-to-tell-users 51 pos 12.6; uptime-checks 27 pos 15.0; statuspage-alternatives 123 pos 22.9; vs-uptime 69 pos 32.6. Maintenance-message-examples not in GSC yet (published 11-19).
