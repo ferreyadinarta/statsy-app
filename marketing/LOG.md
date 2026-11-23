@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-23
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-10-24..11-20): 2 clicks, 1222 impressions, avg position 22.3, CTR 0.2%. Signups: 2 in 28d (11-13, 11-20), 14 total users, 2 status pages. Brand home 141 impr, 2 clicks (pos 5.5). `instatus-alternatives` 414 impr pos 6.4, 0 clicks; maintenance post 295 impr pos 53.6; statuspage-alternatives 131 pos 22.6; vs-uptime 58 pos 29.8; incident-update 65 pos 13.5; how-to-tell-users 55 pos 12.0; degraded-vs-outage 52 pos 19.3; uptime-checks 28 pos 15.8; maintenance-message-examples first appears (17 impr, pos 19.8, 4 days after publish).
+- Did: Monday weekly review. Rewrote PLAYBOOK "Next steps" (evidence, what worked, conclusion, candidates) and refreshed two keyword rows. No content change, no build needed.
+- Why: weekly cap (last post 11-19, next allowed 11-26).
+- Result/observation: impressions +11% over 4 weeks, non-brand clicks still zero. New narrow posts rank page 2 within days but with tiny volume. Content is not the bottleneck; off-site authority is.
+- Next: new post 11-26 (web-check intent; prefer a query naming a tool, e.g. another alternatives post, with sourced competitor facts).
+- NEEDS FERREY: off-site mentions/links (X, Indie Hackers, directories, "best status page" listicle outreach) remain the biggest lever; on-site content alone has produced 0 non-brand clicks in 6+ weeks.
+
 ## 2026-11-22
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated.
 - Stats (GSC 2026-10-23..11-19): 2 clicks, 1193 impressions, avg position 22.6. Signups: 2 in 28d (11-13, 11-20), 14 total users, 2 status pages. Brand home 136 impr, 2 clicks (pos 5.3). `instatus-alternatives` 410 impr pos 6.4, 0 clicks; maintenance post 298 impr pos 53.7; degraded-vs-outage 50 pos 19.3; how-to-tell-users 51 pos 12.0; uptime-checks 28 pos 15.8. Flat vs 11-21.

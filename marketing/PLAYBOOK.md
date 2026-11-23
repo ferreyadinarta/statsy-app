@@ -59,27 +59,26 @@ emails and churn during outages.
   shown the 5 posts published 09-29..10-02 (only how-to-tell-users shows, 1 impr
   at pos 32). Judging them before ~mid-October is premature. Signups: 1 in 28d.
 
-## Next steps (set 2026-11-16, weekly review)
-- Cap: max 1 new post per week while data is thin. Last post 11-12; next allowed 11-19.
-  16 posts now; volume is not the bottleneck.
-- Evidence (GSC 10-17..11-13): 1100 impr (+19% vs 10-10..11-06 window), 3 clicks, avg pos 23.3, 1 signup
-  (11-13, first since 10-13), 13 users. All 3 clicks are brand ("statsy", 113 impr, pos 5.2).
-  Non-brand clicks over 4 weeks: 0 in this window. Impressions grow, clicks don't.
-- `instatus-alternatives`: 359 impr, pos 6.2, 0 clicks; "instatus alternatives" 314 impr pos 6.0. Rewrite of
-  11-09 is 7 days old, no click yet. Judge 11-20; if still 0, stop tweaking (SERP features / pos 6 CTR ~ low).
-- Page 1/edge: indie-developers (7.5, 12 impr), incident-update (11.1), uptime-checks (14.1),
-  how-to-tell-users (15.4, flat after rewrite). Stuck: statuspage-alternatives (24), vs-uptime (36),
-  maintenance (58, 252 impr, generic queries). Absent from GSC: side-project, where-to-host,
-  email-notifications, post-incident-review, degraded-vs-outage.
-- Pattern: narrow how-to posts reach page 1-2 within ~2 weeks but get ~10-80 impr; only the competitor-name
-  query (instatus) produces real volume. Weigh next post toward queries naming a tool/problem people
-  already search, not generic practice questions.
-- Biggest lever is off-site: links/mentions (X, Indie Hackers, directories). Only Ferrey can do this;
-  keep it in NEEDS FERREY every Monday.
-- Candidate topics (web-check intent first, avoid competitor claims): "status page for a SaaS with
-  paying customers", "how to write a status page message for partial outage". Skip generic maintenance
-  head queries. Observed small queries to consider: "30 second uptime checks" (4 impr, pos 19.5),
-  "application outage" (6 impr, pos 39).
+## Next steps (set 2026-11-23, weekly review)
+- Cap: max 1 new post per week while data is thin. Last post 11-19; next allowed 11-26.
+  17 posts now; volume is not the bottleneck.
+- Evidence (GSC 10-23..11-20): 1222 impr (+11% vs 10-17..11-13), 2 clicks (both brand), avg pos 22.3,
+  2 signups in 28d (11-13, 11-20; source unknown, not search-attributable), 14 users, 2 status pages.
+  Non-brand clicks across 6+ weeks: 0.
+- `instatus-alternatives`: 414 impr, pos 6.4, 0 clicks after two rewrites. Judged 11-20: stop tweaking.
+  Only revisit if position moves to <=4 or SERP changes.
+- What worked: narrow how-to posts reach pos 10-20 in ~2 weeks (incident-update 13.5, how-to-tell-users 12,
+  uptime-checks 15.8, degraded-vs-outage 19.3, maintenance-message-examples 19.8 within 4 days).
+  What didn't: any of them producing clicks; impression counts are 12-65 each. Generic head
+  queries (maintenance 295 impr at pos 54) produce impressions at pos 50+ only.
+- Conclusion: on-site content alone is not converting to clicks at this authority level. Biggest lever is
+  off-site (X, Indie Hackers, directories, "alternatives" listings); only Ferrey can do it, so keep it in
+  NEEDS FERREY. Content strategy meanwhile: fewer, better posts + internal links, and queries that name a tool
+  ("<competitor> pricing", "<competitor> alternative") since those are the only ones with volume.
+- Candidate topics (web-check intent first; competitor claims need sources fetched same run):
+  "status page for a SaaS with paying customers", "how to write a status page message for partial outage",
+  an alternatives post for another named tool (observed: "atatus alternatives" 3 impr pos 3.3;
+  "statuspage pricing" 27 impr pos 57). Small observed queries: "30 second uptime checks" (6 impr, pos 20.7).
 - Still to verify before reuse: Uptime Kuma / Cachet rows in the alternatives posts (unsourced).
 
 ## Experiments
@@ -99,9 +98,9 @@ emails and churn during outages.
 ## Target keywords
 | Keyword | Post | Last position seen | Checked |
 |---|---|---|---|
-| statsy (brand) | homepage | 5.2 (113 impr, 2 clicks) | 2026-11-16 |
+| statsy (brand) | homepage | 5.9 (94 impr, 1 click) | 2026-11-23 |
 | instatus alternative | instatus-alternatives | 10.1 (10 impr) | 2026-11-02 |
-| instatus alternatives | instatus-alternatives | 6.0 (314 impr, 0 clicks) | 2026-11-16 |
+| instatus alternatives | instatus-alternatives | 6.2 (360 impr, 0 clicks) | 2026-11-23 |
 | (page-level) instatus-alternatives | instatus-alternatives | 5.6 (82 impr, 1 click) | 2026-11-02 |
 | statuspage alternative | statuspage-alternatives | 26.5 page-level (43 impr) | 2026-11-02 |
 | statuspage alternatives | statuspage-alternatives | 50.3 | 2026-10-02 |
