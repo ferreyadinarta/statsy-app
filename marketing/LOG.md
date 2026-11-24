@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-24
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC window ending ~11-21): 2 clicks, 1240 impressions, avg position 22.3. Signups: 4 in 28d (11-13, 11-20, 2 on 11-23), 16 total users, 4 status pages created (source unknown, not attributable to search). Brand home 140 impr, 2 clicks (pos 5.5). `instatus-alternatives` 414 impr pos 6.4, 0 clicks; maintenance post 293 impr pos 53.3; maintenance-message-examples 32 impr pos 29.8 (up from 17); degraded-vs-outage 54 pos 19.1; how-to-tell-users 55 pos 11.4; uptime-checks 27 pos 16.1.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 11-19, next allowed 11-26); nothing in the data calls for a fix.
+- Result/observation: flat on search; signups ticked up (2 on 11-23, 2 status pages created the same day).
+- Next: new post 11-26 (web-check intent; query naming a tool, e.g. another alternatives post, with competitor facts fetched same run).
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories). If the 11-23 signups came from a post or a link, note the source so we can double down.
+
 ## 2026-11-23
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-24..11-20): 2 clicks, 1222 impressions, avg position 22.3, CTR 0.2%. Signups: 2 in 28d (11-13, 11-20), 14 total users, 2 status pages. Brand home 141 impr, 2 clicks (pos 5.5). `instatus-alternatives` 414 impr pos 6.4, 0 clicks; maintenance post 295 impr pos 53.6; statuspage-alternatives 131 pos 22.6; vs-uptime 58 pos 29.8; incident-update 65 pos 13.5; how-to-tell-users 55 pos 12.0; degraded-vs-outage 52 pos 19.3; uptime-checks 28 pos 15.8; maintenance-message-examples first appears (17 impr, pos 19.8, 4 days after publish).
