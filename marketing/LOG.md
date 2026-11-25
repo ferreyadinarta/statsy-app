@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-25
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC window ending ~11-22): 2 clicks, 1272 impressions, avg position 22.4. Signups: 4 in 28d (11-13, 11-20, 2 on 11-23), 16 total users, 4 status pages. Brand home 144 impr, 2 clicks (pos 5.8). `instatus-alternatives` 415 impr pos 6.4, 0 clicks; maintenance post 293 impr pos 53.1; maintenance-message-examples 55 impr pos 35.3 (up from 32 / 29.8); degraded-vs-outage 55 pos 19.9; how-to-tell-users 57 pos 11.0; uptime-checks 27 pos 16.1.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 11-19, next allowed 11-26); nothing in the data calls for a fix.
+- Result/observation: flat; impressions +2.6% vs 11-24. No build run (only marketing/ changed).
+- Next: new post 11-26 (web-check intent; query naming a tool, e.g. another alternatives post, with competitor facts fetched same run).
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories). If the 11-23 signups came from a link, note the source.
+
 ## 2026-11-24
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC window ending ~11-21): 2 clicks, 1240 impressions, avg position 22.3. Signups: 4 in 28d (11-13, 11-20, 2 on 11-23), 16 total users, 4 status pages created (source unknown, not attributable to search). Brand home 140 impr, 2 clicks (pos 5.5). `instatus-alternatives` 414 impr pos 6.4, 0 clicks; maintenance post 293 impr pos 53.3; maintenance-message-examples 32 impr pos 29.8 (up from 17); degraded-vs-outage 54 pos 19.1; how-to-tell-users 55 pos 11.4; uptime-checks 27 pos 16.1.
