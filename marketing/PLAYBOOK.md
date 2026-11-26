@@ -60,7 +60,7 @@ emails and churn during outages.
   at pos 32). Judging them before ~mid-October is premature. Signups: 1 in 28d.
 
 ## Next steps (set 2026-11-23, weekly review)
-- Cap: max 1 new post per week while data is thin. Last post 11-19; next allowed 11-26.
+- Cap: max 1 new post per week while data is thin. Last post 11-26; next allowed 12-03.
   17 posts now; volume is not the bottleneck.
 - Evidence (GSC 10-23..11-20): 1222 impr (+11% vs 10-17..11-13), 2 clicks (both brand), avg pos 22.3,
   2 signups in 28d (11-13, 11-20; source unknown, not search-attributable), 14 users, 2 status pages.
@@ -79,6 +79,7 @@ emails and churn during outages.
   "status page for a SaaS with paying customers", "how to write a status page message for partial outage",
   an alternatives post for another named tool (observed: "atatus alternatives" 3 impr pos 3.3;
   "statuspage pricing" 27 impr pos 57). Small observed queries: "30 second uptime checks" (6 impr, pos 20.7).
+- UptimeRobot angle skipped 11-26: sources conflict on whether the free plan bans commercial use; don't write about it without the live terms page (uptimerobot.com/terms) read in the same run.
 - Still to verify before reuse: Uptime Kuma / Cachet rows in the alternatives posts (unsourced).
 
 ## Experiments
@@ -93,6 +94,7 @@ emails and churn during outages.
 | 2026-11-01 | Title/description rewrite of `how-to-tell-users-your-app-is-down.mdx` (pos 14.5, 50 impr, 0 clicks) leading with the exact query will lift it to page 1 / earn clicks | Position/CTR of that page in byPage | Pending; baseline pos 14.5 |
 | 2026-11-09 | Second title/description rewrite of `instatus-alternatives.mdx` ("instatus alternatives" pos 4.8, 194 impr, 0 clicks) to a plainer query-first title | Clicks/CTR on that query and page in byPage | Pending; baseline 243 impr, 1 click, pos 5.2 |
 | 2026-11-12 | New post `degraded-vs-outage-status-page.mdx` will reach page 1-2 for degraded/outage status wording queries (no small-team decision test found) | Position/impressions in byPage | Pending; published 2026-11-12 |
+| 2026-11-26 | New post `status-page-vs-twitter-for-outage-updates.mdx` will reach page 1-2 for "status page vs twitter" / outage-communication channel queries (only vendor generic posts found) | Position/impressions in byPage | Pending; published 2026-11-26 |
 | 2026-10-02 | New post `status-page-vs-uptime-monitoring.mdx` will rank for "status page vs uptime monitoring" / "do I need both" phrasing — competitive query (statuspage.me has a near-identical angle) but matches audience pitch tightly | Position/impressions for those phrases in seo-stats byQuery | Pending — published 2026-10-02, no data yet |
 
 ## Target keywords

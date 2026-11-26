@@ -1,0 +1,89 @@
+---
+title: "Status Page vs Twitter for Outage Updates: Which Should You Use?"
+description: "Should you tell users about an outage on a status page or on Twitter/X? A practical split for small SaaS teams: one source of truth, social as a pointer."
+quickAnswer: "Use a status page as the single source of truth for outages and post short pointers to it on Twitter/X. A status page gives users one URL, a timeline and email updates. Social posts alone get buried, can't be subscribed to per incident, and leave no clean record."
+date: "2026-11-26"
+author: "Statsy"
+tags: ["status-page", "incident-communication", "small-teams"]
+---
+
+<QuickAnswer>
+Use a status page as the single source of truth for outages and post short pointers to it on Twitter/X. A status page gives users one URL, a timeline and email updates. Social posts alone get buried, can't be subscribed to per incident, and leave no clean record.
+</QuickAnswer>
+
+When your app goes down, the first instinct of many solo founders is to tweet. It is fast, it needs no setup, and your users might already follow you. That is a fine reflex. It is a poor *only* channel.
+
+This post lays out what each channel is actually good at, a simple split that works for small teams, and a template you can copy.
+
+## What Twitter/X is good at
+
+- **Speed.** You can post in ten seconds from your phone.
+- **Reach to people who already follow you.** Early users often do.
+- **Tone.** A human voice from the founder builds goodwill.
+
+## Where Twitter/X falls short during an outage
+
+- **It is a feed, not a record.** An update from 10:05 is buried by 11:30. A user arriving at noon has to scroll and guess which post is current.
+- **Not everyone is on it.** Your paying users may never check it, and a user who isn't following you won't see the post at all.
+- **No per-incident structure.** There is no "investigating, identified, resolved" progression, so users can't tell if a post is the latest word.
+- **Replies fill with noise.** "Is it down for anyone else?" threads make it hard to find the real update.
+- **It ties communication to an account.** If you lock yourself out or the account is restricted, your incident channel goes with it.
+- **Search engines and support staff can't point to it easily.** A URL like `status.yourapp.com` can go in your error pages, support replies and docs.
+
+## What a status page is good at
+
+- **One URL to point everyone at.** Put it in your error page, your support auto-reply and your footer.
+- **Current state at a glance.** Users see operational, degraded or outage per service without reading anything.
+- **A timeline.** Each update is stamped, so people can see what changed and when.
+- **Subscriptions.** Users who opt in get an email when status changes, so they don't need to refresh anything.
+- **A record afterwards.** Past incidents stay in one place, which helps when someone asks "was that you last Tuesday?" or when you write a [post-incident review](/blog/post-incident-review-template-for-small-teams).
+
+Its weaknesses are real too. A status page has to be updated by a person or it shows green during a real outage, and it only helps if users know it exists. Both are fixable: automate the checks, and link the page everywhere.
+
+## The split that works for small teams
+
+Treat the channels as different jobs:
+
+1. **Status page = source of truth.** Every incident gets created and updated here first.
+2. **Email (from the page) = push to people who opted in.** They don't need to go looking.
+3. **Twitter/X = pointer.** One short post per major phase, always linking to the page.
+4. **Direct replies = individuals.** Answer support emails with the link, not a fresh explanation each time.
+
+The rule: *details live in one place; everything else points to it.* That avoids the classic failure where your tweet says "fixed" while your page still says "investigating."
+
+## A template for the social pointer
+
+Keep it short, factual and linked:
+
+**When you confirm the problem**
+
+> We're seeing errors on login for some users. We're investigating. Updates here: https://status.yourapp.com
+
+**When it's resolved**
+
+> Login is working again. Sorry about that. Timeline and details: https://status.yourapp.com
+
+You don't need to tweet every status change. Two or three posts per incident is enough, and the page carries the rest. For wording of the page updates themselves, see [what to write in a status page incident update](/blog/what-to-write-in-a-status-page-incident-update).
+
+## When tweeting alone is okay
+
+Be honest about the trade-off. If you have a handful of users, no paying customers yet and the app is a side project, a pinned post or a direct email may be enough. Our post on [whether you need a status page for a side project](/blog/do-you-need-a-status-page-for-a-side-project) covers where that line sits.
+
+The calculation changes once people pay you. Paying users expect to be able to check status without being on a particular social network, and a status page is cheap insurance against support email floods during an outage.
+
+## Mistakes to avoid
+
+- **Posting on social first and updating the page "later."** Later rarely happens. Write the page update first, then paste the link.
+- **Having two different versions of the truth.** If wording differs, users trust neither.
+- **Hosting the status page on the same infrastructure as your app.** If both go down together, nobody can read it. See [where to host your status page](/blog/where-to-host-your-status-page).
+- **Going quiet.** Even "still investigating, next update in 30 minutes" beats silence on any channel.
+
+## Doing this with Statsy
+
+On Statsy, each service on your page is operational, degraded or outage, and an incident carries a timeline of updates (investigating, identified, monitoring, resolved). Email subscribers are notified when a service's status changes. The Free plan includes 1 status page, 3 services and 50 email subscribers on a `yourname.statsy.page` address, with checks every 5 minutes and no credit card required. Pro ($15/mo) adds 3 pages, 10 services, 500 subscribers, 1 minute checks and a custom domain.
+
+Statsy does not post to Twitter/X, and it has no SMS, Slack or webhook alerts, so the social pointer is a manual copy-and-paste of your page link. That is a deliberate small step: one source of truth, one link to share.
+
+If you want to try the setup described here, the Free plan is enough for a first page.
+
+<CtaButton href="https://statsy.page/signup">Create a free status page →</CtaButton>

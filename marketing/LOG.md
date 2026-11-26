@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-26
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
+- Stats (GSC 2026-10-27..11-23): 2 clicks, 1315 impressions, avg position 22.3. Signups: 4 in 28d (11-13, 11-20, 2 on 11-23), 16 total users, 4 status pages. Brand home 148 impr, 2 clicks (pos 5.8). `instatus-alternatives` 416 impr pos 6.4, 0 clicks; maintenance post 297 impr pos 52.3; maintenance-message-examples 80 impr pos 33.8 (up from 55 / 35.3); degraded-vs-outage 57 pos 19.5; how-to-tell-users 62 pos 10.5; incident-update 58 pos 14.3. Impressions +3% vs 11-25.
+- Did: new post `content/blog/status-page-vs-twitter-for-outage-updates.mdx` (~1075 words). Backlink added from `do-you-need-a-status-page-for-a-side-project.mdx`; links to incident-update, post-incident-review, where-to-host and side-project posts. Build fails only on the known /login Supabase env error; frontmatter parses, descriptions <=160.
+- Why: weekly cap allows (last post 11-19). Web search of "status page or twitter for outage communication" showed only vendor "why you need a status page" posts and general guides, none giving a small-team channel split or copy-paste social pointer. No competitor claims; Statsy claims checked against FACTS.md (states that Statsy does not post to X and has no SMS/Slack/webhook). Rejected first: "UptimeRobot status page alternative" (crowded vendor listicles; official sources conflict on the free-plan commercial-use rule, so no safe claim).
+- Result/observation: unverified guess that this query has any volume; treat as an experiment. Maintenance-template post is climbing (pos 33.8).
+- Next: confirm live + IndexNow. No new post until 12-03. Check whether the new post appears in GSC around 12-03..12-05. Monday 11-30 weekly review.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories). Posting this new post on X would also be a natural first test of the "pointer" idea.
+
 ## 2026-11-25
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC window ending ~11-22): 2 clicks, 1272 impressions, avg position 22.4. Signups: 4 in 28d (11-13, 11-20, 2 on 11-23), 16 total users, 4 status pages. Brand home 144 impr, 2 clicks (pos 5.8). `instatus-alternatives` 415 impr pos 6.4, 0 clicks; maintenance post 293 impr pos 53.1; maintenance-message-examples 55 impr pos 35.3 (up from 32 / 29.8); degraded-vs-outage 55 pos 19.9; how-to-tell-users 57 pos 11.0; uptime-checks 27 pos 16.1.
