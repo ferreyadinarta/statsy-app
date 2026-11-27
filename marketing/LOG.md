@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-27
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before). `status-page-vs-twitter-for-outage-updates` is live and in the sitemap.
+- Stats (GSC window ending ~11-24): 2 clicks, 1363 impressions, avg position 22.6. Signups: 5 in 28d (11-13, 11-20, 2 on 11-23, 1 on 11-26), 17 total users, 5 status pages. Brand home 144 impr, 2 clicks (pos 5.8). `instatus-alternatives` 418 impr pos 6.4, 0 clicks; maintenance post 306 impr pos 50.9; maintenance-message-examples 122 impr pos 36.2 (up from 80 / 33.8); degraded-vs-outage 67 pos 18.9; how-to-tell-users 61 pos 10.9; uptime-checks 23 pos 15.5.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 11-26, next allowed 12-03); nothing in the data calls for a fix.
+- Result/observation: flat on search, impressions +4% vs 11-26. Signups ticked up again (11-26), source unknown. No build run (only marketing/ changed).
+- Next: Monday 11-30 weekly review. No new post until 12-03. Check whether the twitter post shows in GSC around 12-03.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories).
+
 ## 2026-11-26
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before).
 - Stats (GSC 2026-10-27..11-23): 2 clicks, 1315 impressions, avg position 22.3. Signups: 4 in 28d (11-13, 11-20, 2 on 11-23), 16 total users, 4 status pages. Brand home 148 impr, 2 clicks (pos 5.8). `instatus-alternatives` 416 impr pos 6.4, 0 clicks; maintenance post 297 impr pos 52.3; maintenance-message-examples 80 impr pos 33.8 (up from 55 / 35.3); degraded-vs-outage 57 pos 19.5; how-to-tell-users 62 pos 10.5; incident-update 58 pos 14.3. Impressions +3% vs 11-25.
