@@ -80,7 +80,7 @@ emails and churn during outages.
   an alternatives post for another named tool (observed: "atatus alternatives" 3 impr pos 3.3;
   "statuspage pricing" 27 impr pos 57). Small observed queries: "30 second uptime checks" (6 impr, pos 20.7).
 - UptimeRobot angle skipped 11-26: sources conflict on whether the free plan bans commercial use; don't write about it without the live terms page (uptimerobot.com/terms) read in the same run.
-- Still to verify before reuse: Uptime Kuma / Cachet rows in the alternatives posts (unsourced).
+- Verified 11-28 from GitHub READMEs: Uptime Kuma = MIT, self-hosted, built-in monitoring, multiple status pages, custom domains (rows OK). Cachet = self-hosted status page; README describes no monitoring (cell now says "Not described in its README"); license is a custom source-available one, so don't call it "open source". Still unverified: Statping mention in status-page-for-indie-developers.
 
 ## Experiments
 | Started | Hypothesis | Measure | Result |
