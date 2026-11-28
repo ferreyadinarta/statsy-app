@@ -3,6 +3,15 @@
 Newest entry first. One entry per run: date, health check, what was done, why,
 what to check next time. Keep entries short.
 
+## 2026-11-28
+- Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 21 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct on the pages checked. (First stats call returned fine; a retry briefly returned a non-JSON body, third call OK. One signups call returned `db_failed`, transient.)
+- Stats (GSC 2026-10-29..11-25): 2 clicks, 1373 impressions, avg position 22.6. Signups: 6 in 28d (11-13, 11-20, 2 on 11-23, 11-26, 11-27), 18 total users, 6 status pages. Brand home 142 impr, 2 clicks (pos 5.8). `instatus-alternatives` 407 impr pos 6.5, 0 clicks; maintenance post 302 impr pos 49.9; maintenance-message-examples 145 impr pos 35.1 (up from 122 / 36.2); degraded-vs-outage 70 pos 19.2; how-to-tell-users 64 pos 11.3; uptime-checks 22 pos 16.0. New: a user status page (absensistatus.statsy.page) shows 12 impr at pos 4.3.
+- Did: no content change (log-only run).
+- Why: weekly cap (last post 11-26, next allowed 12-03); nothing in the data calls for a fix.
+- Result/observation: flat on search, signups still trickling (3 in the last 5 days, source unknown). No build run (only marketing/ changed).
+- Next: Monday 11-30 weekly review. No new post until 12-03.
+- NEEDS FERREY: unchanged: off-site mentions/links (X, Indie Hackers, directories). Also: if signups are coming from X or elsewhere, note the source.
+
 ## 2026-11-27
 - Health: OK. Homepage, /blog, /sitemap.xml, /robots.txt and all 20 sitemap URLs: 200 for Googlebot UA, no noindex, no cf-mitigated, canonicals correct (/demo has no self-canonical, as before). `status-page-vs-twitter-for-outage-updates` is live and in the sitemap.
 - Stats (GSC window ending ~11-24): 2 clicks, 1363 impressions, avg position 22.6. Signups: 5 in 28d (11-13, 11-20, 2 on 11-23, 1 on 11-26), 17 total users, 5 status pages. Brand home 144 impr, 2 clicks (pos 5.8). `instatus-alternatives` 418 impr pos 6.4, 0 clicks; maintenance post 306 impr pos 50.9; maintenance-message-examples 122 impr pos 36.2 (up from 80 / 33.8); degraded-vs-outage 67 pos 18.9; how-to-tell-users 61 pos 10.9; uptime-checks 23 pos 15.5.
